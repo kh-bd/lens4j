@@ -40,7 +40,6 @@ public interface Lens<O, P> {
      */
     void set(O object, P property);
 
-
     /**
      * Create a lens from accessors methods.
      *
