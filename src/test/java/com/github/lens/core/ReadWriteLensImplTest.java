@@ -8,10 +8,10 @@ import org.testng.annotations.Test;
 /**
  * @author Sergei_Khadanovich
  */
-public class AccessorsLensTest {
+public class ReadWriteLensImplTest {
 
-    private static final Lens<Entity, String> LENS =
-            Lens.fromAccessors(Entity::getProperty, Entity::setProperty);
+    private static final ReadWriteLens<Entity, String> LENS =
+            Lenses.readWriteLens(Entity::getProperty, Entity::setProperty);
 
     @Test
     public void get_objectIsNull_returnNull() {

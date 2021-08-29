@@ -1,19 +1,19 @@
 package com.github.lens.core;
 
 /**
- * Combined lens implementation.
+ * Combined read-write lens implementation.
  *
  * @param <O>  object type
  * @param <P1> first property type
  * @param <P2> second property type
  */
-class CombinedLens<O, P1, P2> implements Lens<O, P2> {
+class CombinedReadWriteLensImpl<O, P1, P2> implements ReadWriteLens<O, P2> {
 
-    private final Lens<? super O, ? extends P1> base;
-    private final Lens<? super P1, P2> next;
+    private final ReadLens<? super O, ? extends P1> base;
+    private final ReadWriteLens<? super P1, P2> next;
 
-    CombinedLens(Lens<? super O, P1> base,
-                 Lens<? super P1, P2> next) {
+    CombinedReadWriteLensImpl(ReadLens<? super O, ? extends P1> base,
+                              ReadWriteLens<? super P1, P2> next) {
         this.base = base;
         this.next = next;
     }

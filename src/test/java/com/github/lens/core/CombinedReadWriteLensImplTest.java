@@ -9,11 +9,11 @@ import org.testng.annotations.Test;
 /**
  * @author Sergei_Khadanovich
  */
-public class CombinedLensTest {
+public class CombinedReadWriteLensImplTest {
 
-    private static final Lens<Account, String> ACCOUNT_CUR_CODE_LENS =
-            Lens.fromAccessors(Account::getCurrency, Account::setCurrency)
-                    .andThen(Lens.fromAccessors(Currency::getCode, Currency::setCode));
+    private static final ReadWriteLens<Account, String> ACCOUNT_CUR_CODE_LENS =
+            Lenses.readLens(Account::getCurrency)
+                    .andThen(Lenses.readWriteLens(Currency::getCode, Currency::setCode));
 
     @Test
     public void get_accountIsNull_returnNull() {
