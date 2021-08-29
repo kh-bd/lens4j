@@ -1,4 +1,4 @@
-package com.github.lens;
+package com.github.lens.core;
 
 /**
  * Combined lens implementation.

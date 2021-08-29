@@ -1,4 +1,4 @@
-package com.github.lens;
+package com.github.lens.core;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;

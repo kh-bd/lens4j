@@ -1,4 +1,4 @@
-package com.github.lens;
+package com.github.lens.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
