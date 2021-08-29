@@ -47,8 +47,19 @@ public interface Lens<O, P> {
      * @param <P2> deep property type
      * @return combined lens
      */
-    default <P2> Lens<O, P2> combine(Lens<? super P, P2> next) {
+    default <P2> Lens<O, P2> andThen(Lens<? super P, P2> next) {
         return Lens.combine(this, next);
+    }
+
+    /**
+     * Combine specified lens with current one.
+     *
+     * @param base base lens
+     * @param <O1> new object type
+     * @return combined lens
+     */
+    default <O1> Lens<O1, P> compose(Lens<? super O1, ? extends O> base) {
+        return Lens.combine(base, this);
     }
 
     /**

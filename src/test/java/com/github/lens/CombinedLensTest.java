@@ -13,7 +13,7 @@ public class CombinedLensTest {
 
     private static final Lens<Account, String> ACCOUNT_CUR_CODE_LENS =
             Lens.fromAccessors(Account::getCurrency, Account::setCurrency)
-                    .combine(Lens.fromAccessors(Currency::getCode, Currency::setCode));
+                    .andThen(Lens.fromAccessors(Currency::getCode, Currency::setCode));
 
     @Test
     public void get_accountIsNull_returnNull() {
