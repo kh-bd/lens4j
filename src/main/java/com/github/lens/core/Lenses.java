@@ -22,7 +22,7 @@ public class Lenses {
      * @return read lens
      */
     public static <O, P> ReadLens<O, P> readLens(Function<? super O, ? extends P> getter) {
-        return new ReadWriteLensImpl<>(getter, null);
+        return new ReadLensImpl<>(getter);
     }
 
     /**
