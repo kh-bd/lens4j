@@ -1,9 +1,15 @@
 package com.github.lens.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import lombok.Data;
 import org.testng.annotations.Test;
+
+import java.util.function.Function;
 
 /**
  * @author Sergei_Khadanovich
@@ -57,6 +63,34 @@ public class ReadWriteLensImplTest {
         LENS.set(entity, "new value");
 
         assertThat(entity.getProperty()).isEqualTo("new value");
+    }
+
+    @Test
+    public void modify_objectIsNull_doNothing() {
+        Function<String, String> f = mock(Function.class);
+
+        LENS.modify(null, f);
+
+        verify(f, never()).apply(anyString());
+    }
+
+    @Test
+    public void modify_propertyIsNull_doNothing() {
+        Function<String, String> f = mock(Function.class);
+
+        LENS.modify(new Entity(), f);
+
+        verify(f, never()).apply(anyString());
+    }
+
+    @Test
+    public void modify_propertyIsNotNull_setFunctionResult() {
+        Entity entity = new Entity();
+        entity.setProperty("value");
+
+        LENS.modify(entity, String::toUpperCase);
+
+        assertThat(entity.getProperty()).isEqualTo("VALUE");
     }
 
     @Data
