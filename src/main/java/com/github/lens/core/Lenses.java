@@ -21,7 +21,7 @@ public class Lenses {
      * @param <P>    property type
      * @return read lens
      */
-    static <O, P> ReadLens<O, P> readLens(Function<? super O, ? extends P> getter) {
+    public static <O, P> ReadLens<O, P> readLens(Function<? super O, ? extends P> getter) {
         return new ReadWriteLensImpl<>(getter, null);
     }
 
@@ -34,8 +34,8 @@ public class Lenses {
      * @param <P>    property type
      * @return read-write lens
      */
-    static <O, P> ReadWriteLens<O, P> readWriteLens(Function<? super O, ? extends P> getter,
-                                                    BiConsumer<? super O, ? super P> setter) {
+    public static <O, P> ReadWriteLens<O, P> readWriteLens(Function<? super O, ? extends P> getter,
+                                                           BiConsumer<? super O, ? super P> setter) {
         return new ReadWriteLensImpl<>(getter, setter);
     }
 
@@ -49,8 +49,8 @@ public class Lenses {
      * @param <P2> second property type
      * @return combined read lens
      */
-    static <O, P1, P2> ReadLens<O, P2> combine(ReadLens<? super O, ? extends P1> base,
-                                               ReadLens<? super P1, ? extends P2> next) {
+    public static <O, P1, P2> ReadLens<O, P2> combine(ReadLens<? super O, ? extends P1> base,
+                                                      ReadLens<? super P1, ? extends P2> next) {
         return new CombinedReadLensImpl<>(base, next);
     }
 
@@ -64,8 +64,8 @@ public class Lenses {
      * @param <P2> second property type
      * @return combined read lens
      */
-    static <O, P1, P2> ReadWriteLens<O, P2> combine(ReadLens<? super O, ? extends P1> base,
-                                                    ReadWriteLens<? super P1, P2> next) {
+    public static <O, P1, P2> ReadWriteLens<O, P2> combine(ReadLens<? super O, ? extends P1> base,
+                                                           ReadWriteLens<? super P1, P2> next) {
         return new CombinedReadWriteLensImpl<>(base, next);
     }
 }
