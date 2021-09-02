@@ -18,7 +18,6 @@ import com.github.lens.processor.generator.LensMetadata;
 import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableSet;
 import com.squareup.javapoet.JavaFile;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -54,7 +53,6 @@ import java.util.stream.Stream;
  *
  * @author Alexey_Bodyak
  */
-@Slf4j
 @AutoService(Processor.class)
 public class LensProcessor extends AbstractProcessor {
 
@@ -102,7 +100,6 @@ public class LensProcessor extends AbstractProcessor {
                     factoryMetadata.add(processReadWriteElements(element));
                 }
             } catch (Exception e) {
-                log.error("Error: ", e);
                 return ProcessResult.ERROR;
             }
         }
