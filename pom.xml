@@ -32,7 +32,6 @@
         <commons-lang3.version>3.10</commons-lang3.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <guava.version>23.0</guava.version>
-        <sl4j.version>1.7.30</sl4j.version>
     </properties>
 
     <dependencyManagement>
@@ -41,11 +40,6 @@
                 <groupId>com.github</groupId>
                 <artifactId>lens-core</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${sl4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
