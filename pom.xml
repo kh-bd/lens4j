@@ -30,7 +30,6 @@
         <auto-service.version>1.0-rc2</auto-service.version>
         <google-testing.version>0.15</google-testing.version>
         <commons-lang3.version>3.10</commons-lang3.version>
-        <commons-collections.version>3.2.2</commons-collections.version>
         <guava.version>23.0</guava.version>
     </properties>
 
@@ -45,11 +44,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-collections</groupId>
-                <artifactId>commons-collections</artifactId>
-                <version>${commons-collections.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
