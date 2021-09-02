@@ -30,7 +30,6 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.tools.Diagnostic;
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -57,6 +56,7 @@ public class LensProcessor extends AbstractProcessor {
 
     private LensGenerator lensGenerator;
     private Filer filer;
+    private Logger logger;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -64,6 +64,7 @@ public class LensProcessor extends AbstractProcessor {
 
         this.filer = processingEnv.getFiler();
         this.lensGenerator = new BaseLensGenerator();
+        this.logger = new Logger(processingEnv.getMessager());
     }
 
     @Override
@@ -120,7 +121,7 @@ public class LensProcessor extends AbstractProcessor {
         List<GenReadLens> annotations = getReadAnnotationsFromElement(element);
         List<String> factoryNames = extractReadFactoryNames(annotations);
         if (factoryNames.size() > 1) {
-            error(element, "Lens from one type should be have one factory");
+            logger.log(Message.error("Lens from one type should be have one factory", element));
             throw new RuntimeException("Lens from one type should be have one factory");
         }
 
@@ -132,7 +133,7 @@ public class LensProcessor extends AbstractProcessor {
         List<GenReadWriteLens> annotations = getReadWriteAnnotationsFromElement(element);
         List<String> factoryNames = extractReadWriteFactoryNames(annotations);
         if (factoryNames.size() > 1) {
-            error(element, "Lens from one type should be have one factory");
+            logger.log(Message.error("Lens from one type should be have one factory", element));
             throw new RuntimeException("Lens from one type should be have one factory");
         }
 
@@ -259,10 +260,6 @@ public class LensProcessor extends AbstractProcessor {
                 GenReadWriteLens.class,
                 GenReadWriteLenses.class
         );
-    }
-
-    private void error(Element element, String message) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message, element);
     }
 
     enum ProcessResult {
