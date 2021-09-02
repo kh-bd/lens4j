@@ -16,7 +16,6 @@ import com.github.lens.processor.generator.GenerationContext;
 import com.github.lens.processor.generator.LensGenerator;
 import com.github.lens.processor.generator.LensMetadata;
 import com.google.auto.service.AutoService;
-import com.google.common.collect.ImmutableSet;
 import com.squareup.javapoet.JavaFile;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -32,6 +31,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.tools.Diagnostic;
+import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,7 +46,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Annotation processor for generating lens.
@@ -69,12 +68,9 @@ public class LensProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return ImmutableSet.<String>builder()
-                .add(GenReadLens.class.getName())
-                .add(GenReadLenses.class.getName())
-                .add(GenReadWriteLens.class.getName())
-                .add(GenReadWriteLenses.class.getName())
-                .build();
+        return supportedAnnotations().stream()
+                .map(Class::getName)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -250,18 +246,19 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private Set<? extends Element> findLensElements(RoundEnvironment roundEnv) {
-        return Stream.concat(
-                Stream.concat(
-                        roundEnv.getElementsAnnotatedWith(GenReadLens.class).stream(),
-                        roundEnv.getElementsAnnotatedWith(GenReadLenses.class).stream()
-                ),
-                Stream.concat(
-                        roundEnv.getElementsAnnotatedWith(GenReadWriteLens.class).stream(),
-                        roundEnv.getElementsAnnotatedWith(GenReadWriteLenses.class).stream()
-                )
-        )
+        return roundEnv.getElementsAnnotatedWithAny(supportedAnnotations())
+                .stream()
                 .filter(it -> it.getKind() == ElementKind.CLASS)
                 .collect(Collectors.toSet());
+    }
+
+    private Set<Class<? extends Annotation>> supportedAnnotations() {
+        return Set.of(
+                GenReadLens.class,
+                GenReadLenses.class,
+                GenReadWriteLens.class,
+                GenReadWriteLenses.class
+        );
     }
 
     private void error(Element element, String message) {
