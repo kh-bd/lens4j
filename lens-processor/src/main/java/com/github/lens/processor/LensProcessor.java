@@ -5,10 +5,10 @@
 
 package com.github.lens.processor;
 
-import com.github.lens.processor.annotations.GenReadLens;
-import com.github.lens.processor.annotations.GenReadLenses;
-import com.github.lens.processor.annotations.GenReadWriteLens;
-import com.github.lens.processor.annotations.GenReadWriteLenses;
+import com.github.lens.core.annotations.GenReadLens;
+import com.github.lens.core.annotations.GenReadLenses;
+import com.github.lens.core.annotations.GenReadWriteLens;
+import com.github.lens.core.annotations.GenReadWriteLenses;
 import com.github.lens.processor.generator.BaseLensGenerator;
 import com.github.lens.processor.generator.ElementMetadata;
 import com.github.lens.processor.generator.FactoryMetadata;

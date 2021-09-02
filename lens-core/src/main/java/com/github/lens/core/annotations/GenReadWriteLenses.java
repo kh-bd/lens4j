@@ -3,7 +3,7 @@
  * Copyright (c) 2021 VTB Group. All rights reserved.
  */
 
-package com.github.lens.processor.annotations;
+package com.github.lens.core.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -19,6 +19,6 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
-public @interface GenReadLenses {
-    GenReadLens[] value();
+public @interface GenReadWriteLenses {
+    GenReadWriteLens[] value();
 }

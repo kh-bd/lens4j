@@ -1,7 +1,5 @@
 package util;
 
-import com.github.lens.processor.annotations.GenReadLens;
-
 public class Currency {
     private Integer id;
     private String code;

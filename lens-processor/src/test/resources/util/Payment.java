@@ -1,7 +1,7 @@
 package util;
 
-import com.github.lens.processor.annotations.GenReadLens;
-import com.github.lens.processor.annotations.GenReadWriteLens;
+import com.github.lens.core.annotations.GenReadLens;
+import com.github.lens.core.annotations.GenReadWriteLens;
 
 @GenReadLens(lensName = "PAYMENT_RECEIVER_BANK_BIC_READ_LENS", path = "receiver.bank.bic")
 @GenReadLens(lensName = "PAYMENT_PAYER_BANK_BIC_READ_LENS", path = "payer.bank.bic")

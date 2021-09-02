@@ -1,7 +1,6 @@
 package util;
 
-import com.github.lens.processor.annotations.GenReadLens;
-import com.github.lens.processor.annotations.GenReadWriteLens;
+import com.github.lens.core.annotations.GenReadWriteLens;
 
 @GenReadWriteLens(lensName = "ACCOUNT_CUR_CODE_LENS", path = "currency.code")
 public class AccountReadWrite {
