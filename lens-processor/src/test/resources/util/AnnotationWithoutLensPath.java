@@ -1,6 +1,6 @@
 package util;
 
-import com.github.lens.processor.annotations.GenReadLens;
+import com.github.lens.core.annotations.GenReadLens;
 
 @GenReadLens(lensName = "LENS_NAME")
 public class AnnotationWithoutLensPath {

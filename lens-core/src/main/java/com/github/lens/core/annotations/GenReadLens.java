@@ -3,7 +3,7 @@
  * Copyright (c) 2021 VTB Group. All rights reserved.
  */
 
-package com.github.lens.processor.annotations;
+package com.github.lens.core.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -71,7 +71,7 @@ public class LensProcessorTest {
                         .compile(JavaFileObjects.forResource("util/AnnotationWithoutLensName.java"));
 
         assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("annotation @com.github.lens.processor.annotations.GenReadLens is missing a default value for the element 'lensName'");
+        assertThat(compilation).hadErrorContaining("annotation @com.github.lens.core.annotations.GenReadLens is missing a default value for the element 'lensName'");
     }
 
     @Test
@@ -81,6 +81,6 @@ public class LensProcessorTest {
                         .compile(JavaFileObjects.forResource("util/AnnotationWithoutLensPath.java"));
 
         assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("annotation @com.github.lens.processor.annotations.GenReadLens is missing a default value for the element 'path'");
+        assertThat(compilation).hadErrorContaining("annotation @com.github.lens.core.annotations.GenReadLens is missing a default value for the element 'path'");
     }
 }

@@ -1,6 +1,6 @@
 package util;
 
-import com.github.lens.processor.annotations.GenReadLens;
+import com.github.lens.core.annotations.GenReadLens;
 
 @GenReadLens(factoryName = "FactoryName1", lensName = "CUR_CODE_LENS", path = "currency.code")
 @GenReadLens(factoryName = "FactoryName2", lensName = "CUR_ID_LENS", path = "currency.id")
