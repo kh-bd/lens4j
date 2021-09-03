@@ -6,6 +6,8 @@ import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 
 /**
+ * Value to represent some messages which can occur during annotation processing.
+ *
  * @author Sergei_Khadanovich
  */
 @Value(staticConstructor = "of")

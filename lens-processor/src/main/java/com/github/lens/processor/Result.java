@@ -5,6 +5,8 @@ import lombok.Value;
 import java.util.List;
 
 /**
+ * Value with messages pair.
+ *
  * @author Sergei_Khadanovich
  */
 @Value(staticConstructor = "of")

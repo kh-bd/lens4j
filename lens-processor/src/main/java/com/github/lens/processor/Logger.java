@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * {@link Messager} wrapper to log messages more conviniently.
+ *
  * @author Sergei_Khadanovich
  */
 @RequiredArgsConstructor
