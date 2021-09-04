@@ -6,7 +6,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import lombok.Data;
 import org.testng.annotations.Test;
 
 import java.util.function.Function;
@@ -93,8 +92,18 @@ public class ReadWriteLensImplTest {
         assertThat(entity.getProperty()).isEqualTo("VALUE");
     }
 
-    @Data
     static class Entity {
         String property;
+
+        public Entity() {
+        }
+
+        public String getProperty() {
+            return property;
+        }
+
+        public void setProperty(String property) {
+            this.property = property;
+        }
     }
 }

@@ -1,7 +1,5 @@
 package com.github.lens.processor;
 
-import lombok.Value;
-
 import java.util.List;
 
 /**
@@ -9,11 +7,15 @@ import java.util.List;
  *
  * @author Sergei_Khadanovich
  */
-@Value(staticConstructor = "of")
 public class Result<M> {
 
     M value;
     List<Message> messages;
+
+    private Result(M value, List<Message> messages) {
+        this.value = value;
+        this.messages = messages;
+    }
 
     /**
      * Create result from value with any message.
@@ -24,7 +26,7 @@ public class Result<M> {
      * @return result
      */
     public static <M> Result<M> of(M value, Message... messages) {
-        return of(value, List.of(messages));
+        return new Result<>(value, List.of(messages));
     }
 
     /**

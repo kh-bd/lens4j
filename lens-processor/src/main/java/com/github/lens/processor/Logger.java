@@ -1,7 +1,5 @@
 package com.github.lens.processor;
 
-import lombok.RequiredArgsConstructor;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import java.util.Collection;
@@ -13,10 +11,13 @@ import java.util.Objects;
  *
  * @author Sergei_Khadanovich
  */
-@RequiredArgsConstructor
 public class Logger {
 
     private final Messager messager;
+
+    public Logger(Messager messager) {
+        this.messager = messager;
+    }
 
     /**
      * Log message.

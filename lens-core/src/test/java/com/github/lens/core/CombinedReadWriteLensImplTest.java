@@ -2,8 +2,6 @@ package com.github.lens.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
 import org.testng.annotations.Test;
 
 /**
@@ -75,15 +73,35 @@ public class CombinedReadWriteLensImplTest {
         assertThat(account.getCurrency().getCode()).isEqualTo("code");
     }
 
-    @Data
-    @Accessors(chain = true)
     static class Account {
         Currency currency;
+
+        public Account() {
+        }
+
+        public Currency getCurrency() {
+            return currency;
+        }
+
+        public Account setCurrency(Currency currency) {
+            this.currency = currency;
+            return this;
+        }
     }
 
-    @Data
-    @Accessors(chain = true)
     static class Currency {
         String code;
+
+        public Currency() {
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public Currency setCode(String code) {
+            this.code = code;
+            return this;
+        }
     }
 }
