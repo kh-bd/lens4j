@@ -1,7 +1,5 @@
 package com.github.lens.processor;
 
-import lombok.Value;
-
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 
@@ -10,12 +8,17 @@ import javax.tools.Diagnostic;
  *
  * @author Sergei_Khadanovich
  */
-@Value(staticConstructor = "of")
 public class Message {
 
     Diagnostic.Kind kind;
     String msg;
     Element element;
+
+    private Message(Diagnostic.Kind kind, String msg, Element element) {
+        this.kind = kind;
+        this.msg = msg;
+        this.element = element;
+    }
 
     /**
      * Create error message.
@@ -25,7 +28,7 @@ public class Message {
      * @return message
      */
     public static Message error(String msg, Element element) {
-        return of(Diagnostic.Kind.ERROR, msg, element);
+        return new Message(Diagnostic.Kind.ERROR, msg, element);
     }
 
     /**
@@ -46,7 +49,7 @@ public class Message {
      * @return message
      */
     public static Message warn(String msg, Element element) {
-        return of(Diagnostic.Kind.WARNING, msg, element);
+        return new Message(Diagnostic.Kind.WARNING, msg, element);
     }
 
     /**
@@ -57,5 +60,32 @@ public class Message {
      */
     public static Message warn(String msg) {
         return warn(msg, null);
+    }
+
+    /**
+     * Get kind.
+     *
+     * @return kind
+     */
+    public Diagnostic.Kind getKind() {
+        return kind;
+    }
+
+    /**
+     * Get message.
+     *
+     * @return message
+     */
+    public String getMsg() {
+        return msg;
+    }
+
+    /**
+     * Get element.
+     *
+     * @return element
+     */
+    public Element getElement() {
+        return element;
     }
 }
