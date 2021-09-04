@@ -1,12 +1,17 @@
 package util;
 
-import com.github.lens.core.annotations.GenReadLens;
-import com.github.lens.core.annotations.GenReadWriteLens;
+import com.github.lens.core.annotations.GenLenses;
+import com.github.lens.core.annotations.Lens;
+import com.github.lens.core.annotations.LensType;
 
-@GenReadLens(lensName = "PAYMENT_RECEIVER_BANK_BIC_READ_LENS", path = "receiver.bank.bic")
-@GenReadLens(lensName = "PAYMENT_PAYER_BANK_BIC_READ_LENS", path = "payer.bank.bic")
-@GenReadWriteLens(lensName = "PAYMENT_RECEIVER_BANK_BIC_READ_WRITE_LENS", path = "receiver.bank.bic")
-@GenReadWriteLens(lensName = "PAYMENT_PAYER_BANK_BIC_READ_WRITE_LENS", path = "payer.bank.bic")
+@GenLenses(
+        lenses = {
+                @Lens(path = "receiver.bank.bic", lensName = "PAYMENT_RECEIVER_BANK_BIC_READ_LENS"),
+                @Lens(path = "receiver.bank.bic", lensName = "PAYMENT_RECEIVER_BANK_BIC_READ_WRITE_LENS", type = LensType.READ_WRITE),
+                @Lens(path = "payer.bank.bic", lensName = "PAYMENT_PAYER_BANK_BIC_READ_LENS"),
+                @Lens(path = "payer.bank.bic", lensName = "PAYMENT_PAYER_BANK_BIC_READ_WRITE_LENS", type = LensType.READ_WRITE)
+        }
+)
 public class Payment {
     private String id;
     private Payer payer;

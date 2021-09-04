@@ -21,7 +21,7 @@ public @interface GenLenses {
      *
      * @return factory name
      */
-    String factoryName();
+    String factoryName() default "";
 
     /**
      * Lenses which should be added to generated factory.

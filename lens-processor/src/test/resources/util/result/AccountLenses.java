@@ -1,19 +1,19 @@
-package com.github.lens;
+package util;
 
+import com.github.lens.core.Lenses;
 import com.github.lens.core.ReadLens;
+import java.lang.Integer;
 import java.lang.String;
 import javax.annotation.processing.Generated;
-import util.Account;
-import util.Currency;
 
 @Generated("com.github.lens.processor.LensProcessor")
-public final class Lenses {
-    public static final ReadLens<Account, String> ACCOUNT_CUR_CODE_READ_LENS = com.github.lens.core.Lenses.readLens(Account::getCurrency)
-            .andThen(com.github.lens.core.Lenses.readLens(Currency::getCode));
+public final class AccountLenses {
+    public static final ReadLens<Account, String> ACCOUNT_CURRENCY_CODE_READ_LENS = Lenses.readLens(Account::getCurrency)
+            .andThen(Lenses.readLens(Currency::getCode));
 
-    public static final ReadLens<Account, String> ACCOUNT_CUR_CODE_READ_WRITE_LENS = com.github.lens.core.Lenses.readLens(Account::getCurrency)
-            .andThen(com.github.lens.core.Lenses.readWriteLens(Currency::getCode, Currency::setCode));
+    public static final ReadLens<Account, Integer> ACCOUNT_CURRENCY_CODE_READ_WRITE_LENS = Lenses.readLens(Account::getCurrency)
+            .andThen(Lenses.readWriteLens(Currency::getId, Currency::setId));
 
-    private Lenses() {
+    private AccountLenses() {
     }
 }

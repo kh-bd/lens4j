@@ -1,8 +1,9 @@
 package util;
 
-import com.github.lens.core.annotations.GenReadLens;
+import com.github.lens.core.annotations.GenLenses;
+import com.github.lens.core.annotations.Lens;
 
-@GenReadLens(lensName = "LENS_NAME")
+@GenLenses(lenses = @Lens(lensName = "LENS_NAME"))
 public class AnnotationWithoutLensPath {
     private String id;
     private Currency currency;

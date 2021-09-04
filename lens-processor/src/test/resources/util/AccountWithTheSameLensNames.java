@@ -1,9 +1,16 @@
 package util;
 
-import com.github.lens.core.annotations.GenReadWriteLens;
+import com.github.lens.core.annotations.GenLenses;
+import com.github.lens.core.annotations.Lens;
+import com.github.lens.core.annotations.LensType;
 
-@GenReadWriteLens(lensName = "ACCOUNT_CUR_CODE_LENS", path = "currency.code")
-public class AccountReadWrite {
+@GenLenses(
+        lenses = {
+                @Lens(path = "currency.code", lensName = "ACCOUNT_CURRENCY_CODE_LENS"),
+                @Lens(path = "currency.code", lensName = "ACCOUNT_CURRENCY_CODE_LENS", type = LensType.READ_WRITE)
+        }
+)
+public class AccountWithTheSameLensNames {
     private String id;
     private String accountNumber;
     private String bic;

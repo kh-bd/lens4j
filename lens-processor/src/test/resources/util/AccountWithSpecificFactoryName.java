@@ -5,12 +5,13 @@ import com.github.lens.core.annotations.Lens;
 import com.github.lens.core.annotations.LensType;
 
 @GenLenses(
+        factoryName = "SpecificFactoryName",
         lenses = {
                 @Lens(path = "currency.code", lensName = "ACCOUNT_CURRENCY_CODE_READ_LENS"),
                 @Lens(path = "currency.id", lensName = "ACCOUNT_CURRENCY_CODE_READ_WRITE_LENS", type = LensType.READ_WRITE)
         }
 )
-public class Account {
+public class AccountWithSpecificFactoryName {
     private String id;
     private String accountNumber;
     private String bic;

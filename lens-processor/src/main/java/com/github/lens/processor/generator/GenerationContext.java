@@ -1,8 +1,3 @@
-/*
- * VTB Group. Do not reproduce without permission in writing.
- * Copyright (c) 2021 VTB Group. All rights reserved.
- */
-
 package com.github.lens.processor.generator;
 
 import java.util.List;
