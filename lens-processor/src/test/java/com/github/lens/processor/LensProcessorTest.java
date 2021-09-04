@@ -1,8 +1,3 @@
-/*
- * VTB Group. Do not reproduce without permission in writing.
- * Copyright (c) 2021 VTB Group. All rights reserved.
- */
-
 package com.github.lens.processor;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
@@ -18,31 +13,31 @@ import org.testng.annotations.Test;
 public class LensProcessorTest {
 
     @Test
-    public void generate_classWithOneGenReadAnnotations_generateValidId() {
+    public void generate_classWithOneGenReadAnnotations_generateValidAccountFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
                         .compile(JavaFileObjects.forResource("util/Account.java"));
 
         assertThat(compilation).succeeded();
         assertThat(compilation)
-                .generatedSourceFile("com/github/lens/Lenses")
+                .generatedSourceFile("util/AccountLenses")
                 .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/AccountLenses.java"));
     }
 
     @Test
-    public void generate_classWithTwoGenReadAnnotations_generateValidId() {
+    public void generate_classWithTwoGenReadAnnotations_generateValidPaymentFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
                         .compile(JavaFileObjects.forResource("util/Payment.java"));
 
         assertThat(compilation).succeeded();
         assertThat(compilation)
-                .generatedSourceFile("com/github/lens/Lenses")
+                .generatedSourceFile("util/PaymentLenses")
                 .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/PaymentLenses.java"));
     }
 
     @Test
-    public void generate_twoClassesWithGenReadAnnotations_generateValidId() {
+    public void generate_twoClassesWithGenLensesAnnotations_generateValidFactories() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
                         .compile(JavaFileObjects.forResource("util/Account.java"),
@@ -50,18 +45,45 @@ public class LensProcessorTest {
 
         assertThat(compilation).succeeded();
         assertThat(compilation)
-                .generatedSourceFile("com/github/lens/Lenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/ComboLens.java"));
+                .generatedSourceFile("util/AccountLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/AccountLenses.java"));
+        assertThat(compilation)
+                .generatedSourceFile("util/PaymentLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/PaymentLenses.java"));
     }
 
     @Test
-    public void generate_typeWithDifferentFactoryNames_compilationError() {
+    public void generate_annotationWithSpecificFactoryName_generateValidSpecificFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/TypeWithDifferentFactoryNames.java"));
+                        .compile(JavaFileObjects.forResource("util/AccountWithSpecificFactoryName.java"));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("util/SpecificFactoryName")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/SpecificFactoryName.java"));
+    }
+
+    @Test
+    public void generate_annotationWithDeCapitalizeSpecificFactoryName_generateValidSpecificFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(JavaFileObjects.forResource("util/AccountWithDeCapitalizeSpecificFactoryName.java"));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("util/SpecificFactoryName")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/CapitalizeSpecificFactoryName.java"));
+    }
+
+    @Test
+    public void generate_typeHasNotUniqueLensNames_compilationError() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(JavaFileObjects.forResource("util/AccountWithTheSameLensNames.java"));
 
         assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Lens from one type should be have one factory");
+        assertThat(compilation).hadErrorContaining("Lens names for type should be unique");
     }
 
     @Test
@@ -71,7 +93,7 @@ public class LensProcessorTest {
                         .compile(JavaFileObjects.forResource("util/AnnotationWithoutLensName.java"));
 
         assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("annotation @com.github.lens.core.annotations.GenReadLens is missing a default value for the element 'lensName'");
+        assertThat(compilation).hadErrorContaining("annotation @com.github.lens.core.annotations.Lens is missing a default value for the element 'lensName'");
     }
 
     @Test
@@ -81,6 +103,6 @@ public class LensProcessorTest {
                         .compile(JavaFileObjects.forResource("util/AnnotationWithoutLensPath.java"));
 
         assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("annotation @com.github.lens.core.annotations.GenReadLens is missing a default value for the element 'path'");
+        assertThat(compilation).hadErrorContaining("annotation @com.github.lens.core.annotations.Lens is missing a default value for the element 'path'");
     }
 }

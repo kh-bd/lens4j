@@ -1,9 +1,6 @@
-/*
- * VTB Group. Do not reproduce without permission in writing.
- * Copyright (c) 2021 VTB Group. All rights reserved.
- */
-
 package com.github.lens.processor.generator;
+
+import com.github.lens.core.annotations.LensType;
 
 import javax.lang.model.element.Element;
 import java.util.Deque;
@@ -15,27 +12,26 @@ import java.util.Deque;
  */
 public class LensMetadata {
     private final String lensName;
-    private final boolean onlyRead;
-    private final Deque<Element> lensFields;
+    private final LensType lensType;
+    private final Deque<Element> fields;
 
-    private LensMetadata(String lensName, boolean onlyRead,
-                         Deque<Element> lensFields) {
+    private LensMetadata(String lensName, LensType lensType,
+                         Deque<Element> fields) {
         this.lensName = lensName;
-        this.onlyRead = onlyRead;
-        this.lensFields = lensFields;
+        this.lensType = lensType;
+        this.fields = fields;
     }
 
     /**
      * Create lens metadata.
      *
-     * @param lensName   lens name
-     * @param onlyRead   {@code true} if need create only read lens {@code false} otherwise
-     * @param lensFields lens fields
+     * @param lensName lens name
+     * @param lensType lens type
+     * @param fields   lens fields
      * @return lens metadata
      */
-    public static LensMetadata of(String lensName, boolean onlyRead,
-                                  Deque<Element> lensFields) {
-        return new LensMetadata(lensName, onlyRead, lensFields);
+    public static LensMetadata of(String lensName, LensType lensType, Deque<Element> fields) {
+        return new LensMetadata(lensName, lensType, fields);
     }
 
     /**
@@ -48,12 +44,12 @@ public class LensMetadata {
     }
 
     /**
-     * Is only read.
+     * Get lens type.
      *
-     * @return {@code true} if need create only read lens {@code false} otherwise
+     * @return lens type
      */
-    public boolean isOnlyRead() {
-        return onlyRead;
+    public LensType getLensType() {
+        return lensType;
     }
 
     /**
@@ -61,7 +57,7 @@ public class LensMetadata {
      *
      * @return lens fields
      */
-    public Deque<Element> getLensFields() {
-        return lensFields;
+    public Deque<Element> getFields() {
+        return fields;
     }
 }
