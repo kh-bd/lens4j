@@ -70,7 +70,7 @@ public class LensGenerator {
         CodeBlock.Builder builder = CodeBlock.builder().add(
                 "$T.readLens($T::get$L)",
                 ClassName.get(Lenses.class),
-                ClassName.get(firstPart.getSourceType()),
+                TypeName.get(firstPart.getSourceType()),
                 StringUtils.capitalize(firstPart.getPropertyName())
         );
 
@@ -80,7 +80,7 @@ public class LensGenerator {
             builder.add("$L$L$L$L", SEPARATOR, TAB, TAB, TAB);
             builder.add(".andThen($T.readLens($T::get$L))",
                     ClassName.get(Lenses.class),
-                    ClassName.get(part.getSourceType()),
+                    TypeName.get(part.getSourceType()),
                     StringUtils.capitalize(part.getPropertyName())
             );
         }
@@ -90,7 +90,7 @@ public class LensGenerator {
         builder.add("$L$L$L$L", SEPARATOR, TAB, TAB, TAB);
         Map<String, Object> params = Map.of(
                 "lenses", ClassName.get(Lenses.class),
-                "baseType", ClassName.get(lastPart.getSourceType()),
+                "baseType", TypeName.get(lastPart.getSourceType()),
                 "fieldName", StringUtils.capitalize(lastPart.getPropertyName())
         );
         builder.addNamed(getLastElementTemplate(lensMeta.getLensType()), params);
