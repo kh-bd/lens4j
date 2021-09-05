@@ -2,6 +2,7 @@ package com.github.lens.processor.generator;
 
 import com.github.lens.core.Lenses;
 import com.github.lens.core.ReadLens;
+import com.github.lens.core.ReadWriteLens;
 import com.github.lens.core.annotations.LensType;
 import com.github.lens.processor.LensProcessor;
 import com.squareup.javapoet.AnnotationSpec;
@@ -16,13 +17,8 @@ import com.squareup.javapoet.TypeSpec;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.Generated;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.type.TypeMirror;
-import java.util.Deque;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Lens generator.
@@ -34,68 +30,70 @@ public class LensGenerator {
     private static final String TAB = "    ";
     private static final String SEPARATOR = System.getProperty("line.separator");
 
-    public List<JavaFile> generate(GenerationContext context) {
-        return context.getFactoryMetadata().stream()
-                .map(it -> JavaFile.builder(it.getFactoryPackage(), makeType(it)).build())
-                .collect(Collectors.toList());
+    /**
+     * Generate factory source file.
+     *
+     * @param factoryMeta factory meta
+     * @return generated java file
+     */
+    public JavaFile generate(FactoryMeta factoryMeta) {
+        return JavaFile.builder(factoryMeta.getPackageName(), makeType(factoryMeta)).build();
     }
 
-    private TypeSpec makeType(FactoryMetadata factoryMetadata) {
-        TypeSpec.Builder builder = TypeSpec.classBuilder(factoryMetadata.getFactoryName());
+    private TypeSpec makeType(FactoryMeta factoryMeta) {
+        TypeSpec.Builder builder = TypeSpec.classBuilder(factoryMeta.getFactoryName());
         builder.addModifiers(Modifier.PUBLIC, Modifier.FINAL);
-        builder.addAnnotation(makeAnnotation());
+        builder.addAnnotation(makeGeneratedAnnotation());
         builder.addMethod(makeConstructor());
-        for (LensMetadata lensMetadata : factoryMetadata.getLensMetadata()) {
-            builder.addField(makeLens(factoryMetadata.getRootType(), lensMetadata));
+        for (LensMeta lensMeta : factoryMeta.getLenses()) {
+            builder.addField(makeLens(lensMeta));
         }
         return builder.build();
     }
 
-    private AnnotationSpec makeAnnotation() {
+    private AnnotationSpec makeGeneratedAnnotation() {
         return AnnotationSpec.builder(Generated.class)
                 .addMember("value", "$S", LensProcessor.class.getCanonicalName())
                 .build();
     }
 
-    private FieldSpec makeLens(TypeMirror rootType, LensMetadata lensMetadata) {
-        Deque<Element> fields = lensMetadata.getFields();
-        Element lastElement = fields.getLast();
-        return FieldSpec.builder(makeLensType(rootType, lastElement), lensMetadata.getLensName())
+    private FieldSpec makeLens(LensMeta lensMeta) {
+        return FieldSpec.builder(makeLensType(lensMeta), lensMeta.getLensName())
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-                .initializer(makeExpression(rootType, fields, lensMetadata.getLensType()))
+                .initializer(makeExpression(lensMeta))
                 .build();
     }
 
-    private CodeBlock makeExpression(TypeMirror sourceType, Deque<Element> fields, LensType lensType) {
-        Element firstElement = fields.removeFirst();
-        Element lastElement = fields.removeLast();
+    private CodeBlock makeExpression(LensMeta lensMeta) {
+        LensPartMeta firstPart = lensMeta.getFirstLensPart();
+
         CodeBlock.Builder builder = CodeBlock.builder().add(
                 "$T.readLens($T::get$L)",
                 ClassName.get(Lenses.class),
-                ClassName.get(sourceType),
-                StringUtils.capitalize(firstElement.toString())
+                ClassName.get(firstPart.getSourceType()),
+                StringUtils.capitalize(firstPart.getPropertyName())
         );
-        for (Element element : fields) {
-            TypeMirror baseType = element.getEnclosingElement().asType();
-            String name = element.getSimpleName().toString();
+
+        for (int i = 1; i < lensMeta.getLensParts().size() - 1; i++) {
+            LensPartMeta part = lensMeta.getLensParts().get(i);
+
             builder.add("$L$L$L$L", SEPARATOR, TAB, TAB, TAB);
-            builder.add(
-                    ".andThen($T.readLens($T::get$L))",
+            builder.add(".andThen($T.readLens($T::get$L))",
                     ClassName.get(Lenses.class),
-                    ClassName.get(baseType),
-                    StringUtils.capitalize(name)
+                    ClassName.get(part.getSourceType()),
+                    StringUtils.capitalize(part.getPropertyName())
             );
         }
 
-        TypeMirror baseType = lastElement.getEnclosingElement().asType();
-        String name = lastElement.getSimpleName().toString();
+        LensPartMeta lastPart = lensMeta.getLastLensPart();
+
         builder.add("$L$L$L$L", SEPARATOR, TAB, TAB, TAB);
         Map<String, Object> params = Map.of(
                 "lenses", ClassName.get(Lenses.class),
-                "baseType", ClassName.get(baseType),
-                "fieldName", StringUtils.capitalize(name)
+                "baseType", ClassName.get(lastPart.getSourceType()),
+                "fieldName", StringUtils.capitalize(lastPart.getPropertyName())
         );
-        builder.addNamed(getLastElementTemplate(lensType), params);
+        builder.addNamed(getLastElementTemplate(lensMeta.getLensType()), params);
         return builder.build();
     }
 
@@ -104,11 +102,26 @@ public class LensGenerator {
                 : ".andThen($lenses:T.readWriteLens($baseType:T::get$fieldName:L, $baseType:T::set$fieldName:L))";
     }
 
-    private TypeName makeLensType(TypeMirror sourceType, Element lastFields) {
+    private TypeName makeLensType(LensMeta lensMeta) {
+        if (lensMeta.getLensType() == LensType.READ) {
+            return makeLensReadType(lensMeta);
+        }
+        return makeLensReadWriteType(lensMeta);
+    }
+
+    private TypeName makeLensReadType(LensMeta lensMeta) {
         return ParameterizedTypeName.get(
                 ClassName.get(ReadLens.class),
-                TypeName.get(sourceType),
-                TypeName.get(lastFields.asType())
+                TypeName.get(lensMeta.getFirstLensPart().getSourceType()),
+                TypeName.get(lensMeta.getLastLensPart().getPropertyType())
+        );
+    }
+
+    private TypeName makeLensReadWriteType(LensMeta lensMeta) {
+        return ParameterizedTypeName.get(
+                ClassName.get(ReadWriteLens.class),
+                TypeName.get(lensMeta.getFirstLensPart().getSourceType()),
+                TypeName.get(lensMeta.getLastLensPart().getPropertyType())
         );
     }
 
