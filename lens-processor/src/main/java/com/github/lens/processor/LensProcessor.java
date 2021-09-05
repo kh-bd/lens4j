@@ -2,10 +2,6 @@ package com.github.lens.processor;
 
 import com.github.lens.core.annotations.GenLenses;
 import com.github.lens.core.annotations.Lens;
-import com.github.lens.processor.generator.FactoryMetadata;
-import com.github.lens.processor.generator.GenerationContext;
-import com.github.lens.processor.generator.LensGenerator;
-import com.github.lens.processor.generator.LensMetadata;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.JavaFile;
 import org.apache.commons.lang3.StringUtils;
@@ -22,17 +18,10 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -76,94 +65,73 @@ public class LensProcessor extends AbstractProcessor {
     private ProcessResult processElements(RoundEnvironment roundEnv) {
         Set<? extends Element> lensElements = findLensElements(roundEnv);
         try {
-            List<FactoryMetadata> factoryMetadata = new ArrayList<>();
             for (Element element : lensElements) {
                 GenLenses annotation = element.getAnnotation(GenLenses.class);
-                String factoryName = annotation.factoryName();
-                List<Lens> lenses = Arrays.asList(annotation.lenses());
-                checkLensNames(lenses);
-                List<LensMetadata> lensMetadata = makeLensMetadata(element, lenses);
-                factoryMetadata.add(makeFactoryMetadata(element, factoryName, lensMetadata));
+                FactoryMeta factoryMeta = makeFactoryMeta(element, annotation);
+                JavaFile file = lensGenerator.generate(factoryMeta);
+                writeFile(file);
             }
-            factoryMetadata.sort(Comparator.comparing(it -> it.getRootType().toString()));
-            List<JavaFile> javaFiles = lensGenerator.generate(GenerationContext.of(factoryMetadata));
-            writeFile(javaFiles);
-        } catch (Exception e) {
+        } catch (LensProcessingException e) {
+            logger.error(e.getError());
             return ProcessResult.ERROR;
         }
         return ProcessResult.GENERATED;
     }
 
-    private String makeFactoryName(Element element, String factoryName) {
+    private FactoryMeta makeFactoryMeta(Element classElement, GenLenses annotation) {
+        checkLensNames(List.of(annotation.lenses()));
+
+        FactoryMeta factory = new FactoryMeta(extractPackageName(classElement),
+                makeFactoryName(classElement, annotation));
+
+        for (Lens lens : annotation.lenses()) {
+            factory.addLens(makeLensMeta(classElement, lens));
+        }
+
+        return factory;
+    }
+
+    private void checkLensNames(List<Lens> lenses) {
+        Map<String, List<Lens>> lensNames = lenses.stream().collect(Collectors.groupingBy(Lens::lensName));
+        for (Map.Entry<String, List<Lens>> entry : lensNames.entrySet()) {
+            if (entry.getValue().size() > 1) {
+                throw new LensProcessingException(Message.of("Lens names for type should be unique"));
+            }
+        }
+    }
+
+    private String makeFactoryName(Element element, GenLenses annotation) {
+        String factoryName = annotation.factoryName();
         if (StringUtils.isBlank(factoryName)) {
             return String.format("%s%s", element.getSimpleName(), DEFAULT_FACTORY_NAME);
         }
         return StringUtils.capitalize(factoryName);
     }
 
-    private void writeFile(List<JavaFile> javaFiles) throws IOException {
-        for (JavaFile javaFile : javaFiles) {
-            javaFile.writeTo(filer);
-        }
-    }
-
-    private void checkLensNames(List<Lens> lenses) throws Exception {
-        Map<String, List<Lens>> lensNames = lenses.stream().collect(Collectors.groupingBy(Lens::lensName));
-        for (Map.Entry<String, List<Lens>> entry : lensNames.entrySet()) {
-            if (entry.getValue().size() > 1) {
-                logger.log(Message.error("Lens names for type should be unique"));
-                throw new Exception("Lens names for type should be unique");
-            }
-        }
-    }
-
-    private FactoryMetadata makeFactoryMetadata(Element element, String factoryName,
-                                                List<LensMetadata> lensMetadata) {
-        return FactoryMetadata.of(
-                makeFactoryName(element, factoryName),
-                extractPackageName(element),
-                element.asType(), lensMetadata);
-    }
-
-    private List<LensMetadata> makeLensMetadata(Element element, List<Lens> lenses) {
-        return lenses.stream()
-                .map(makeLensMetadata(element))
-                .collect(Collectors.toList());
-    }
-
     private String extractPackageName(Element element) {
         return element.getEnclosingElement().getSimpleName().toString();
     }
 
-    private Function<Lens, LensMetadata> makeLensMetadata(Element element) {
-        return annotation -> {
-            Deque<Element> elementQueue = new ArrayDeque<>();
-            String path = annotation.path();
-            String lensName = annotation.lensName();
-            String[] fields = path.split("\\.");
-            findAndFillElement(elementQueue, element, fields);
-            return LensMetadata.of(lensName, annotation.type(), elementQueue);
-        };
-    }
+    private LensMeta makeLensMeta(Element classElement, Lens annotation) {
+        LensMeta meta = new LensMeta(annotation.lensName(), annotation.type());
 
-    private void findAndFillElement(Queue<Element> elementQueue, Element element, String[] fields) {
-        Optional<? extends Element> elementByName = findElementByName(fields[0], element);
-        if (elementByName.isPresent()) {
-            Element e = elementByName.get();
-            elementQueue.add(e);
-            String[] newFields;
-            if (fields.length > 1) {
-                newFields = new String[fields.length - 1];
-                System.arraycopy(fields, 1, newFields, 0, fields.length - 1);
-            } else {
-                newFields = fields;
+        String path = annotation.path();
+
+        String[] properties = path.split("\\.");
+        Element currentClassElement = classElement;
+
+        for (String property : properties) {
+            Optional<? extends Element> elementByName = findElementByName(property, currentClassElement);
+            if (elementByName.isPresent()) {
+                Element field = elementByName.get();
+                LensPartMeta part = new LensPartMeta(currentClassElement.asType(), field.asType(), property);
+                meta.addLensPart(part);
+
+                currentClassElement = ((DeclaredType) field.asType()).asElement();
             }
-            findAndFillElement(
-                    elementQueue,
-                    ((DeclaredType) e.asType()).asElement(),
-                    newFields
-            );
         }
+
+        return meta;
     }
 
     private Optional<? extends Element> findElementByName(String fieldName, Element element) {
@@ -179,6 +147,14 @@ public class LensProcessor extends AbstractProcessor {
                 .stream()
                 .filter(it -> it.getKind() == ElementKind.CLASS)
                 .collect(Collectors.toSet());
+    }
+
+    private void writeFile(JavaFile javaFile) {
+        try {
+            javaFile.writeTo(filer);
+        } catch (IOException ioe) {
+            throw new RuntimeException("Error during java sources generation", ioe);
+        }
     }
 
     enum ProcessResult {

@@ -6,10 +6,12 @@
     <artifactId>lens4j</artifactId>
     <packaging>pom</packaging>
     <version>0.1-SNAPSHOT</version>
+
     <modules>
         <module>lens-core</module>
         <module>lens-processor</module>
     </modules>
+
     <name>lens4j</name>
 
     <properties>

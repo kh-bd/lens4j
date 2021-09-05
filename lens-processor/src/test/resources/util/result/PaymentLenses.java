@@ -2,6 +2,7 @@ package util;
 
 import com.github.lens.core.Lenses;
 import com.github.lens.core.ReadLens;
+import com.github.lens.core.ReadWriteLens;
 import java.lang.String;
 import javax.annotation.processing.Generated;
 
@@ -11,7 +12,7 @@ public final class PaymentLenses {
             .andThen(Lenses.readLens(Receiver::getBank))
             .andThen(Lenses.readLens(Bank::getBic));
 
-    public static final ReadLens<Payment, String> PAYMENT_RECEIVER_BANK_BIC_READ_WRITE_LENS = Lenses.readLens(Payment::getReceiver)
+    public static final ReadWriteLens<Payment, String> PAYMENT_RECEIVER_BANK_BIC_READ_WRITE_LENS = Lenses.readLens(Payment::getReceiver)
             .andThen(Lenses.readLens(Receiver::getBank))
             .andThen(Lenses.readWriteLens(Bank::getBic, Bank::setBic));
 
@@ -19,7 +20,7 @@ public final class PaymentLenses {
             .andThen(Lenses.readLens(Payer::getBank))
             .andThen(Lenses.readLens(Bank::getBic));
 
-    public static final ReadLens<Payment, String> PAYMENT_PAYER_BANK_BIC_READ_WRITE_LENS = Lenses.readLens(Payment::getPayer)
+    public static final ReadWriteLens<Payment, String> PAYMENT_PAYER_BANK_BIC_READ_WRITE_LENS = Lenses.readLens(Payment::getPayer)
             .andThen(Lenses.readLens(Payer::getBank))
             .andThen(Lenses.readWriteLens(Bank::getBic, Bank::setBic));
 

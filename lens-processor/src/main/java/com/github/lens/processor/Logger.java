@@ -1,13 +1,12 @@
 package com.github.lens.processor;
 
 import javax.annotation.processing.Messager;
-import javax.lang.model.element.Element;
+import javax.tools.Diagnostic;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 /**
- * {@link Messager} wrapper to log messages more conviniently.
+ * {@link Messager} wrapper to log messages more conveniently.
  *
  * @author Sergei_Khadanovich
  */
@@ -20,36 +19,44 @@ public class Logger {
     }
 
     /**
-     * Log message.
-     *
-     * @param message message
-     */
-    public void log(Message message) {
-        Element element = message.getElement();
-        if (Objects.nonNull(element)) {
-            messager.printMessage(message.getKind(), message.getMsg(), element);
-        } else {
-            messager.printMessage(message.getKind(), message.getMsg());
-        }
-    }
-
-    /**
-     * Log all messages.
+     * Log all messages as errors.
      *
      * @param messages messages
      */
-    public void log(Message... messages) {
-        log(List.of(messages));
+    public void error(Message... messages) {
+        error(List.of(messages));
     }
 
     /**
-     * Log all messages.
+     * Log all messages as errors.
      *
      * @param messages all messages
      */
-    public void log(Collection<Message> messages) {
+    public void error(Collection<Message> messages) {
+        log(Diagnostic.Kind.ERROR, messages);
+    }
+
+    /**
+     * Log all messages as warnings.
+     *
+     * @param messages messages
+     */
+    public void warn(Message... messages) {
+        warn(List.of(messages));
+    }
+
+    /**
+     * Log all messages as warnings.
+     *
+     * @param messages all messages
+     */
+    public void warn(Collection<Message> messages) {
+        log(Diagnostic.Kind.WARNING, messages);
+    }
+
+    private void log(Diagnostic.Kind kind, Collection<Message> messages) {
         for (Message message : messages) {
-            log(message);
+            messager.printMessage(kind, message.getMsg(), message.getElement());
         }
     }
 }
