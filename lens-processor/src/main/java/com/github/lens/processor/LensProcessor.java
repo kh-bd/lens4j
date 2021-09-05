@@ -102,7 +102,7 @@ public class LensProcessor extends AbstractProcessor {
         Map<String, List<Lens>> lensNames = lenses.stream().collect(Collectors.groupingBy(Lens::lensName));
         for (Map.Entry<String, List<Lens>> entry : lensNames.entrySet()) {
             if (entry.getValue().size() > 1) {
-                logger.log(Message.error("Lens names for type should be unique"));
+                logger.error(Message.of("Lens names for type should be unique"));
                 throw new Exception("Lens names for type should be unique");
             }
         }
