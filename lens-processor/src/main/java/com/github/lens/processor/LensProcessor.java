@@ -75,17 +75,14 @@ public class LensProcessor extends AbstractProcessor {
                 JavaFile file = lensGenerator.generate(factoryMeta);
                 writeFile(file);
             }
-        } catch (Exception e) {
+        } catch (LensProcessingException e) {
+            logger.error(e.getError());
             return ProcessResult.ERROR;
         }
         return ProcessResult.GENERATED;
     }
 
-    private void writeFile(JavaFile javaFile) throws IOException {
-        javaFile.writeTo(filer);
-    }
-
-    private FactoryMeta makeFactoryMeta(Element classElement, GenLenses annotation) throws Exception {
+    private FactoryMeta makeFactoryMeta(Element classElement, GenLenses annotation) {
         checkLensNames(List.of(annotation.lenses()));
 
         FactoryMeta factory = new FactoryMeta(extractPackageName(classElement),
@@ -98,12 +95,11 @@ public class LensProcessor extends AbstractProcessor {
         return factory;
     }
 
-    private void checkLensNames(List<Lens> lenses) throws Exception {
+    private void checkLensNames(List<Lens> lenses) {
         Map<String, List<Lens>> lensNames = lenses.stream().collect(Collectors.groupingBy(Lens::lensName));
         for (Map.Entry<String, List<Lens>> entry : lensNames.entrySet()) {
             if (entry.getValue().size() > 1) {
-                logger.error(Message.of("Lens names for type should be unique"));
-                throw new Exception("Lens names for type should be unique");
+                throw new LensProcessingException(Message.of("Lens names for type should be unique"));
             }
         }
     }
@@ -155,6 +151,14 @@ public class LensProcessor extends AbstractProcessor {
                 .stream()
                 .filter(it -> it.getKind() == ElementKind.CLASS)
                 .collect(Collectors.toSet());
+    }
+
+    private void writeFile(JavaFile javaFile) {
+        try {
+            javaFile.writeTo(filer);
+        } catch (IOException ioe) {
+            throw new RuntimeException("Error during java sources generation", ioe);
+        }
     }
 
     enum ProcessResult {
