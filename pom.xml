@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.github</groupId>
+    <groupId>com.github.lens4j</groupId>
     <artifactId>lens4j</artifactId>
     <packaging>pom</packaging>
     <version>0.1-SNAPSHOT</version>
@@ -36,7 +36,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.github</groupId>
+                <groupId>com.github.lens4j</groupId>
                 <artifactId>lens-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
