@@ -1,4 +1,4 @@
-package com.github.lens.processor.generator;
+package com.github.lens.processor;
 
 import java.util.ArrayList;
 import java.util.List;

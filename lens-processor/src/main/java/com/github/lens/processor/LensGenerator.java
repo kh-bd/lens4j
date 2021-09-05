@@ -1,10 +1,9 @@
-package com.github.lens.processor.generator;
+package com.github.lens.processor;
 
 import com.github.lens.core.Lenses;
 import com.github.lens.core.ReadLens;
 import com.github.lens.core.ReadWriteLens;
 import com.github.lens.core.annotations.LensType;
-import com.github.lens.processor.LensProcessor;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;

@@ -1,4 +1,4 @@
-package com.github.lens.processor.generator;
+package com.github.lens.processor;
 
 import com.github.lens.core.annotations.LensType;
 

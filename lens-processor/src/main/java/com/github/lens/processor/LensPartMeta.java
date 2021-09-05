@@ -1,4 +1,4 @@
-package com.github.lens.processor.generator;
+package com.github.lens.processor;
 
 import javax.lang.model.type.TypeMirror;
 

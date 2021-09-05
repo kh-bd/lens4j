@@ -2,10 +2,6 @@ package com.github.lens.processor;
 
 import com.github.lens.core.annotations.GenLenses;
 import com.github.lens.core.annotations.Lens;
-import com.github.lens.processor.generator.FactoryMeta;
-import com.github.lens.processor.generator.LensGenerator;
-import com.github.lens.processor.generator.LensMeta;
-import com.github.lens.processor.generator.LensPartMeta;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.JavaFile;
 import org.apache.commons.lang3.StringUtils;
