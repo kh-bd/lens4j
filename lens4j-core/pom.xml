@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>lens-core</artifactId>
+    <artifactId>lens4j-core</artifactId>
 
     <dependencies>
         <dependency>
