@@ -1,6 +1,7 @@
 package com.github.lens.core;
 
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -67,5 +68,26 @@ public class Lenses {
     public static <O, P1, P2> ReadWriteLens<O, P2> combine(ReadLens<? super O, ? extends P1> base,
                                                            ReadWriteLens<? super P1, P2> next) {
         return new CombinedReadWriteLensImpl<>(base, next);
+    }
+
+    /**
+     * Create a 'both' lens from two lenses.
+     *
+     * <p>If both sub lenses produce non-null results, 'both' lens will produce
+     * result of function application to those results.
+     *
+     * @param lens1    first lens
+     * @param lens2    second lens
+     * @param combineF combinator function
+     * @param <O>      source entity type
+     * @param <P1>     first property type
+     * @param <P2>     second property type
+     * @param <R>      result type
+     * @return 'both' lens
+     */
+    public static <O, P1, P2, R> ReadLens<O, R> both(ReadLens<? super O, ? extends P1> lens1,
+                                                     ReadLens<? super O, ? extends P2> lens2,
+                                                     BiFunction<? super P1, ? super P2, ? extends R> combineF) {
+        return new BothReadLensImpl<>(lens1, lens2, combineF);
     }
 }
