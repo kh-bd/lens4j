@@ -1,4 +1,4 @@
-package util;
+package util.examples;
 
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;

@@ -1,4 +1,4 @@
-package util;
+package util.examples;
 
 import dev.khbd.lens4j.core.Lenses;
 import dev.khbd.lens4j.core.ReadLens;

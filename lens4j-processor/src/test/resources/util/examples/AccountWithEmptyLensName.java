@@ -1,20 +1,18 @@
-package util;
+package util.examples;
 
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
 import dev.khbd.lens4j.core.annotations.LensType;
 
-@GenLenses(
-        lenses = {
-                @Lens(path = "currency.code", lensName = "ACCOUNT_CURRENCY_CODE_READ_LENS"),
-                @Lens(path = "currency.id", lensName = "ACCOUNT_CURRENCY_CODE_READ_WRITE_LENS", type = LensType.READ_WRITE)
-        }
-)
-public class Account {
+@GenLenses(lenses = {
+        @Lens(path = "currencyFieldForTest.code"),
+        @Lens(path = "currencyFieldForTest.id", type = LensType.READ_WRITE)
+})
+public class AccountWithEmptyLensName {
     private String id;
     private String accountNumber;
     private String bic;
-    private Currency currency;
+    private Currency currencyFieldForTest;
 
     public void setId(String id) {
         this.id = id;
@@ -40,11 +38,11 @@ public class Account {
         return bic;
     }
 
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setCurrencyFieldForTest(Currency currencyFieldForTest) {
+        this.currencyFieldForTest = currencyFieldForTest;
     }
 
-    public Currency getCurrency() {
-        return currency;
+    public Currency getCurrencyFieldForTest() {
+        return currencyFieldForTest;
     }
 }

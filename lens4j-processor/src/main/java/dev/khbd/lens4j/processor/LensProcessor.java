@@ -130,7 +130,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private String extractPackageName(Element element) {
-        return element.getEnclosingElement().getSimpleName().toString();
+        return element.getEnclosingElement().toString();
     }
 
     private LensMeta makeLensMeta(Element classElement, Lens annotation) {
