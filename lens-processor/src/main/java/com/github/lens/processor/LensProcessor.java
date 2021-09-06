@@ -79,7 +79,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private FactoryMeta makeFactoryMeta(Element classElement, GenLenses annotation) {
-        checkLensNames(List.of(annotation.lenses()));
+        checkLenses(classElement, List.of(annotation.lenses()));
 
         FactoryMeta factory = new FactoryMeta(extractPackageName(classElement),
                 makeFactoryName(classElement, annotation));
@@ -91,11 +91,17 @@ public class LensProcessor extends AbstractProcessor {
         return factory;
     }
 
-    private void checkLensNames(List<Lens> lenses) {
+    private void checkLenses(Element classElement, List<Lens> lenses) {
         Map<String, List<Lens>> lensNames = lenses.stream().collect(Collectors.groupingBy(Lens::lensName));
         for (Map.Entry<String, List<Lens>> entry : lensNames.entrySet()) {
             if (entry.getValue().size() > 1) {
                 throw new LensProcessingException(Message.of("Lens names for type should be unique"));
+            }
+        }
+
+        for (Lens lens : lenses) {
+            if (StringUtils.isBlank(lens.path())) {
+                throw new LensProcessingException(Message.of("Lens path should be not empty", classElement));
             }
         }
     }
