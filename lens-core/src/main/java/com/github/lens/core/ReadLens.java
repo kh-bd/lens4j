@@ -3,6 +3,30 @@ package com.github.lens.core;
 /**
  * Read lens.
  *
+ * <p>Be careful with usage of this interface.
+ * {@link ReadLens} is functional interface, but not all functional interfaces have
+ * null propagation capability.
+ *
+ * <p>For example,
+ * <pre>{@code
+ * ReadLens<Entity, Property1> lens = Lenses.readLens(Entity::getProperty1);
+ * ReadLens<Entity, DeepProperty2> lens2 =
+ *   Lenses.combine(lens, Property1::getDeepProperty2);
+ * DeepProperty2 p2 = lens2.get(entity);
+ * }</pre>
+ * This code can produce {@link java.lang.NullPointerException} if {@code Entity.getProperty1()}
+ * will be null. Any similar functional interfaces can be implicitly converted
+ * to {@link ReadLens} interface.
+ *
+ * <p>To write the same code more correctly, wrap method reference to {@link ReadLens} manually.
+ * <pre>{@code
+ * ReadLens<Entity, Property1> lens = Lenses.readLens(Entity::getProperty1);
+ * ReadLens<Entity, DeepProperty2> lens2 =
+ *   Lenses.combine(lens, Lenses.readLens(Property1::getDeepProperty2));
+ * DeepProperty2 p2 = lens2.get(entity);
+ * }</pre>
+ * This code works as intended.
+ *
  * @param <O> object type
  * @param <P> property type
  */
