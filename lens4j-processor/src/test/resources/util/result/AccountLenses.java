@@ -9,6 +9,8 @@ import javax.annotation.processing.Generated;
 
 @Generated("dev.khbd.lens4j.processor.LensProcessor")
 public final class AccountLenses {
+    public static final ReadLens<Account, String> ACCOUNT_NUMBER = Lenses.readLens(Account::getAccountNumber);
+
     public static final ReadLens<Account, String> ACCOUNT_CURRENCY_CODE_READ_LENS = Lenses.readLens(Account::getCurrency)
             .andThen(Lenses.readLens(Currency::getCode));
 

@@ -84,15 +84,17 @@ public class LensGenerator {
             );
         }
 
-        LensPartMeta lastPart = lensMeta.getLastLensPart();
+        if (lensMeta.getLensParts().size() > 1) {
+            LensPartMeta lastPart = lensMeta.getLastLensPart();
 
-        builder.add("$L$L$L$L", SEPARATOR, TAB, TAB, TAB);
-        Map<String, Object> params = Map.of(
-                "lenses", ClassName.get(Lenses.class),
-                "baseType", TypeName.get(lastPart.getSourceType()),
-                "fieldName", StringUtils.capitalize(lastPart.getPropertyName())
-        );
-        builder.addNamed(getLastElementTemplate(lensMeta.getLensType()), params);
+            builder.add("$L$L$L$L", SEPARATOR, TAB, TAB, TAB);
+            Map<String, Object> params = Map.of(
+                    "lenses", ClassName.get(Lenses.class),
+                    "baseType", TypeName.get(lastPart.getSourceType()),
+                    "fieldName", StringUtils.capitalize(lastPart.getPropertyName())
+            );
+            builder.addNamed(getLastElementTemplate(lensMeta.getLensType()), params);
+        }
         return builder.build();
     }
 
