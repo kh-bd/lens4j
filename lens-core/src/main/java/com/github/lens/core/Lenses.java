@@ -90,4 +90,29 @@ public class Lenses {
                                                      BiFunction<? super P1, ? super P2, ? extends R> combineF) {
         return new BothReadLensImpl<>(lens1, lens2, combineF);
     }
+
+    /**
+     * Create a 'both' lens from two lenses.
+     *
+     * <p>If both sub lenses produce non-null results, 'both' lens will produce
+     * result of function application to those results.
+     *
+     * @param lens1       first lens
+     * @param lens2       second lens
+     * @param combineF    combinator function
+     * @param extractorF1 first property extractor function
+     * @param extractorF2 second property extractor function
+     * @param <O>         source entity type
+     * @param <P1>        first property type
+     * @param <P2>        second property type
+     * @param <R>         result type
+     * @return 'both' lens
+     */
+    public static <O, P1, P2, R> ReadWriteLens<O, R> both(ReadWriteLens<? super O, P1> lens1,
+                                                          ReadWriteLens<? super O, P2> lens2,
+                                                          BiFunction<? super P1, ? super P2, ? extends R> combineF,
+                                                          Function<? super R, ? extends P1> extractorF1,
+                                                          Function<? super R, ? extends P2> extractorF2) {
+        return new BothReadWriteLensImpl<>(lens1, lens2, combineF, extractorF1, extractorF2);
+    }
 }
