@@ -1,12 +1,12 @@
 package util;
 
-import com.github.lens.core.Lenses;
-import com.github.lens.core.ReadLens;
-import com.github.lens.core.ReadWriteLens;
+import dev.khbd.lens4j.core.Lenses;
+import dev.khbd.lens4j.core.ReadLens;
+import dev.khbd.lens4j.core.ReadWriteLens;
 import java.lang.String;
 import javax.annotation.processing.Generated;
 
-@Generated("com.github.lens.processor.LensProcessor")
+@Generated("dev.khbd.lens4j.processor.LensProcessor")
 public final class PaymentLenses {
     public static final ReadLens<Payment, String> PAYMENT_RECEIVER_BANK_BIC_READ_LENS = Lenses.readLens(Payment::getReceiver)
             .andThen(Lenses.readLens(Receiver::getBank))
