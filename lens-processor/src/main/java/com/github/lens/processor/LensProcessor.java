@@ -64,6 +64,11 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private ProcessResult processElements(RoundEnvironment roundEnv) {
+        if (isAnnotationNotOnClass(roundEnv)) {
+            logger.error(Message.of("@GenLenses should be on the class"));
+            return ProcessResult.ERROR;
+        }
+
         Set<? extends Element> lensElements = findLensElements(roundEnv);
         try {
             for (Element element : lensElements) {
@@ -77,6 +82,11 @@ public class LensProcessor extends AbstractProcessor {
             return ProcessResult.ERROR;
         }
         return ProcessResult.GENERATED;
+    }
+
+    private boolean isAnnotationNotOnClass(RoundEnvironment roundEnv) {
+        return roundEnv.getElementsAnnotatedWith(GenLenses.class).stream()
+                .anyMatch(it -> it.getKind() != ElementKind.CLASS);
     }
 
     private FactoryMeta makeFactoryMeta(Element classElement, GenLenses annotation) {
@@ -161,8 +171,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private Set<? extends Element> findLensElements(RoundEnvironment roundEnv) {
-        return roundEnv.getElementsAnnotatedWith(GenLenses.class)
-                .stream()
+        return roundEnv.getElementsAnnotatedWith(GenLenses.class).stream()
                 .filter(it -> it.getKind() == ElementKind.CLASS)
                 .collect(Collectors.toSet());
     }

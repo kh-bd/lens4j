@@ -109,6 +109,16 @@ public class LensProcessorTest {
     }
 
     @Test
+    public void generate_annotationOnInterface_compilationError() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(JavaFileObjects.forResource("util/LensOnInterface.java"));
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("@GenLenses should be on the class");
+    }
+
+    @Test
     public void generate_annotationWithoutLensPath_compilationError() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
