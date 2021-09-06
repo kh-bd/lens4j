@@ -1,17 +1,16 @@
-package util;
+package util.examples;
 
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
 import dev.khbd.lens4j.core.annotations.LensType;
 
 @GenLenses(
-        factoryName = "specificFactoryName",
         lenses = {
                 @Lens(path = "currency.code", lensName = "ACCOUNT_CURRENCY_CODE_READ_LENS"),
                 @Lens(path = "currency.id", lensName = "ACCOUNT_CURRENCY_CODE_READ_WRITE_LENS", type = LensType.READ_WRITE)
         }
 )
-public class AccountWithDeCapitalizeSpecificFactoryName {
+public class Account {
     private String id;
     private String accountNumber;
     private String bic;

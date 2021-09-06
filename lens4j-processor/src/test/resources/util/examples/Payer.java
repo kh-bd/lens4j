@@ -1,4 +1,4 @@
-package util;
+package util.examples;
 
 public class Payer {
     private String id;

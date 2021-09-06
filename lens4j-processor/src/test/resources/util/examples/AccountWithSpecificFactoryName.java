@@ -1,16 +1,17 @@
-package util;
+package util.examples;
 
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
 import dev.khbd.lens4j.core.annotations.LensType;
 
 @GenLenses(
+        factoryName = "SpecificFactoryName",
         lenses = {
-                @Lens(path = "currency.code", lensName = "ACCOUNT_CURRENCY_CODE_LENS"),
-                @Lens(path = "currency.code", lensName = "ACCOUNT_CURRENCY_CODE_LENS", type = LensType.READ_WRITE)
+                @Lens(path = "currency.code", lensName = "ACCOUNT_CURRENCY_CODE_READ_LENS"),
+                @Lens(path = "currency.id", lensName = "ACCOUNT_CURRENCY_CODE_READ_WRITE_LENS", type = LensType.READ_WRITE)
         }
 )
-public class AccountWithTheSameLensNames {
+public class AccountWithSpecificFactoryName {
     private String id;
     private String accountNumber;
     private String bic;
