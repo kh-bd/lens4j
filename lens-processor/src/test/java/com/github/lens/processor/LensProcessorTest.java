@@ -87,6 +87,16 @@ public class LensProcessorTest {
     }
 
     @Test
+    public void generate_lensPathIsEmpty_compilationError() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(JavaFileObjects.forResource("util/AccountWithEmptyPath.java"));
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("Lens path should be not empty");
+    }
+
+    @Test
     public void generate_annotationWithoutLensName_compilationError() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
