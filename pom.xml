@@ -7,6 +7,10 @@
     <packaging>pom</packaging>
     <version>0.1</version>
 
+    <description>Lens4j is a lightweight lens library for Java</description>
+
+    <url>https://github.com/KhadanovichSergey/lens4j</url>
+
     <modules>
         <module>lens-core</module>
         <module>lens-processor</module>
