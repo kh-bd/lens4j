@@ -115,7 +115,7 @@ public class LensProcessorTest {
                         .compile(JavaFileObjects.forResource("util/LensOnInterface.java"));
 
         assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("@GenLenses should be on the class");
+        assertThat(compilation).hadErrorContaining("@GenLenses is not allowed here");
     }
 
     @Test

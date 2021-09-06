@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Annotation processor for generating lens.
@@ -64,16 +65,10 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private ProcessResult processElements(RoundEnvironment roundEnv) {
-        if (isAnnotationNotOnClass(roundEnv)) {
-            logger.error(Message.of("@GenLenses should be on the class"));
-            return ProcessResult.ERROR;
-        }
-
         Set<? extends Element> lensElements = findLensElements(roundEnv);
         try {
             for (Element element : lensElements) {
-                GenLenses annotation = element.getAnnotation(GenLenses.class);
-                FactoryMeta factoryMeta = makeFactoryMeta(element, annotation);
+                FactoryMeta factoryMeta = makeFactoryMeta(element);
                 JavaFile file = lensGenerator.generate(factoryMeta);
                 writeFile(file);
             }
@@ -84,12 +79,19 @@ public class LensProcessor extends AbstractProcessor {
         return ProcessResult.GENERATED;
     }
 
-    private boolean isAnnotationNotOnClass(RoundEnvironment roundEnv) {
-        return roundEnv.getElementsAnnotatedWith(GenLenses.class).stream()
-                .anyMatch(it -> it.getKind() != ElementKind.CLASS);
+    private FactoryMeta makeFactoryMeta(Element element) {
+        if (element.getKind() == ElementKind.CLASS) {
+            return makeFactoryMetaFromClassElement(element);
+        }
+        throw new LensProcessingException(Message.of("@GenLenses is not allowed here", element));
     }
 
-    private FactoryMeta makeFactoryMeta(Element classElement, GenLenses annotation) {
+    private FactoryMeta makeFactoryMetaFromClassElement(Element classElement) {
+        GenLenses annotation = classElement.getAnnotation(GenLenses.class);
+        return makeFactoryMetaFromClassElement(classElement, annotation);
+    }
+
+    private FactoryMeta makeFactoryMetaFromClassElement(Element classElement, GenLenses annotation) {
         checkLensPath(classElement, List.of(annotation.lenses()));
 
         FactoryMeta factory = new FactoryMeta(extractPackageName(classElement),
@@ -157,7 +159,7 @@ public class LensProcessor extends AbstractProcessor {
         if (StringUtils.isNotBlank(userLensName)) {
             return userLensName;
         }
-        return List.of(properties).stream()
+        return Stream.of(properties)
                 .map(it -> CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it))
                 .collect(Collectors.joining("_"));
     }
@@ -171,9 +173,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private Set<? extends Element> findLensElements(RoundEnvironment roundEnv) {
-        return roundEnv.getElementsAnnotatedWith(GenLenses.class).stream()
-                .filter(it -> it.getKind() == ElementKind.CLASS)
-                .collect(Collectors.toSet());
+        return roundEnv.getElementsAnnotatedWith(GenLenses.class);
     }
 
     private void writeFile(JavaFile javaFile) {
