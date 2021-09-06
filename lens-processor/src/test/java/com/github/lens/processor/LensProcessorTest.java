@@ -77,6 +77,18 @@ public class LensProcessorTest {
     }
 
     @Test
+    public void generate_annotationWithEmptyLensName_generateValidSpecificFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(JavaFileObjects.forResource("util/AccountWithEmptyLensName.java"));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("util/AccountWithEmptyLensNameLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/AccountWithEmptyLensNameLenses.java"));
+    }
+
+    @Test
     public void generate_typeHasNotUniqueLensNames_compilationError() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
@@ -94,16 +106,6 @@ public class LensProcessorTest {
 
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining("Lens path should be not empty");
-    }
-
-    @Test
-    public void generate_annotationWithoutLensName_compilationError() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/AnnotationWithoutLensName.java"));
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("annotation @com.github.lens.core.annotations.Lens is missing a default value for the element 'lensName'");
     }
 
     @Test

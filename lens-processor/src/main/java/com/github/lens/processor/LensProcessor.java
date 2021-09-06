@@ -3,6 +3,7 @@ package com.github.lens.processor;
 import com.github.lens.core.annotations.GenLenses;
 import com.github.lens.core.annotations.Lens;
 import com.google.auto.service.AutoService;
+import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.JavaFile;
 import org.apache.commons.lang3.StringUtils;
 
@@ -79,7 +80,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private FactoryMeta makeFactoryMeta(Element classElement, GenLenses annotation) {
-        checkLenses(classElement, List.of(annotation.lenses()));
+        checkLensPath(classElement, List.of(annotation.lenses()));
 
         FactoryMeta factory = new FactoryMeta(extractPackageName(classElement),
                 makeFactoryName(classElement, annotation));
@@ -87,18 +88,20 @@ public class LensProcessor extends AbstractProcessor {
         for (Lens lens : annotation.lenses()) {
             factory.addLens(makeLensMeta(classElement, lens));
         }
-
+        checkLensNames(classElement, factory.getLenses());
         return factory;
     }
 
-    private void checkLenses(Element classElement, List<Lens> lenses) {
-        Map<String, List<Lens>> lensNames = lenses.stream().collect(Collectors.groupingBy(Lens::lensName));
-        for (Map.Entry<String, List<Lens>> entry : lensNames.entrySet()) {
+    private void checkLensNames(Element classElement, List<LensMeta> lenses) {
+        Map<String, List<LensMeta>> lensNames = lenses.stream().collect(Collectors.groupingBy(LensMeta::getLensName));
+        for (Map.Entry<String, List<LensMeta>> entry : lensNames.entrySet()) {
             if (entry.getValue().size() > 1) {
-                throw new LensProcessingException(Message.of("Lens names for type should be unique"));
+                throw new LensProcessingException(Message.of("Lens names for type should be unique", classElement));
             }
         }
+    }
 
+    private void checkLensPath(Element classElement, List<Lens> lenses) {
         for (Lens lens : lenses) {
             if (StringUtils.isBlank(lens.path())) {
                 throw new LensProcessingException(Message.of("Lens path should be not empty", classElement));
@@ -119,11 +122,11 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private LensMeta makeLensMeta(Element classElement, Lens annotation) {
-        LensMeta meta = new LensMeta(annotation.lensName(), annotation.type());
-
         String path = annotation.path();
-
         String[] properties = path.split("\\.");
+        String lensName = makeLensName(annotation.lensName(), properties);
+
+        LensMeta meta = new LensMeta(lensName, annotation.type());
         Element currentClassElement = classElement;
 
         for (String property : properties) {
@@ -138,6 +141,15 @@ public class LensProcessor extends AbstractProcessor {
         }
 
         return meta;
+    }
+
+    private String makeLensName(String userLensName, String[] properties) {
+        if (StringUtils.isNotBlank(userLensName)) {
+            return userLensName;
+        }
+        return List.of(properties).stream()
+                .map(it -> CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it))
+                .collect(Collectors.joining("_"));
     }
 
     private Optional<? extends Element> findElementByName(String fieldName, Element element) {

@@ -12,7 +12,12 @@ public @interface Lens {
 
     String path();
 
-    String lensName();
+    /**
+     * If lensName is empty, it will be generated from {@link Lens#path}.
+     *
+     * @return name of lens
+     */
+    String lensName() default "";
 
     /**
      * What type of lens should be generated.
