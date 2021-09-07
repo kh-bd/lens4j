@@ -56,6 +56,7 @@ public interface ReadLens<O, P> {
      * @param next next lens
      * @param <P2> deep property type
      * @return combined lens
+     * @see Lenses#combine(ReadLens, ReadLens)
      */
     default <P2> ReadLens<O, P2> andThen(ReadLens<? super P, ? extends P2> next) {
         return Lenses.combine(this, next);
@@ -67,6 +68,7 @@ public interface ReadLens<O, P> {
      * @param next next lens
      * @param <P2> deep property type
      * @return combined lens
+     * @see Lenses#combine(ReadLens, ReadWriteLens)
      */
     default <P2> ReadWriteLens<O, P2> andThen(ReadWriteLens<? super P, P2> next) {
         return Lenses.combine(this, next);
@@ -78,6 +80,7 @@ public interface ReadLens<O, P> {
      * @param base base lens
      * @param <O1> new object type
      * @return combined lens
+     * @see Lenses#combine(ReadLens, ReadLens)
      */
     default <O1> ReadLens<O1, P> compose(ReadLens<? super O1, ? extends O> base) {
         return Lenses.combine(base, this);

@@ -59,6 +59,7 @@ public interface ReadWriteLens<O, P> extends ReadLens<O, P> {
      * @param base base lens
      * @param <O1> new object type
      * @return combined lens
+     * @see Lenses#combine(ReadLens, ReadWriteLens)
      */
     @Override
     default <O1> ReadWriteLens<O1, P> compose(ReadLens<? super O1, ? extends O> base) {
