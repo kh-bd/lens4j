@@ -19,6 +19,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,7 +96,7 @@ public class LensProcessor extends AbstractProcessor {
         checkLensPath(classElement, List.of(annotation.lenses()));
 
         FactoryMeta factory = new FactoryMeta(extractPackageName(classElement),
-                makeFactoryName(classElement, annotation));
+                makeFactoryName(classElement, annotation), getClassModifiers(classElement));
 
         for (Lens lens : annotation.lenses()) {
             factory.addLens(makeLensMeta(classElement, lens));
@@ -127,6 +128,15 @@ public class LensProcessor extends AbstractProcessor {
             return String.format("%s%s", element.getSimpleName(), DEFAULT_FACTORY_NAME);
         }
         return StringUtils.capitalize(factoryName);
+    }
+
+    private Set<Modifier> getClassModifiers(Element classElement) {
+        Set<Modifier> modifiers = new HashSet<>();
+        modifiers.add(Modifier.FINAL);
+        if (classElement.getModifiers().contains(Modifier.PUBLIC)) {
+            modifiers.add(Modifier.PUBLIC);
+        }
+        return modifiers;
     }
 
     private String extractPackageName(Element element) {

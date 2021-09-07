@@ -89,6 +89,18 @@ public class LensProcessorTest {
     }
 
     @Test
+    public void generate_annotationFromPackagePrivateClass_generateValidPackagePrivateFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(JavaFileObjects.forResource("util/examples/PackagePrivateAccount.java"));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("util/examples/PackagePrivateAccountLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/PackagePrivateAccountLenses.java"));
+    }
+
+    @Test
     public void generate_typeHasNotUniqueLensNames_compilationError() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())

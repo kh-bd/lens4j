@@ -26,9 +26,6 @@ import java.util.Map;
  */
 public class LensGenerator {
 
-    private static final String TAB = "    ";
-    private static final String SEPARATOR = System.getProperty("line.separator");
-
     /**
      * Generate factory source file.
      *
@@ -41,7 +38,7 @@ public class LensGenerator {
 
     private TypeSpec makeType(FactoryMeta factoryMeta) {
         TypeSpec.Builder builder = TypeSpec.classBuilder(factoryMeta.getFactoryName());
-        builder.addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+        builder.addModifiers(factoryMeta.getFactoryModifiers().toArray(new Modifier[0]));
         builder.addAnnotation(makeGeneratedAnnotation());
         builder.addMethod(makeConstructor());
         for (LensMeta lensMeta : factoryMeta.getLenses()) {
