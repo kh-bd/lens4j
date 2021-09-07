@@ -1,7 +1,9 @@
 package dev.khbd.lens4j.processor;
 
+import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Factory metadata.
@@ -12,11 +14,14 @@ public class FactoryMeta {
 
     private final String packageName;
     private final String factoryName;
+    private final Set<Modifier> factoryModifiers;
     private final List<LensMeta> lenses = new ArrayList<>();
 
-    public FactoryMeta(String packageName, String factoryName) {
+    public FactoryMeta(String packageName, String factoryName,
+                       Set<Modifier> factoryModifiers) {
         this.packageName = packageName;
         this.factoryName = factoryName;
+        this.factoryModifiers = factoryModifiers;
     }
 
     /**
@@ -44,6 +49,15 @@ public class FactoryMeta {
      */
     public String getFactoryName() {
         return factoryName;
+    }
+
+    /**
+     * Get factory modifiers.
+     *
+     * @return factory modifiers
+     */
+    public Set<Modifier> getFactoryModifiers() {
+        return factoryModifiers;
     }
 
     /**
