@@ -59,7 +59,6 @@
         <testng.version>7.4.0</testng.version>
         <mockito.version>3.9.0</mockito.version>
         <assertj.version>3.20.2</assertj.version>
-        <lombok.version>1.18.20</lombok.version>
         <javapoet.version>1.13.0</javapoet.version>
         <auto-service.version>1.0-rc2</auto-service.version>
         <google-testing.version>0.15</google-testing.version>
