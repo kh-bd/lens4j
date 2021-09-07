@@ -11,6 +11,8 @@ import javax.annotation.processing.Generated;
 public final class AccountLenses {
     public static final ReadLens<Account, String> ACCOUNT_NUMBER = Lenses.readLens(Account::getAccountNumber);
 
+    public static final ReadWriteLens<Account, String> ACCOUNT_NUMBER_READ_WRITE_LENS = Lenses.readWriteLens(Account::getAccountNumber, Account::setAccountNumber);
+
     public static final ReadLens<Account, String> ACCOUNT_CURRENCY_CODE_READ_LENS = Lenses.readLens(Account::getCurrency)
             .andThen(Lenses.readLens(Currency::getCode));
 

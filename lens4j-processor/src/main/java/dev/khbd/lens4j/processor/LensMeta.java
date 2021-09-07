@@ -4,6 +4,7 @@ import dev.khbd.lens4j.core.annotations.LensType;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Information for generating specific lens.
@@ -55,6 +56,27 @@ public class LensMeta {
      */
     public List<LensPartMeta> getLensParts() {
         return lensParts;
+    }
+
+    /**
+     * Get lens parts without first and last element.
+     *
+     * @return lens parts
+     */
+    public List<LensPartMeta> getLensPartsWithoutEnds() {
+        return lensParts.stream()
+                .skip(1)
+                .limit(lensParts.size() - 2)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Is single part or not.
+     *
+     * @return {@code true} if single part {@code false} otherwise
+     */
+    public boolean isSinglePart() {
+        return lensParts.size() == 1;
     }
 
     /**
