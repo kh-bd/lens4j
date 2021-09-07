@@ -6,6 +6,8 @@ import dev.khbd.lens4j.core.annotations.LensType;
 
 @GenLenses(
         lenses = {
+                @Lens(path = "accountNumber"),
+                @Lens(path = "accountNumber", lensName = "ACCOUNT_NUMBER_READ_WRITE_LENS", type = LensType.READ_WRITE),
                 @Lens(path = "currency.code", lensName = "ACCOUNT_CURRENCY_CODE_READ_LENS"),
                 @Lens(path = "currency.id", lensName = "ACCOUNT_CURRENCY_CODE_READ_WRITE_LENS", type = LensType.READ_WRITE)
         }
