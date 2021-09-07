@@ -6,6 +6,22 @@ import java.util.function.Function;
 /**
  * Read-write lens.
  *
+ * <p>Read-write lens has the same properties as {@link ReadLens},
+ * it can be used to get data from original objects.
+ * For example, if we have a lens {@code ReadWriteLens<E, A>}, we can use
+ * this lens to get value with type A from object with type E.
+ * <pre>{@code
+ * ReadWriteLens<E, A> lens = ...;
+ * A a = lens.get(e);
+ * }</pre>
+ * Moreover, read-write lens can be used to set value into source objects.
+ * Again, if we have a lens {@code ReadWriteLens<E, A>}, we can set
+ * value of type A into object with type E.
+ * <pre>{@code
+ * ReadWriteLens<E, A> lens = ...;
+ * lens.set(e, a);
+ * }</pre>
+ *
  * @param <O> object type
  * @param <P> property type
  */

@@ -3,6 +3,14 @@ package dev.khbd.lens4j.core;
 /**
  * Read lens.
  *
+ * <p>Read lens can be used to get some data from source object.
+ * For example, if we have a lens {@code ReadLens<E, A>}, we can use
+ * this lens to extract value with type A from entity with type E.
+ * <pre>{@code
+ * ReadLens<E, A> lens = ...;
+ * A a = lens.get(e);
+ * }</pre>
+ *
  * <p>Be careful with usage of this interface.
  * {@link ReadLens} is functional interface, but not all functional interfaces have
  * null propagation capability.
