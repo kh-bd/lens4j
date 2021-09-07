@@ -7,6 +7,54 @@ import java.util.function.Function;
 /**
  * Utility class to create and combine lenses.
  *
+ * <p>To create {@link ReadLens} use {@link Lenses#readLens(Function)} factory method.
+ * For example, {@link ReadLens} can be created from method reference:
+ * <pre>{@code
+ * ReadLens<Entity, Property> lens = Lenses.readLens(Entity::getProperty);
+ * }</pre>
+ *
+ * <p>To create {@link ReadWriteLens} use {@link Lenses#readWriteLens(Function, BiConsumer)} factory method.
+ * To create read-write lens for property from last example, you can write code like this:
+ * <pre>{@code
+ * ReadWriteLens<Entity, Property> lens =
+ *   Lenses.readWriteLens(Entity::getProperty, Entity::setProperty);
+ * }</pre>
+ *
+ * <p>Lenses can be combined with each other to create more complicated lenses.
+ * To continue we assume there are several classes:
+ * <pre>{@code
+ * class Account {
+ *     Currency currency;
+ *     String accountNumber;
+ *
+ *     ... accessor methods here
+ * }
+ * class Currency {
+ *      String code;
+ *
+ *      ... accessor methods here
+ * }
+ * }</pre>
+ *
+ * <p>
+ * To create lens which can read currency code from account instance, we can combine
+ * two lenses into bigger one.
+ * <pre>{@code
+ * ReadLens<Account, Currency> curLens = Lenses.readLens(Account::getCurrency);
+ * ReadLens<Currency, String> codeLens = Lenses.readLens(Currency::getCode);
+ * ReadLens<Account, String> curCodeLens = Lenses.combine(curLens, codeLens);
+ * }</pre>
+ *
+ * <p>
+ * If we want read currency code from account instance and write currency code to account instance,
+ * we can combine read lens with read-write lens to create bigger read-write lens.
+ * <pre>{@code
+ * ReadLens<Account, Currency> curLens = Lenses.readLens(Account::getCurrency);
+ * ReadWriteLens<Currency, String> codeLens =
+ *   Lenses.readWriteLens(Currency::getCode, Currency::setCode);
+ * ReadWriteLens<Account, String> curCodeLens = Lenses.combine(curLens, codeLens);
+ * }</pre>
+ *
  * @author Sergei_Khadanovich
  */
 public class Lenses {
