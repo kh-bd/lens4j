@@ -80,10 +80,14 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private FactoryMeta makeFactoryMeta(Element element) {
-        if (element.getKind() == ElementKind.CLASS) {
-            return makeFactoryMetaFromClassElement(element);
+        if (element.getKind() != ElementKind.CLASS) {
+            throw new LensProcessingException(Message.of("@GenLenses is not allowed here", element));
         }
-        throw new LensProcessingException(Message.of("@GenLenses is not allowed here", element));
+
+        if (element.getEnclosingElement().getKind() != ElementKind.PACKAGE) {
+            throw new LensProcessingException(Message.of("@GenLenses is not allowed on inner classes", element));
+        }
+        return makeFactoryMetaFromClassElement(element);
     }
 
     private FactoryMeta makeFactoryMetaFromClassElement(Element classElement) {
