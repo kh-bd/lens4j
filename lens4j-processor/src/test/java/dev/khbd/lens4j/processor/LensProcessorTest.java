@@ -139,4 +139,14 @@ public class LensProcessorTest {
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining("annotation @dev.khbd.lens4j.core.annotations.Lens is missing a default value for the element 'path'");
     }
+
+    @Test
+    public void generate_pathContainsWrongFieldName_compilationError() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(JavaFileObjects.forResource("util/examples/FieldNotFound.java"));
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("Field 'bid' was not found in class 'Account'");
+    }
 }

@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -152,14 +151,10 @@ public class LensProcessor extends AbstractProcessor {
         Element currentClassElement = classElement;
 
         for (String property : properties) {
-            Optional<? extends Element> elementByName = findElementByName(property, currentClassElement);
-            if (elementByName.isPresent()) {
-                Element field = elementByName.get();
-                LensPartMeta part = new LensPartMeta(currentClassElement.asType(), field.asType(), property);
-                meta.addLensPart(part);
-
-                currentClassElement = ((DeclaredType) field.asType()).asElement();
-            }
+            Element field = findFieldByName(property, currentClassElement);
+            LensPartMeta part = new LensPartMeta(currentClassElement.asType(), field.asType(), property);
+            meta.addLensPart(part);
+            currentClassElement = ((DeclaredType) field.asType()).asElement();
         }
 
         return meta;
@@ -174,12 +169,18 @@ public class LensProcessor extends AbstractProcessor {
                 .collect(Collectors.joining("_"));
     }
 
-    private Optional<? extends Element> findElementByName(String fieldName, Element element) {
-        return element.getEnclosedElements().stream()
+    private Element findFieldByName(String fieldName, Element classElement) {
+        return classElement.getEnclosedElements().stream()
                 .filter(it -> it.getKind() == ElementKind.FIELD)
                 .filter(it -> !it.getModifiers().contains(Modifier.STATIC))
                 .filter(it -> it.getSimpleName().toString().equalsIgnoreCase(fieldName))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(() -> new LensProcessingException(fieldNotFoundMessage(classElement, fieldName)));
+    }
+
+    private Message fieldNotFoundMessage(Element classElement, String fieldName) {
+        String msg = String.format("Field '%s' was not found in class '%s'", fieldName, classElement.getSimpleName());
+        return Message.of(msg, classElement);
     }
 
     private Set<? extends Element> findLensElements(RoundEnvironment roundEnv) {
