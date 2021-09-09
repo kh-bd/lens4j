@@ -36,8 +36,7 @@ import java.util.function.Function;
  * }
  * }</pre>
  *
- * <p>
- * To create lens which can read currency code from account instance, we can combine
+ * <p>To create lens which can read currency code from account instance, we can combine
  * two lenses into bigger one.
  * <pre>{@code
  * ReadLens<Account, Currency> curLens = Lenses.readLens(Account::getCurrency);
@@ -45,8 +44,7 @@ import java.util.function.Function;
  * ReadLens<Account, String> curCodeLens = Lenses.combine(curLens, codeLens);
  * }</pre>
  *
- * <p>
- * If we want read currency code from account instance and write currency code to account instance,
+ * <p>If we want read currency code from account instance and write currency code to account instance,
  * we can combine read lens with read-write lens to create bigger read-write lens.
  * <pre>{@code
  * ReadLens<Account, Currency> curLens = Lenses.readLens(Account::getCurrency);
@@ -54,6 +52,30 @@ import java.util.function.Function;
  *   Lenses.readWriteLens(Currency::getCode, Currency::setCode);
  * ReadWriteLens<Account, String> curCodeLens = Lenses.combine(curLens, codeLens);
  * }</pre>
+ *
+ * <p>Lenses can be combined in different ways. If we have two read lenses with the same source type,
+ * we can combine them into bigger one with {@link #both(ReadLens, ReadLens, BiFunction)} combinator.
+ * Result lens can extract both values from source instance, but only if
+ * both sub-lenses return non-null results.
+ * For example,
+ * <pre>{@code
+ * ReadLens<E, A> lens1 = ...;
+ * ReadLens<E, B> lens2 = ...;
+ * ReadLens<E, Pair<A, B>> combinedLens = Lenses.both(lens1, lens2, Pair::of);
+ * }</pre>
+ * Result lens can extract a pair of {@code A} and {@code B}, but only if both values are not null.
+ *
+ * <p>Read-write lenses can be combined with {@link #both(ReadWriteLens, ReadWriteLens, BiFunction, Function, Function)}
+ * combinator too, but with combiner function we have to supply extractor functions.
+ * Example above with read-write lenses can be rewritten in such way:
+ * <pre>{@code
+ * ReadWriteLens<E, A> lens1 = ...;
+ * ReadWriteLens<E, B> lens2 = ...;
+ * ReadWriteLens<E, Pair<A, B>> combinedLens =
+ *   Lenses.both(lens1, lens2, Pair::of, Pair::getLeft, Pair::getRight);
+ * }</pre>
+ * Such combined lens can get a pair of values {@code A} and {@code B} as read analog.
+ * Additionally, it can set a pair of values {@code A} and {@code B} to instance of type {@code E}.
  *
  * @author Sergei_Khadanovich
  */
