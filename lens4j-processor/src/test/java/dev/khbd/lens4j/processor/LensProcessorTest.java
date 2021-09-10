@@ -151,10 +151,10 @@ public class LensProcessorTest {
     }
 
     @Test
-    public void generate_subclassAnnotatedGenLenses_compilationError() {
+    public void generate_innerClassAnnotatedGenLenses_compilationError() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/GenLensesOnSubclass.java"));
+                        .compile(JavaFileObjects.forResource("util/examples/GenLensesOnInnerClass.java"));
 
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining("@GenLenses is not allowed on inner classes");
