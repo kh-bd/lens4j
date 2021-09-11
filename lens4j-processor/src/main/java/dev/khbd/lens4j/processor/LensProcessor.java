@@ -80,19 +80,26 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private FactoryMeta makeFactoryMeta(Element element) {
-        if (element.getKind() != ElementKind.CLASS) {
-            throw new LensProcessingException(Message.of("@GenLenses is not allowed here", element));
+        if (element.getKind() == ElementKind.CLASS) {
+            return makeFactoryMetaFromClassElement((TypeElement) element);
         }
-
-        if (element.getEnclosingElement().getKind() != ElementKind.PACKAGE) {
-            throw new LensProcessingException(Message.of("@GenLenses is not allowed on inner classes", element));
-        }
-        return makeFactoryMetaFromClassElement(element);
+        throw new LensProcessingException(Message.of("@GenLenses is not allowed here", element));
     }
 
-    private FactoryMeta makeFactoryMetaFromClassElement(Element classElement) {
+    private FactoryMeta makeFactoryMetaFromClassElement(TypeElement classElement) {
+        verifyClass(classElement);
+
         GenLenses annotation = classElement.getAnnotation(GenLenses.class);
         return makeFactoryMetaFromClassElement(classElement, annotation);
+    }
+
+    private void verifyClass(TypeElement classElement) {
+        if (classElement.getEnclosingElement().getKind() != ElementKind.PACKAGE) {
+            throw new LensProcessingException(Message.of("@GenLenses is not allowed on inner classes", classElement));
+        }
+        if (!classElement.getTypeParameters().isEmpty()) {
+            throw new LensProcessingException(Message.of("@GenLenses is not allowed on generic classes", classElement));
+        }
     }
 
     private FactoryMeta makeFactoryMetaFromClassElement(Element classElement, GenLenses annotation) {
@@ -125,10 +132,10 @@ public class LensProcessor extends AbstractProcessor {
         }
     }
 
-    private String makeFactoryName(Element element, GenLenses annotation) {
+    private String makeFactoryName(Element classElement, GenLenses annotation) {
         String factoryName = annotation.factoryName();
         if (StringUtils.isBlank(factoryName)) {
-            return String.format("%s%s", element.getSimpleName(), DEFAULT_FACTORY_NAME);
+            return String.format("%s%s", classElement.getSimpleName(), DEFAULT_FACTORY_NAME);
         }
         return StringUtils.capitalize(factoryName);
     }

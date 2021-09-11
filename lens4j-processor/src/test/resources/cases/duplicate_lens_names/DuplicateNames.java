@@ -1,5 +1,6 @@
-package util.examples;
+package cases.duplicate_lens_names;
 
+import common.Currency;
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
 import dev.khbd.lens4j.core.annotations.LensType;
@@ -10,7 +11,7 @@ import dev.khbd.lens4j.core.annotations.LensType;
                 @Lens(path = "currency.code", lensName = "ACCOUNT_CURRENCY_CODE_LENS", type = LensType.READ_WRITE)
         }
 )
-public class AccountWithTheSameLensNames {
+public class DuplicateNames {
     private String id;
     private String accountNumber;
     private String bic;

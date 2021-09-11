@@ -1,5 +1,6 @@
-package util.examples;
+package cases.single_property;
 
+import common.Currency;
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
 import dev.khbd.lens4j.core.annotations.LensType;
@@ -12,7 +13,7 @@ import dev.khbd.lens4j.core.annotations.LensType;
                 @Lens(path = "currency.id", lensName = "ACCOUNT_CURRENCY_CODE_READ_WRITE_LENS", type = LensType.READ_WRITE)
         }
 )
-class PackagePrivateAccount {
+public class Account {
     private String id;
     private String accountNumber;
     private String bic;

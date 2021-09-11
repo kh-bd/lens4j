@@ -1,10 +1,10 @@
-package util.examples;
+package cases.lens_with_empty_path;
 
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
 
-@GenLenses(lenses = @Lens(path = "currency.id"))
-public class AnnotationWithoutLensName {
+@GenLenses(lenses = @Lens(path = "", lensName = "SOME_LENS_NAME"))
+public class WithEmptyPath {
     private String id;
     private Currency currency;
 
