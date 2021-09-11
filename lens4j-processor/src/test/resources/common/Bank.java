@@ -1,4 +1,4 @@
-package util.examples;
+package common;
 
 public class Bank {
     private Integer id;

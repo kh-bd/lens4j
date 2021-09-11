@@ -1,9 +1,10 @@
 package util.examples;
 
+import common.Currency;
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
 
-@GenLenses(lenses = @Lens(path = "account.id"))
+@GenLenses(lenses = @Lens(path = "currency.id"))
 public interface LensOnInterface {
-    Account getAccount();
+    Currency getCurrency();
 }

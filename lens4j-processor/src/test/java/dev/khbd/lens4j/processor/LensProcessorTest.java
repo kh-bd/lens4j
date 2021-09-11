@@ -17,7 +17,7 @@ import java.util.List;
 public class LensProcessorTest {
 
     @Test
-    public void generate_classWithOneGenReadAnnotations_generateValidAccountFactory() {
+    public void generate_lensesWithSinglePropertyPath_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
                         .compile(withPathObjects(JavaFileObjects.forResource("cases/single-property/Account.java")));
@@ -161,7 +161,7 @@ public class LensProcessorTest {
                         .compile(withPathObjects(fileObject));
 
         assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Field 'bid' was not found in class 'Account'");
+        assertThat(compilation).hadErrorContaining("Field 'bid' was not found in class 'Currency'");
     }
 
     @Test
@@ -179,10 +179,10 @@ public class LensProcessorTest {
         List<JavaFileObject> result = new ArrayList<>(List.of(objects));
         result.addAll(
                 List.of(
-                        JavaFileObjects.forResource("paths/Bank.java"),
-                        JavaFileObjects.forResource("paths/Currency.java"),
-                        JavaFileObjects.forResource("paths/Payer.java"),
-                        JavaFileObjects.forResource("paths/Receiver.java")
+                        JavaFileObjects.forResource("common/Bank.java"),
+                        JavaFileObjects.forResource("common/Currency.java"),
+                        JavaFileObjects.forResource("common/Payer.java"),
+                        JavaFileObjects.forResource("common/Receiver.java")
                 )
         );
         return result;

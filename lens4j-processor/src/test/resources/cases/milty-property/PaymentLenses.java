@@ -1,5 +1,8 @@
 package util.examples;
 
+import common.Bank;
+import common.Payer;
+import common.Receiver;
 import dev.khbd.lens4j.core.Lenses;
 import dev.khbd.lens4j.core.ReadLens;
 import dev.khbd.lens4j.core.ReadWriteLens;

@@ -1,5 +1,6 @@
 package util.examples;
 
+import common.Currency;
 import dev.khbd.lens4j.core.Lenses;
 import dev.khbd.lens4j.core.ReadLens;
 import dev.khbd.lens4j.core.ReadWriteLens;

@@ -1,4 +1,4 @@
-package util.examples;
+package common;
 
 public class Currency {
     private Integer id;

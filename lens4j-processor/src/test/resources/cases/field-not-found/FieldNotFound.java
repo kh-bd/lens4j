@@ -1,17 +1,18 @@
 package util.examples;
 
+import common.Currency;
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
 
-@GenLenses(lenses = @Lens(path = "account.bid"))
+@GenLenses(lenses = @Lens(path = "currency.bid"))
 class FieldNotFound {
-    Account account;
+    Currency currency;
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
     }
 
-    Account getAccount() {
-        return account;
+    Currency getCurrency() {
+        return currency;
     }
 }

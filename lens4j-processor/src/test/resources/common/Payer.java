@@ -1,6 +1,6 @@
-package util.examples;
+package common;
 
-public class Receiver {
+public class Payer {
     private String id;
     private Bank bank;
 
