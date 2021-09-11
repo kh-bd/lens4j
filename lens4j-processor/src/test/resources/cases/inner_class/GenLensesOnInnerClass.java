@@ -1,20 +1,21 @@
 package cases.inner_class;
 
+import common.Currency;
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
 
 class GenLensesOnInnerClass {
 
-    @GenLenses(lenses = @Lens(path = "account.bic"))
+    @GenLenses(lenses = @Lens(path = "currency.code"))
     class InnerClass {
-        Account account;
+        Currency currency;
 
-        public void setAccount(Account account) {
-            this.account = account;
+        public void setCurrency(Currency currency) {
+            this.currency = currency;
         }
 
-        Account getAccount() {
-            return account;
+        Currency getCurrency() {
+            return currency;
         }
     }
 }
