@@ -175,6 +175,17 @@ public class LensProcessorTest {
         assertThat(compilation).hadErrorContaining("@GenLenses is not allowed on inner classes");
     }
 
+    @Test
+    public void generate_classIsGeneric_compilationError() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/generic_class/GenericClass.java");
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(fileObject);
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("@GenLenses is not allowed on generic classes");
+    }
+
     private List<JavaFileObject> withPathObjects(JavaFileObject... objects) {
         List<JavaFileObject> result = new ArrayList<>(List.of(objects));
         result.addAll(
