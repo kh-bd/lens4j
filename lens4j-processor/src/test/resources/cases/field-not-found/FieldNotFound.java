@@ -2,7 +2,6 @@ package util.examples;
 
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
-import dev.khbd.lens4j.core.annotations.LensType;
 
 @GenLenses(lenses = @Lens(path = "account.bid"))
 class FieldNotFound {

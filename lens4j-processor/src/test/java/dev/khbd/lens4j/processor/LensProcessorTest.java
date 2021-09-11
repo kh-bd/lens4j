@@ -7,6 +7,10 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
 import org.testng.annotations.Test;
 
+import javax.tools.JavaFileObject;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Alexey_Bodyak
  */
@@ -16,95 +20,101 @@ public class LensProcessorTest {
     public void generate_classWithOneGenReadAnnotations_generateValidAccountFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/Account.java"));
+                        .compile(withPathObjects(JavaFileObjects.forResource("cases/single-property/Account.java")));
 
         assertThat(compilation).succeeded();
         assertThat(compilation)
                 .generatedSourceFile("util/examples/AccountLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/AccountLenses.java"));
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/single-property/AccountLenses.java"));
     }
 
     @Test
     public void generate_classWithTwoGenReadAnnotations_generateValidPaymentFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/Payment.java"));
+                        .compile(withPathObjects(JavaFileObjects.forResource("cases/milty-property/Payment.java")));
 
         assertThat(compilation).succeeded();
         assertThat(compilation)
                 .generatedSourceFile("util/examples/PaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/PaymentLenses.java"));
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/milty-property/PaymentLenses.java"));
     }
 
     @Test
     public void generate_twoClassesWithGenLensesAnnotations_generateValidFactories() {
+        JavaFileObject accountFile = JavaFileObjects.forResource("cases/single-property/Account.java");
+        JavaFileObject paymentFile = JavaFileObjects.forResource("cases/milty-property/Payment.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/Account.java"),
-                                JavaFileObjects.forResource("util/examples/Payment.java"));
+                        .compile(withPathObjects(accountFile, paymentFile));
 
         assertThat(compilation).succeeded();
         assertThat(compilation)
                 .generatedSourceFile("util/examples/AccountLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/AccountLenses.java"));
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/single-property/AccountLenses.java"));
         assertThat(compilation)
                 .generatedSourceFile("util/examples/PaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/PaymentLenses.java"));
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/milty-property/PaymentLenses.java"));
     }
 
     @Test
     public void generate_annotationWithSpecificFactoryName_generateValidSpecificFactory() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/specific-factory-name/AccountWithSpecificFactoryName.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/AccountWithSpecificFactoryName.java"));
+                        .compile(withPathObjects(fileObject));
 
         assertThat(compilation).succeeded();
         assertThat(compilation)
                 .generatedSourceFile("util/examples/SpecificFactoryName")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/SpecificFactoryName.java"));
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/specific-factory-name/SpecificFactoryName.java"));
     }
 
     @Test
     public void generate_annotationWithDeCapitalizeSpecificFactoryName_generateValidSpecificFactory() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/decapitalize-factory-name/AccountWithDeCapitalizeSpecificFactoryName.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/AccountWithDeCapitalizeSpecificFactoryName.java"));
+                        .compile(withPathObjects(fileObject));
 
         assertThat(compilation).succeeded();
         assertThat(compilation)
                 .generatedSourceFile("util/examples/SpecificFactoryName")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/CapitalizeSpecificFactoryName.java"));
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/decapitalize-factory-name/CapitalizeSpecificFactoryName.java"));
     }
 
     @Test
     public void generate_annotationWithEmptyLensName_generateValidSpecificFactory() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/empty-lens-name/AccountWithEmptyLensName.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/AccountWithEmptyLensName.java"));
+                        .compile(withPathObjects(fileObject));
 
         assertThat(compilation).succeeded();
         assertThat(compilation)
                 .generatedSourceFile("util/examples/AccountWithEmptyLensNameLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/AccountWithEmptyLensNameLenses.java"));
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/empty-lens-name/AccountWithEmptyLensNameLenses.java"));
     }
 
     @Test
     public void generate_annotationFromPackagePrivateClass_generateValidPackagePrivateFactory() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/package-private-class/PackagePrivateAccount.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/PackagePrivateAccount.java"));
+                        .compile(withPathObjects(fileObject));
 
         assertThat(compilation).succeeded();
         assertThat(compilation)
                 .generatedSourceFile("util/examples/PackagePrivateAccountLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("util/result/PackagePrivateAccountLenses.java"));
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/package-private-class/PackagePrivateAccountLenses.java"));
     }
 
     @Test
     public void generate_typeHasNotUniqueLensNames_compilationError() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/duplicate-lens-names/DuplicateNames.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/AccountWithTheSameLensNames.java"));
+                        .compile(withPathObjects(fileObject));
 
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining("Lens names for type should be unique");
@@ -112,9 +122,10 @@ public class LensProcessorTest {
 
     @Test
     public void generate_lensPathIsEmpty_compilationError() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/lens-with-empty-path/WithEmptyPath.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/AccountWithEmptyPath.java"));
+                        .compile(withPathObjects(fileObject));
 
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining("Lens path should be not empty");
@@ -122,9 +133,10 @@ public class LensProcessorTest {
 
     @Test
     public void generate_annotationOnInterface_compilationError() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/on-interface/LensOnInterface.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/LensOnInterface.java"));
+                        .compile(withPathObjects(fileObject));
 
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining("@GenLenses is not allowed here");
@@ -132,9 +144,10 @@ public class LensProcessorTest {
 
     @Test
     public void generate_annotationWithoutLensPath_compilationError() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/lens-without-path/AnnotationWithoutLensPath.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/AnnotationWithoutLensPath.java"));
+                        .compile(withPathObjects(fileObject));
 
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining("annotation @dev.khbd.lens4j.core.annotations.Lens is missing a default value for the element 'path'");
@@ -142,9 +155,10 @@ public class LensProcessorTest {
 
     @Test
     public void generate_pathContainsWrongFieldName_compilationError() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/field-not-found/FieldNotFound.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/FieldNotFound.java"));
+                        .compile(withPathObjects(fileObject));
 
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining("Field 'bid' was not found in class 'Account'");
@@ -152,11 +166,25 @@ public class LensProcessorTest {
 
     @Test
     public void generate_innerClassAnnotatedGenLenses_compilationError() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/inner-class/GenLensesOnInnerClass.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("util/examples/GenLensesOnInnerClass.java"));
+                        .compile(withPathObjects(fileObject));
 
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining("@GenLenses is not allowed on inner classes");
+    }
+
+    private List<JavaFileObject> withPathObjects(JavaFileObject... objects) {
+        List<JavaFileObject> result = new ArrayList<>(List.of(objects));
+        result.addAll(
+                List.of(
+                        JavaFileObjects.forResource("paths/Bank.java"),
+                        JavaFileObjects.forResource("paths/Currency.java"),
+                        JavaFileObjects.forResource("paths/Payer.java"),
+                        JavaFileObjects.forResource("paths/Receiver.java")
+                )
+        );
+        return result;
     }
 }

@@ -10,7 +10,7 @@ import dev.khbd.lens4j.core.annotations.LensType;
                 @Lens(path = "currency.code", lensName = "ACCOUNT_CURRENCY_CODE_LENS", type = LensType.READ_WRITE)
         }
 )
-public class AccountWithTheSameLensNames {
+public class DuplicateNames {
     private String id;
     private String accountNumber;
     private String bic;
