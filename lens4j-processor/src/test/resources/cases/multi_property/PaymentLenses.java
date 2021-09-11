@@ -1,4 +1,4 @@
-package util.examples;
+package cases.multi_property;
 
 import common.Bank;
 import common.Payer;

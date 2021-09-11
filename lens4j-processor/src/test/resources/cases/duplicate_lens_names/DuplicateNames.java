@@ -1,4 +1,4 @@
-package util.examples;
+package cases.duplicate_lens_names;
 
 import common.Currency;
 import dev.khbd.lens4j.core.annotations.GenLenses;

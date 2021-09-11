@@ -1,4 +1,4 @@
-package util.examples;
+package cases.decapitalize_factory_name;
 
 import common.Currency;
 import dev.khbd.lens4j.core.annotations.GenLenses;

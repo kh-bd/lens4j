@@ -1,4 +1,4 @@
-package util.examples;
+package cases.field_not_found;
 
 import common.Currency;
 import dev.khbd.lens4j.core.annotations.GenLenses;

@@ -1,4 +1,4 @@
-package util.examples;
+package cases.on_interface;
 
 import common.Currency;
 import dev.khbd.lens4j.core.annotations.GenLenses;

@@ -1,4 +1,4 @@
-package util.examples;
+package cases.empty_lens_name;
 
 import common.Currency;
 import dev.khbd.lens4j.core.Lenses;
