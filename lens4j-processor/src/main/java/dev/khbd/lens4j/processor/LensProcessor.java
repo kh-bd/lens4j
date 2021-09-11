@@ -18,6 +18,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.util.Elements;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +40,7 @@ public class LensProcessor extends AbstractProcessor {
     private LensGenerator lensGenerator;
     private Filer filer;
     private Logger logger;
+    private Elements elementUtil;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -47,6 +49,7 @@ public class LensProcessor extends AbstractProcessor {
         this.filer = processingEnv.getFiler();
         this.lensGenerator = new LensGenerator();
         this.logger = new Logger(processingEnv.getMessager());
+        this.elementUtil = processingEnv.getElementUtils();
     }
 
     @Override
@@ -181,7 +184,9 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private Element findFieldByName(String fieldName, Element classElement) {
-        return classElement.getEnclosedElements().stream()
+        DeclaredType type = (DeclaredType) classElement.asType();
+
+        return elementUtil.getAllMembers((TypeElement) type.asElement()).stream()
                 .filter(it -> it.getKind() == ElementKind.FIELD)
                 .filter(it -> !it.getModifiers().contains(Modifier.STATIC))
                 .filter(it -> it.getSimpleName().toString().equalsIgnoreCase(fieldName))
