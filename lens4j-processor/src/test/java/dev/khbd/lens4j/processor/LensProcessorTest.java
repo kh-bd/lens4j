@@ -110,6 +110,19 @@ public class LensProcessorTest {
     }
 
     @Test
+    public void generate_lensPathContainsPropertyFromBaseClass_generateValidFactory() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/sub_class/SubClass.java");
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(withPathObjects(fileObject));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/sub_class/SubClassLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/sub_class/SubClassLenses.java"));
+    }
+
+    @Test
     public void generate_typeHasNotUniqueLensNames_compilationError() {
         JavaFileObject fileObject = JavaFileObjects.forResource("cases/duplicate_lens_names/DuplicateNames.java");
         Compilation compilation =
