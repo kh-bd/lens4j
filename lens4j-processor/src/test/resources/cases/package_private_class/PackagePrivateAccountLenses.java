@@ -10,7 +10,7 @@ import javax.annotation.processing.Generated;
 
 @Generated("dev.khbd.lens4j.processor.LensProcessor")
 final class PackagePrivateAccountLenses {
-    public static final ReadLens<PackagePrivateAccount, String> ACCOUNT_NUMBER = Lenses.readLens(PackagePrivateAccount::getAccountNumber);
+    public static final ReadLens<PackagePrivateAccount, String> ACCOUNT_NUMBER_READ_LENS = Lenses.readLens(PackagePrivateAccount::getAccountNumber);
 
     public static final ReadWriteLens<PackagePrivateAccount, String> ACCOUNT_NUMBER_READ_WRITE_LENS = Lenses.readWriteLens(PackagePrivateAccount::getAccountNumber, PackagePrivateAccount::setAccountNumber);
 

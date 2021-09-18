@@ -8,7 +8,7 @@ import javax.annotation.processing.Generated;
 
 @Generated("dev.khbd.lens4j.processor.LensProcessor")
 public final class SubClassLenses {
-    public static final ReadLens<SubClass, String> CURRENCY_CODE = Lenses.readLens(SubClass::getCurrency).andThen(Lenses.readLens(Currency::getCode));
+    public static final ReadLens<SubClass, String> CURRENCY_CODE_READ_LENS = Lenses.readLens(SubClass::getCurrency).andThen(Lenses.readLens(Currency::getCode));
 
     private SubClassLenses() {
     }
