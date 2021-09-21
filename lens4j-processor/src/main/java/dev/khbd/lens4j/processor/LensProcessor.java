@@ -5,6 +5,7 @@ import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.JavaFile;
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
+import dev.khbd.lens4j.core.annotations.LensType;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -36,6 +37,7 @@ import java.util.stream.Stream;
 public class LensProcessor extends AbstractProcessor {
 
     private static final String DEFAULT_FACTORY_NAME = "Lenses";
+    private static final String LENS_NAME_SUFFIX = "LENS";
 
     private LensGenerator lensGenerator;
     private Filer filer;
@@ -159,7 +161,7 @@ public class LensProcessor extends AbstractProcessor {
     private LensMeta makeLensMeta(Element classElement, Lens annotation) {
         String path = annotation.path();
         String[] properties = path.split("\\.");
-        String lensName = makeLensName(annotation.lensName(), properties);
+        String lensName = makeLensName(annotation.lensName(), annotation.type(), properties);
 
         LensMeta meta = new LensMeta(lensName, annotation.type());
         Element currentClassElement = classElement;
@@ -174,10 +176,14 @@ public class LensProcessor extends AbstractProcessor {
         return meta;
     }
 
-    private String makeLensName(String userLensName, String[] properties) {
+    private String makeLensName(String userLensName, LensType lensType, String[] properties) {
         if (StringUtils.isNotBlank(userLensName)) {
             return userLensName;
         }
+        return String.format("%s_%s_%s", makeLensName(properties), lensType, LENS_NAME_SUFFIX);
+    }
+
+    private String makeLensName(String[] properties) {
         return Stream.of(properties)
                 .map(it -> CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it))
                 .collect(Collectors.joining("_"));
