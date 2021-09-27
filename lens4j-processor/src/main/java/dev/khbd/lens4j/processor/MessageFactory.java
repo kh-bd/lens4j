@@ -30,4 +30,12 @@ public final class MessageFactory {
     public static Message genLensNotAllowedOnGenericClasses(Element element) {
         return Message.of("@GenLenses is not allowed on generic classes", element);
     }
+
+    public static Message existNotUniqueLensName(Element element) {
+        return Message.of("Lens names for type should be unique", element);
+    }
+
+    public static Message pathIsEmpty(Element element) {
+        return Message.of("Lens path should be not empty", element);
+    }
 }

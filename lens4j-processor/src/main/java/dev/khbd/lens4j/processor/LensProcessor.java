@@ -126,7 +126,7 @@ public class LensProcessor extends AbstractProcessor {
         Map<String, List<LensMeta>> lensNames = lenses.stream().collect(Collectors.groupingBy(LensMeta::getLensName));
         for (Map.Entry<String, List<LensMeta>> entry : lensNames.entrySet()) {
             if (entry.getValue().size() > 1) {
-                throw new LensProcessingException(Message.of("Lens names for type should be unique", classElement));
+                throw new LensProcessingException(MessageFactory.existNotUniqueLensName(classElement));
             }
         }
     }
@@ -134,7 +134,7 @@ public class LensProcessor extends AbstractProcessor {
     private void checkLensPath(Element classElement, List<Lens> lenses) {
         for (Lens lens : lenses) {
             if (StringUtils.isBlank(lens.path())) {
-                throw new LensProcessingException(Message.of("Lens path should be not empty", classElement));
+                throw new LensProcessingException(MessageFactory.pathIsEmpty(classElement));
             }
         }
     }
