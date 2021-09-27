@@ -17,6 +17,29 @@ import java.util.List;
 public class LensProcessorTest {
 
     @Test
+    public void generate_lensPathContainsPrimitiveType_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(JavaFileObjects.forResource("cases/primitive_type_at_the_end/WithPrimitive.java"));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/primitive_type_at_the_end/WithPrimitiveLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/primitive_type_at_the_end/WithPrimitiveLenses.java"));
+    }
+
+    @Test
+    public void generate_lensPathHasPrimitiveTypeInTheMiddle_compilationError() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/primitive_type_in_the_middle/WithPrimitive.java");
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(fileObject);
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("Primitive types are allowed only as last part of a path");
+    }
+
+    @Test
     public void generate_lensesWithSinglePropertyPath_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())

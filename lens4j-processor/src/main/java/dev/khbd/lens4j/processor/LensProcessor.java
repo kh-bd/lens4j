@@ -19,6 +19,8 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import java.io.IOException;
 import java.util.HashSet;
@@ -49,7 +51,7 @@ public class LensProcessor extends AbstractProcessor {
         super.init(processingEnv);
 
         this.filer = processingEnv.getFiler();
-        this.lensGenerator = new LensGenerator();
+        this.lensGenerator = new LensGenerator(processingEnv.getTypeUtils());
         this.logger = new Logger(processingEnv.getMessager());
         this.elementUtil = processingEnv.getElementUtils();
     }
@@ -88,7 +90,7 @@ public class LensProcessor extends AbstractProcessor {
         if (element.getKind() == ElementKind.CLASS) {
             return makeFactoryMetaFromClassElement((TypeElement) element);
         }
-        throw new LensProcessingException(Message.of("@GenLenses is not allowed here", element));
+        throw new LensProcessingException(MessageFactory.genLensNotAllowedHere(element));
     }
 
     private FactoryMeta makeFactoryMetaFromClassElement(TypeElement classElement) {
@@ -100,10 +102,10 @@ public class LensProcessor extends AbstractProcessor {
 
     private void verifyClass(TypeElement classElement) {
         if (classElement.getEnclosingElement().getKind() != ElementKind.PACKAGE) {
-            throw new LensProcessingException(Message.of("@GenLenses is not allowed on inner classes", classElement));
+            throw new LensProcessingException(MessageFactory.genLensNotAllowedOnInnerClasses(classElement));
         }
         if (!classElement.getTypeParameters().isEmpty()) {
-            throw new LensProcessingException(Message.of("@GenLenses is not allowed on generic classes", classElement));
+            throw new LensProcessingException(MessageFactory.genLensNotAllowedOnGenericClasses(classElement));
         }
     }
 
@@ -166,14 +168,26 @@ public class LensProcessor extends AbstractProcessor {
         LensMeta meta = new LensMeta(lensName, annotation.type());
         Element currentClassElement = classElement;
 
-        for (String property : properties) {
+        for (int i = 0; i < properties.length; i++) {
+            String property = properties[i];
             Element field = findFieldByName(property, currentClassElement);
             LensPartMeta part = new LensPartMeta(currentClassElement.asType(), field.asType(), property);
             meta.addLensPart(part);
-            currentClassElement = ((DeclaredType) field.asType()).asElement();
+
+            TypeMirror fieldTypeMirror = field.asType();
+            if (fieldTypeMirror.getKind().isPrimitive() && !isLast(i, properties.length)) {
+                throw new LensProcessingException(MessageFactory.wrongPlaceOfPrimitiveType(classElement));
+            }
+            if (fieldTypeMirror.getKind() == TypeKind.DECLARED) {
+                currentClassElement = ((DeclaredType) field.asType()).asElement();
+            }
         }
 
         return meta;
+    }
+
+    private boolean isLast(int currentIndex, int length) {
+        return currentIndex == length - 1;
     }
 
     private String makeLensName(String userLensName, LensType lensType, String[] properties) {
@@ -197,12 +211,7 @@ public class LensProcessor extends AbstractProcessor {
                 .filter(it -> !it.getModifiers().contains(Modifier.STATIC))
                 .filter(it -> it.getSimpleName().toString().equalsIgnoreCase(fieldName))
                 .findFirst()
-                .orElseThrow(() -> new LensProcessingException(fieldNotFoundMessage(classElement, fieldName)));
-    }
-
-    private Message fieldNotFoundMessage(Element classElement, String fieldName) {
-        String msg = String.format("Field '%s' was not found in class '%s'", fieldName, classElement.getSimpleName());
-        return Message.of(msg, classElement);
+                .orElseThrow(() -> new LensProcessingException(MessageFactory.fieldNotFound(classElement, fieldName)));
     }
 
     private Set<? extends Element> findLensElements(RoundEnvironment roundEnv) {

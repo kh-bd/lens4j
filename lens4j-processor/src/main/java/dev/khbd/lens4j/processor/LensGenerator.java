@@ -17,6 +17,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.Generated;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 import java.util.Map;
 
 /**
@@ -25,6 +29,12 @@ import java.util.Map;
  * @author Alexey_Bodyak
  */
 public class LensGenerator {
+
+    private final Types typeUtils;
+
+    public LensGenerator(Types typeUtils) {
+        this.typeUtils = typeUtils;
+    }
 
     /**
      * Generate factory source file.
@@ -103,7 +113,7 @@ public class LensGenerator {
         return ParameterizedTypeName.get(
                 ClassName.get(ReadLens.class),
                 TypeName.get(lensMeta.getFirstLensPart().getSourceType()),
-                TypeName.get(lensMeta.getLastLensPart().getPropertyType())
+                resolvePropertyType(lensMeta.getLastLensPart().getPropertyType())
         );
     }
 
@@ -111,8 +121,16 @@ public class LensGenerator {
         return ParameterizedTypeName.get(
                 ClassName.get(ReadWriteLens.class),
                 TypeName.get(lensMeta.getFirstLensPart().getSourceType()),
-                TypeName.get(lensMeta.getLastLensPart().getPropertyType())
+                resolvePropertyType(lensMeta.getLastLensPart().getPropertyType())
         );
+    }
+
+    private TypeName resolvePropertyType(TypeMirror typeMirror) {
+        TypeKind typeKind = typeMirror.getKind();
+        if (typeKind.isPrimitive()) {
+            return TypeName.get(typeUtils.boxedClass((PrimitiveType) typeMirror).asType());
+        }
+        return TypeName.get(typeMirror);
     }
 
     private MethodSpec makeConstructor() {
