@@ -174,30 +174,34 @@ public class LensProcessor extends AbstractProcessor {
             LensPartMeta part = new LensPartMeta(currentClassElement.asType(), field.asType(), property);
             meta.addLensPart(part);
 
-            TypeMirror fieldTypeMirror = field.asType();
-            if (fieldTypeMirror.getKind().isPrimitive() && !isLast(i, properties.length)) {
-                throw new LensProcessingException(MessageFactory.wrongPlaceOfPrimitiveType(classElement));
-            }
-            if (fieldTypeMirror.getKind() == TypeKind.DECLARED) {
-                currentClassElement = ((DeclaredType) field.asType()).asElement();
+            if (i != properties.length - 1) { // not last element in path
+                currentClassElement = resolveFieldClass(classElement, field.asType());
             }
         }
 
         return meta;
     }
 
-    private boolean isLast(int currentIndex, int length) {
-        return currentIndex == length - 1;
+    private Element resolveFieldClass(Element classElement, TypeMirror fieldType) {
+        TypeKind kind = fieldType.getKind();
+        if (kind == TypeKind.DECLARED) {
+            return ((DeclaredType) fieldType).asElement();
+        }
+        throw new LensProcessingException(MessageFactory.nonDeclaredTypeFound(classElement));
     }
 
     private String makeLensName(String userLensName, LensType lensType, String[] properties) {
         if (StringUtils.isNotBlank(userLensName)) {
             return userLensName;
         }
-        return String.format("%s_%s_%s", makeLensName(properties), lensType, LENS_NAME_SUFFIX);
+        return deriveLensNameByPath(properties, lensType);
     }
 
-    private String makeLensName(String[] properties) {
+    private String deriveLensNameByPath(String[] properties, LensType lensType) {
+        return String.format("%s_%s_%s", joinProperties(properties), lensType, LENS_NAME_SUFFIX);
+    }
+
+    private String joinProperties(String[] properties) {
         return Stream.of(properties)
                 .map(it -> CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it))
                 .collect(Collectors.joining("_"));

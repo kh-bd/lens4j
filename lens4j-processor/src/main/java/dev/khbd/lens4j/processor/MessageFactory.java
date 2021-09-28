@@ -15,8 +15,8 @@ public final class MessageFactory {
         return Message.of(msg, classElement);
     }
 
-    public static Message wrongPlaceOfPrimitiveType(Element classElement) {
-        return Message.of("Primitive types are allowed only as last part of a path", classElement);
+    public static Message nonDeclaredTypeFound(Element classElement) {
+        return Message.of("Non-declared types are allowed only at last position in path", classElement);
     }
 
     public static Message genLensNotAllowedHere(Element element) {

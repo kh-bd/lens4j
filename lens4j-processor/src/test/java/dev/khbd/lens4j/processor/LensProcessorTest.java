@@ -36,7 +36,7 @@ public class LensProcessorTest {
                         .compile(fileObject);
 
         assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Primitive types are allowed only as last part of a path");
+        assertThat(compilation).hadErrorContaining("Non-declared types are allowed only at last position in path");
     }
 
     @Test
