@@ -17,6 +17,29 @@ import java.util.List;
 public class LensProcessorTest {
 
     @Test
+    public void generate_lensPathContainsArrayType_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(JavaFileObjects.forResource("cases/array_type_at_the_end/WithArray.java"));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/array_type_at_the_end/WithArrayLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/array_type_at_the_end/WithArrayLenses.java"));
+    }
+
+    @Test
+    public void generate_lensPathHasArrayTypeInTheMiddle_compilationError() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/array_type_in_the_middle/WithArray.java");
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(fileObject);
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("Non-declared types are allowed only at last position in path");
+    }
+
+    @Test
     public void generate_lensPathContainsPrimitiveType_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
