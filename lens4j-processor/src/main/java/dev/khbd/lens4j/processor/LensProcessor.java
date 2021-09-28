@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 @AutoService(Processor.class)
 public class LensProcessor extends AbstractProcessor {
 
-    private static final String DEFAULT_FACTORY_NAME = "Lenses";
+    private static final String DEFAULT_FACTORY_SUFFIX = "Lenses";
     private static final String LENS_NAME_SUFFIX = "LENS";
 
     private LensGenerator lensGenerator;
@@ -101,9 +101,6 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private void verifyClass(TypeElement classElement) {
-        if (classElement.getEnclosingElement().getKind() != ElementKind.PACKAGE) {
-            throw new LensProcessingException(MessageFactory.genLensNotAllowedOnInnerClasses(classElement));
-        }
         if (!classElement.getTypeParameters().isEmpty()) {
             throw new LensProcessingException(MessageFactory.genLensNotAllowedOnGenericClasses(classElement));
         }
@@ -112,7 +109,7 @@ public class LensProcessor extends AbstractProcessor {
     private FactoryMeta makeFactoryMetaFromClassElement(Element classElement, GenLenses annotation) {
         checkLensPath(classElement, List.of(annotation.lenses()));
 
-        FactoryMeta factory = new FactoryMeta(extractPackageName(classElement),
+        FactoryMeta factory = new FactoryMeta(getPackage(classElement),
                 makeFactoryName(classElement, annotation), getClassModifiers(classElement));
 
         for (Lens lens : annotation.lenses()) {
@@ -142,22 +139,31 @@ public class LensProcessor extends AbstractProcessor {
     private String makeFactoryName(Element classElement, GenLenses annotation) {
         String factoryName = annotation.factoryName();
         if (StringUtils.isBlank(factoryName)) {
-            return String.format("%s%s", classElement.getSimpleName(), DEFAULT_FACTORY_NAME);
+            return deriveFactoryName(classElement);
         }
         return StringUtils.capitalize(factoryName);
+    }
+
+    private String deriveFactoryName(Element classElement) {
+        String joinedClassNames = ProcessorUtils.getAllClasses(classElement).stream()
+                .map(Element::getSimpleName)
+                .collect(Collectors.joining());
+        return joinedClassNames + DEFAULT_FACTORY_SUFFIX;
     }
 
     private Set<Modifier> getClassModifiers(Element classElement) {
         Set<Modifier> modifiers = new HashSet<>();
         modifiers.add(Modifier.FINAL);
-        if (classElement.getModifiers().contains(Modifier.PUBLIC)) {
+
+        Element topLevelClass = ProcessorUtils.getTopLevelClass(classElement);
+        if (topLevelClass.getModifiers().contains(Modifier.PUBLIC)) {
             modifiers.add(Modifier.PUBLIC);
         }
         return modifiers;
     }
 
-    private String extractPackageName(Element element) {
-        return element.getEnclosingElement().toString();
+    private String getPackage(Element classElement) {
+        return elementUtil.getPackageOf(classElement).toString();
     }
 
     private LensMeta makeLensMeta(Element classElement, Lens annotation) {

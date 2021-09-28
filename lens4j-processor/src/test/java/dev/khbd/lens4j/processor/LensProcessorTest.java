@@ -224,14 +224,29 @@ public class LensProcessorTest {
     }
 
     @Test
-    public void generate_innerClassAnnotatedGenLenses_compilationError() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/inner_class/GenLensesOnInnerClass.java");
+    public void generate_innerClassAnnotatedGenLenses_generateFactory() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/inner_class/Outer.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
                         .compile(withPathObjects(fileObject));
 
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("@GenLenses is not allowed on inner classes");
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/inner_class/OuterInner1Inner2Lenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/inner_class/OuterInner1Inner2Lenses.java"));
+    }
+
+    @Test
+    public void generate_nessClassAnnotatedGenLenses_generateFactory() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/nested_class/Outer.java");
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(withPathObjects(fileObject));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/nested_class/OuterInner1Inner2Lenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/nested_class/OuterInner1Inner2Lenses.java"));
     }
 
     @Test
