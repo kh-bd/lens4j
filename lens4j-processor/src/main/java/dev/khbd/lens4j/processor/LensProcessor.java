@@ -19,6 +19,8 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import java.io.IOException;
 import java.util.HashSet;
@@ -49,7 +51,7 @@ public class LensProcessor extends AbstractProcessor {
         super.init(processingEnv);
 
         this.filer = processingEnv.getFiler();
-        this.lensGenerator = new LensGenerator();
+        this.lensGenerator = new LensGenerator(processingEnv.getTypeUtils());
         this.logger = new Logger(processingEnv.getMessager());
         this.elementUtil = processingEnv.getElementUtils();
     }
@@ -88,7 +90,7 @@ public class LensProcessor extends AbstractProcessor {
         if (element.getKind() == ElementKind.CLASS) {
             return makeFactoryMetaFromClassElement((TypeElement) element);
         }
-        throw new LensProcessingException(Message.of("@GenLenses is not allowed here", element));
+        throw new LensProcessingException(MessageFactory.genLensNotAllowedHere(element));
     }
 
     private FactoryMeta makeFactoryMetaFromClassElement(TypeElement classElement) {
@@ -100,10 +102,10 @@ public class LensProcessor extends AbstractProcessor {
 
     private void verifyClass(TypeElement classElement) {
         if (classElement.getEnclosingElement().getKind() != ElementKind.PACKAGE) {
-            throw new LensProcessingException(Message.of("@GenLenses is not allowed on inner classes", classElement));
+            throw new LensProcessingException(MessageFactory.genLensNotAllowedOnInnerClasses(classElement));
         }
         if (!classElement.getTypeParameters().isEmpty()) {
-            throw new LensProcessingException(Message.of("@GenLenses is not allowed on generic classes", classElement));
+            throw new LensProcessingException(MessageFactory.genLensNotAllowedOnGenericClasses(classElement));
         }
     }
 
@@ -124,7 +126,7 @@ public class LensProcessor extends AbstractProcessor {
         Map<String, List<LensMeta>> lensNames = lenses.stream().collect(Collectors.groupingBy(LensMeta::getLensName));
         for (Map.Entry<String, List<LensMeta>> entry : lensNames.entrySet()) {
             if (entry.getValue().size() > 1) {
-                throw new LensProcessingException(Message.of("Lens names for type should be unique", classElement));
+                throw new LensProcessingException(MessageFactory.existNotUniqueLensName(classElement));
             }
         }
     }
@@ -132,7 +134,7 @@ public class LensProcessor extends AbstractProcessor {
     private void checkLensPath(Element classElement, List<Lens> lenses) {
         for (Lens lens : lenses) {
             if (StringUtils.isBlank(lens.path())) {
-                throw new LensProcessingException(Message.of("Lens path should be not empty", classElement));
+                throw new LensProcessingException(MessageFactory.pathIsEmpty(classElement));
             }
         }
     }
@@ -166,24 +168,40 @@ public class LensProcessor extends AbstractProcessor {
         LensMeta meta = new LensMeta(lensName, annotation.type());
         Element currentClassElement = classElement;
 
-        for (String property : properties) {
+        for (int i = 0; i < properties.length; i++) {
+            String property = properties[i];
             Element field = findFieldByName(property, currentClassElement);
             LensPartMeta part = new LensPartMeta(currentClassElement.asType(), field.asType(), property);
             meta.addLensPart(part);
-            currentClassElement = ((DeclaredType) field.asType()).asElement();
+
+            if (i != properties.length - 1) { // not last element in path
+                currentClassElement = resolveFieldClass(classElement, field.asType());
+            }
         }
 
         return meta;
+    }
+
+    private Element resolveFieldClass(Element classElement, TypeMirror fieldType) {
+        TypeKind kind = fieldType.getKind();
+        if (kind == TypeKind.DECLARED) {
+            return ((DeclaredType) fieldType).asElement();
+        }
+        throw new LensProcessingException(MessageFactory.nonDeclaredTypeFound(classElement));
     }
 
     private String makeLensName(String userLensName, LensType lensType, String[] properties) {
         if (StringUtils.isNotBlank(userLensName)) {
             return userLensName;
         }
-        return String.format("%s_%s_%s", makeLensName(properties), lensType, LENS_NAME_SUFFIX);
+        return deriveLensNameByPath(properties, lensType);
     }
 
-    private String makeLensName(String[] properties) {
+    private String deriveLensNameByPath(String[] properties, LensType lensType) {
+        return String.format("%s_%s_%s", joinProperties(properties), lensType, LENS_NAME_SUFFIX);
+    }
+
+    private String joinProperties(String[] properties) {
         return Stream.of(properties)
                 .map(it -> CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it))
                 .collect(Collectors.joining("_"));
@@ -197,12 +215,7 @@ public class LensProcessor extends AbstractProcessor {
                 .filter(it -> !it.getModifiers().contains(Modifier.STATIC))
                 .filter(it -> it.getSimpleName().toString().equalsIgnoreCase(fieldName))
                 .findFirst()
-                .orElseThrow(() -> new LensProcessingException(fieldNotFoundMessage(classElement, fieldName)));
-    }
-
-    private Message fieldNotFoundMessage(Element classElement, String fieldName) {
-        String msg = String.format("Field '%s' was not found in class '%s'", fieldName, classElement.getSimpleName());
-        return Message.of(msg, classElement);
+                .orElseThrow(() -> new LensProcessingException(MessageFactory.fieldNotFound(classElement, fieldName)));
     }
 
     private Set<? extends Element> findLensElements(RoundEnvironment roundEnv) {
