@@ -76,32 +76,41 @@ public class LensGenerator {
         CodeBlock.Builder builder = CodeBlock.builder();
 
         if (lensMeta.isSinglePart()) {
-            builder.add(makeCodeBlockLens(lensMeta.getFirstLensPart(), lensMeta.getLensType()));
+            builder.add(makeLensCodeBlock(lensMeta.getFirstLensPart(), lensMeta.getLensType()));
             return builder.build();
         }
 
-        builder.add(makeCodeBlockLens(lensMeta.getFirstLensPart(), LensType.READ));
+        builder.add(makeLensCodeBlock(lensMeta.getFirstLensPart(), LensType.READ));
         for (LensPartMeta part : lensMeta.getLensPartsWithoutEnds()) {
-            builder.add(".andThen($L)", makeCodeBlockLens(part, LensType.READ));
+            builder.add(".andThen($L)", makeLensCodeBlock(part, LensType.READ));
         }
-        builder.add(".andThen($L)", makeCodeBlockLens(lensMeta.getLastLensPart(), lensMeta.getLensType()));
+        builder.add(".andThen($L)", makeLensCodeBlock(lensMeta.getLastLensPart(), lensMeta.getLensType()));
         return builder.build();
     }
 
-    private CodeBlock makeCodeBlockLens(LensPartMeta lensPartMeta, LensType lensType) {
+    private CodeBlock makeLensCodeBlock(LensPartMeta lensPartMeta, LensType lensType) {
         Map<String, Object> params = Map.of(
                 "lenses", ClassName.get(Lenses.class),
-                "baseType", TypeName.get(lensPartMeta.getSourceType()),
+                "sourceType", TypeName.get(lensPartMeta.getSourceType()),
                 "fieldName", StringUtils.capitalize(lensPartMeta.getPropertyName())
         );
         return CodeBlock.builder()
-                .addNamed(makeMethodNameByTypeLens(lensType), params)
+                .addNamed(getLensCodeBlockTemplate(lensType), params)
                 .build();
     }
 
-    private String makeMethodNameByTypeLens(LensType lensType) {
-        return lensType == LensType.READ ? "$lenses:T.readLens($baseType:T::get$fieldName:L)"
-                : "$lenses:T.readWriteLens($baseType:T::get$fieldName:L, $baseType:T::set$fieldName:L)";
+    private String getLensCodeBlockTemplate(LensType lensType) {
+        return lensType == LensType.READ
+                ? getReadLensCodeBlockTemplate()
+                : getReadWriteLensCodeBlockTemplate();
+    }
+
+    private String getReadLensCodeBlockTemplate() {
+        return "$lenses:T.readLens($sourceType:T::get$fieldName:L)";
+    }
+
+    private String getReadWriteLensCodeBlockTemplate() {
+        return "$lenses:T.readWriteLens($sourceType:T::get$fieldName:L, $sourceType:T::set$fieldName:L)";
     }
 
     private TypeName makeLensType(LensMeta lensMeta) {
