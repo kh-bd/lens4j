@@ -24,7 +24,7 @@ public final class ProcessorUtils {
      * @return top level class for specified one
      */
     public static Element getTopLevelClass(Element classElement) {
-        List<Element> classes = getAllClasses(classElement);
+        List<Element> classes = getAllEnclosingClasses(classElement);
         return classes.get(0);
     }
 
@@ -39,12 +39,12 @@ public final class ProcessorUtils {
      *      }
      *  }
      * }</pre>
-     * {@code getAllClasses(Inner2) == [Outer, Inner1, Inner2] }
+     * {@code getAllEnclosingClasses(Inner2) == [Outer, Inner1, Inner2] }
      *
      * @param classElement class to start
      * @return all classes up to top level
      */
-    public static List<Element> getAllClasses(Element classElement) {
+    public static List<Element> getAllEnclosingClasses(Element classElement) {
         List<Element> classes = new ArrayList<>();
         classes.add(classElement);
 
