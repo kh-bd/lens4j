@@ -65,4 +65,18 @@ public interface ReadWriteLens<O, P> extends ReadLens<O, P> {
     default <O1> ReadWriteLens<O1, P> compose(ReadLens<? super O1, ? extends O> base) {
         return Lenses.combine(base, this);
     }
+
+    /**
+     * Create read lens from specified function and combine it with current one.
+     *
+     * @param getter getter function
+     * @param <O1>   new object type
+     * @return combine lens
+     * @see Lenses#combine(ReadLens, ReadWriteLens)
+     * @see #compose(ReadLens)
+     */
+    @Override
+    default <O1> ReadWriteLens<O1, P> composeF(Function<? super O1, ? extends O> getter) {
+        return Lenses.combine(Lenses.readLens(getter), this);
+    }
 }

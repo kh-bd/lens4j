@@ -92,17 +92,17 @@ time.
 
 ## Constructing lenses manually
 
-There are several combinator functions to combine lenses with each other: `endThen` and `compose`. These functions have
-analogical semantic as `Function#endThen` and `Function#compose`. To construct `PAYER_ACCOUNT_CODE_LENS` we can do the
-following:
+There are several combinator functions to combine lenses with each other: `endThenF` and `composeF`. These functions
+have analogical semantic as `Function#endThen` and `Function#compose`. To construct `PAYER_ACCOUNT_CODE_LENS` we can do
+the following:
 
 ```java
 class PaymentValidator {
 
     static final ReadLens<Payment, String> PAYER_ACCOUNT_CODE_LENS =
             Lenses.readLens(Payment::getPayerAccount)
-                    .andThen(Lenses.readLens(Accout::getCurrency))
-                    .andThen(Lenses.readLens(Currency::getCode));
+                    .andThenF(Accout::getCurrency)
+                    .andThenF(Currency::getCode);
 }
 ```
 
