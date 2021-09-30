@@ -6,6 +6,7 @@ import dev.khbd.lens4j.core.ReadLens;
 import dev.khbd.lens4j.core.ReadWriteLens;
 import java.lang.Integer;
 import java.lang.String;
+import java.lang.UnsupportedOperationException;
 import javax.annotation.processing.Generated;
 
 @Generated("dev.khbd.lens4j.processor.LensProcessor")
@@ -19,5 +20,6 @@ final class PackagePrivateAccountLenses {
     public static final ReadWriteLens<PackagePrivateAccount, Integer> ACCOUNT_CURRENCY_CODE_READ_WRITE_LENS = Lenses.readLens(PackagePrivateAccount::getCurrency).andThen(Lenses.readWriteLens(Currency::getId, Currency::setId));
 
     private PackagePrivateAccountLenses() {
+        throw new UnsupportedOperationException("Can not create instance of factory class");
     }
 }

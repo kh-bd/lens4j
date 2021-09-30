@@ -11,6 +11,7 @@ import java.lang.Float;
 import java.lang.Integer;
 import java.lang.Long;
 import java.lang.Short;
+import java.lang.UnsupportedOperationException;
 import javax.annotation.processing.Generated;
 
 @Generated("dev.khbd.lens4j.processor.LensProcessor")
@@ -48,5 +49,6 @@ public final class WithPrimitiveLenses {
     public static final ReadWriteLens<WithPrimitive, Boolean> BOOL_READ_WRITE_LENS = Lenses.readWriteLens(WithPrimitive::getBool, WithPrimitive::setBool);
 
     private WithPrimitiveLenses() {
+        throw new UnsupportedOperationException("Can not create instance of factory class");
     }
 }

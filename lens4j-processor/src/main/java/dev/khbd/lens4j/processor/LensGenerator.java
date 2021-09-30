@@ -30,6 +30,8 @@ import java.util.Map;
  */
 public class LensGenerator {
 
+    private static final String UNSUPPORTED_METHOD_MSG = "Can not create instance of factory class";
+
     private final Types typeUtils;
 
     public LensGenerator(Types typeUtils) {
@@ -136,6 +138,10 @@ public class LensGenerator {
     private MethodSpec makeConstructor() {
         return MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PRIVATE)
+                .addStatement("throw new $T($S)",
+                        ClassName.get(UnsupportedOperationException.class),
+                        UNSUPPORTED_METHOD_MSG
+                )
                 .build();
     }
 }
