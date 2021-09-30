@@ -1,7 +1,7 @@
 package dev.khbd.lens4j.processor;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,8 +23,8 @@ public final class ProcessorUtils {
      * @param classElement class element
      * @return top level class for specified one
      */
-    public static Element getTopLevelClass(Element classElement) {
-        List<Element> classes = getAllEnclosingClasses(classElement);
+    public static TypeElement getTopLevelClass(TypeElement classElement) {
+        List<TypeElement> classes = getAllEnclosingClasses(classElement);
         return classes.get(0);
     }
 
@@ -44,14 +44,14 @@ public final class ProcessorUtils {
      * @param classElement class to start
      * @return all classes up to top level
      */
-    public static List<Element> getAllEnclosingClasses(Element classElement) {
-        List<Element> classes = new ArrayList<>();
+    public static List<TypeElement> getAllEnclosingClasses(TypeElement classElement) {
+        List<TypeElement> classes = new ArrayList<>();
         classes.add(classElement);
 
-        Element current = classElement;
+        TypeElement current = classElement;
 
         while (current.getEnclosingElement().getKind() != ElementKind.PACKAGE) {
-            current = current.getEnclosingElement();
+            current = (TypeElement) current.getEnclosingElement();
             classes.add(current);
         }
 

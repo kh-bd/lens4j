@@ -106,7 +106,7 @@ public class LensProcessor extends AbstractProcessor {
         }
     }
 
-    private FactoryMeta makeFactoryMetaFromClassElement(Element classElement, GenLenses annotation) {
+    private FactoryMeta makeFactoryMetaFromClassElement(TypeElement classElement, GenLenses annotation) {
         checkLensPath(classElement, List.of(annotation.lenses()));
 
         FactoryMeta factory = new FactoryMeta(getPackage(classElement),
@@ -136,7 +136,7 @@ public class LensProcessor extends AbstractProcessor {
         }
     }
 
-    private String makeFactoryName(Element classElement, GenLenses annotation) {
+    private String makeFactoryName(TypeElement classElement, GenLenses annotation) {
         String factoryName = annotation.factoryName();
         if (StringUtils.isBlank(factoryName)) {
             return deriveFactoryName(classElement);
@@ -144,18 +144,18 @@ public class LensProcessor extends AbstractProcessor {
         return StringUtils.capitalize(factoryName);
     }
 
-    private String deriveFactoryName(Element classElement) {
-        String joinedClassNames = ProcessorUtils.getAllClasses(classElement).stream()
+    private String deriveFactoryName(TypeElement classElement) {
+        String joinedClassNames = ProcessorUtils.getAllEnclosingClasses(classElement).stream()
                 .map(Element::getSimpleName)
                 .collect(Collectors.joining());
         return joinedClassNames + DEFAULT_FACTORY_SUFFIX;
     }
 
-    private Set<Modifier> getClassModifiers(Element classElement) {
+    private Set<Modifier> getClassModifiers(TypeElement classElement) {
         Set<Modifier> modifiers = new HashSet<>();
         modifiers.add(Modifier.FINAL);
 
-        Element topLevelClass = ProcessorUtils.getTopLevelClass(classElement);
+        TypeElement topLevelClass = ProcessorUtils.getTopLevelClass(classElement);
         if (topLevelClass.getModifiers().contains(Modifier.PUBLIC)) {
             modifiers.add(Modifier.PUBLIC);
         }

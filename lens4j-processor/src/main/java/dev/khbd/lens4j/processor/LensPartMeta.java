@@ -11,7 +11,6 @@ public class LensPartMeta {
     private final TypeMirror propertyType;
     private final String propertyName;
 
-
     public LensPartMeta(TypeMirror sourceType, TypeMirror propertyType, String propertyName) {
         this.sourceType = sourceType;
         this.propertyType = propertyType;
