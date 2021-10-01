@@ -1,10 +1,16 @@
 package dev.khbd.lens4j.processor;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Sergei_Khadanovich
@@ -58,5 +64,31 @@ public final class ProcessorUtils {
         Collections.reverse(classes);
 
         return classes;
+    }
+
+    /**
+     * Find non-static field by name in specified class or any super classes.
+     *
+     * @param classElement class to start search
+     * @param fieldName    field name
+     * @return found field or empty
+     */
+    public static Optional<Element> findNonStaticFieldByName(TypeElement classElement,
+                                                             String fieldName) {
+        Optional<Element> fieldOpt =
+                classElement.getEnclosedElements().stream()
+                        .filter(e -> e.getKind() == ElementKind.FIELD)
+                        .filter(e -> !e.getModifiers().contains(Modifier.STATIC))
+                        .filter(e -> e.getSimpleName().toString().equals(fieldName))
+                        .map(Element.class::cast)
+                        .findFirst();
+        return fieldOpt.or(() -> {
+            TypeMirror superType = classElement.getSuperclass();
+            if (superType.getKind() == TypeKind.NONE) {
+                return Optional.empty();
+            }
+            DeclaredType declaredType = (DeclaredType) superType;
+            return findNonStaticFieldByName((TypeElement) declaredType.asElement(), fieldName);
+        });
     }
 }

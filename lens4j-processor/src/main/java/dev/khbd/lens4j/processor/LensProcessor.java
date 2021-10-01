@@ -162,21 +162,21 @@ public class LensProcessor extends AbstractProcessor {
         return modifiers;
     }
 
-    private String getPackage(Element classElement) {
+    private String getPackage(TypeElement classElement) {
         return elementUtil.getPackageOf(classElement).toString();
     }
 
-    private LensMeta makeLensMeta(Element classElement, Lens annotation) {
+    private LensMeta makeLensMeta(TypeElement classElement, Lens annotation) {
         String path = annotation.path();
         String[] properties = path.split("\\.");
         String lensName = makeLensName(annotation.lensName(), annotation.type(), properties);
 
         LensMeta meta = new LensMeta(lensName, annotation.type());
-        Element currentClassElement = classElement;
+        TypeElement currentClassElement = classElement;
 
         for (int i = 0; i < properties.length; i++) {
             String property = properties[i];
-            Element field = findFieldByName(property, currentClassElement);
+            Element field = findFieldByName(currentClassElement, property);
             LensPartMeta part = new LensPartMeta(currentClassElement.asType(), field.asType(), property);
             meta.addLensPart(part);
 
@@ -188,10 +188,11 @@ public class LensProcessor extends AbstractProcessor {
         return meta;
     }
 
-    private Element resolveFieldClass(Element classElement, TypeMirror fieldType) {
+    private TypeElement resolveFieldClass(Element classElement, TypeMirror fieldType) {
         TypeKind kind = fieldType.getKind();
         if (kind == TypeKind.DECLARED) {
-            return ((DeclaredType) fieldType).asElement();
+            DeclaredType declaredType = (DeclaredType) fieldType;
+            return (TypeElement) declaredType.asElement();
         }
         throw new LensProcessingException(MessageFactory.nonDeclaredTypeFound(classElement));
     }
@@ -213,14 +214,8 @@ public class LensProcessor extends AbstractProcessor {
                 .collect(Collectors.joining("_"));
     }
 
-    private Element findFieldByName(String fieldName, Element classElement) {
-        DeclaredType type = (DeclaredType) classElement.asType();
-
-        return elementUtil.getAllMembers((TypeElement) type.asElement()).stream()
-                .filter(it -> it.getKind() == ElementKind.FIELD)
-                .filter(it -> !it.getModifiers().contains(Modifier.STATIC))
-                .filter(it -> it.getSimpleName().toString().equalsIgnoreCase(fieldName))
-                .findFirst()
+    private Element findFieldByName(TypeElement classElement, String fieldName) {
+        return ProcessorUtils.findNonStaticFieldByName(classElement, fieldName)
                 .orElseThrow(() -> new LensProcessingException(MessageFactory.fieldNotFound(classElement, fieldName)));
     }
 
