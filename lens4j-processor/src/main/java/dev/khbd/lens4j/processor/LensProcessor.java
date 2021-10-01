@@ -145,7 +145,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private String deriveFactoryName(TypeElement classElement) {
-        String joinedClassNames = ProcessorUtils.getAllEnclosingClasses(classElement).stream()
+        String joinedClassNames = ProcessorUtils.getNestedHierarchy(classElement).stream()
                 .map(Element::getSimpleName)
                 .collect(Collectors.joining());
         return joinedClassNames + DEFAULT_FACTORY_SUFFIX;

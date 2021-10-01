@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @author Sergei_Khadanovich
@@ -30,8 +31,7 @@ public final class ProcessorUtils {
      * @return top level class for specified one
      */
     public static TypeElement getTopLevelClass(TypeElement classElement) {
-        List<TypeElement> classes = getAllEnclosingClasses(classElement);
-        return classes.get(0);
+        return getNestedHierarchy(classElement).getHighest();
     }
 
     /**
@@ -45,12 +45,12 @@ public final class ProcessorUtils {
      *      }
      *  }
      * }</pre>
-     * {@code getAllEnclosingClasses(Inner2) == [Outer, Inner1, Inner2] }
+     * {@code getNestedHierarchy(Inner2) == [Outer, Inner1, Inner2] }
      *
      * @param classElement class to start
      * @return all classes up to top level
      */
-    public static List<TypeElement> getAllEnclosingClasses(TypeElement classElement) {
+    public static LinerHierarchy<TypeElement> getNestedHierarchy(TypeElement classElement) {
         List<TypeElement> classes = new ArrayList<>();
         classes.add(classElement);
 
@@ -63,7 +63,7 @@ public final class ProcessorUtils {
 
         Collections.reverse(classes);
 
-        return classes;
+        return new LinerHierarchy<>(classes);
     }
 
     /**
@@ -75,20 +75,28 @@ public final class ProcessorUtils {
      */
     public static Optional<Element> findNonStaticFieldByName(TypeElement classElement,
                                                              String fieldName) {
-        Optional<Element> fieldOpt =
-                classElement.getEnclosedElements().stream()
-                        .filter(e -> e.getKind() == ElementKind.FIELD)
-                        .filter(e -> !e.getModifiers().contains(Modifier.STATIC))
-                        .filter(e -> e.getSimpleName().toString().equals(fieldName))
-                        .map(Element.class::cast)
-                        .findFirst();
-        return fieldOpt.or(() -> {
+        return findNonStaticFieldInClass(classElement, fieldName)
+                .or(findNonStaticFieldInSuperClass(classElement, fieldName));
+    }
+
+    private static Optional<Element> findNonStaticFieldInClass(TypeElement classElement, String fieldName) {
+        return classElement.getEnclosedElements().stream()
+                .filter(e -> e.getKind() == ElementKind.FIELD)
+                .filter(e -> !e.getModifiers().contains(Modifier.STATIC))
+                .filter(e -> e.getSimpleName().toString().equals(fieldName))
+                .map(Element.class::cast)
+                .findFirst();
+    }
+
+    private static Supplier<Optional<Element>> findNonStaticFieldInSuperClass(TypeElement classElement,
+                                                                              String fieldName) {
+        return () -> {
             TypeMirror superType = classElement.getSuperclass();
             if (superType.getKind() == TypeKind.NONE) {
                 return Optional.empty();
             }
             DeclaredType declaredType = (DeclaredType) superType;
             return findNonStaticFieldByName((TypeElement) declaredType.asElement(), fieldName);
-        });
+        };
     }
 }
