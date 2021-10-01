@@ -21,6 +21,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import java.io.IOException;
 import java.util.HashSet;
@@ -176,25 +177,34 @@ public class LensProcessor extends AbstractProcessor {
 
         for (int i = 0; i < properties.length; i++) {
             String property = properties[i];
+
             Element field = findFieldByName(currentClassElement, property);
-            LensPartMeta part = new LensPartMeta(currentClassElement.asType(), field.asType(), property);
+            TypeMirror fieldType = resolveFieldType(currentClassElement, field);
+
+            LensPartMeta part = new LensPartMeta(currentClassElement.asType(), fieldType, property);
             meta.addLensPart(part);
 
             if (i != properties.length - 1) { // not last element in path
-                currentClassElement = resolveFieldClass(classElement, field.asType());
+                if (fieldType.getKind() != TypeKind.DECLARED) {
+                    throw new LensProcessingException(MessageFactory.nonDeclaredTypeFound(classElement));
+                }
+                DeclaredType declaredType = (DeclaredType) fieldType;
+                currentClassElement = (TypeElement) declaredType.asElement();
             }
         }
 
         return meta;
     }
 
-    private TypeElement resolveFieldClass(Element classElement, TypeMirror fieldType) {
-        TypeKind kind = fieldType.getKind();
-        if (kind == TypeKind.DECLARED) {
-            DeclaredType declaredType = (DeclaredType) fieldType;
-            return (TypeElement) declaredType.asElement();
+    private TypeMirror resolveFieldType(TypeElement classElement, Element field) {
+        TypeMirror fieldType = field.asType();
+        if (fieldType.getKind() == TypeKind.TYPEVAR) {
+            TypeVariable typeVariable = (TypeVariable) fieldType;
+            return new FieldGenericTypeResolver(classElement)
+                    .resolveGenericType((TypeElement) field.getEnclosingElement(),
+                            typeVariable);
         }
-        throw new LensProcessingException(MessageFactory.nonDeclaredTypeFound(classElement));
+        return fieldType;
     }
 
     private String makeLensName(String userLensName, LensType lensType, String[] properties) {

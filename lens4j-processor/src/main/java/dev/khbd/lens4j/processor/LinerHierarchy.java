@@ -2,6 +2,7 @@ package dev.khbd.lens4j.processor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -31,11 +32,35 @@ public class LinerHierarchy<E> {
     }
 
     /**
+     * Find first element under specified in a hierarchy.
+     *
+     * @param element element
+     * @return first element under specified
+     */
+    public Optional<E> findFirstUnder(E element) {
+        int index = elements.indexOf(element);
+        if (index == -1) {
+            throw new IllegalStateException("Element is not in hierarchy");
+        }
+        if (index == elements.size() - 1) {
+            return Optional.empty();
+        }
+        return Optional.of(elements.get(index + 1));
+    }
+
+    /**
      * Get stream of all elements in hierarchy.
      *
      * @return stream of all elements
      */
     public Stream<E> stream() {
         return elements.stream();
+    }
+
+    @Override
+    public String toString() {
+        return "LinerHierarchy{" +
+                "elements=" + elements +
+                '}';
     }
 }

@@ -45,7 +45,7 @@ public final class ProcessorUtils {
      *      }
      *  }
      * }</pre>
-     * {@code getNestedHierarchy(Inner2) == [Outer, Inner1, Inner2] }
+     * {@code getNestedHierarchy(Inner2) == [Outer -> Inner1 -> Inner2] }
      *
      * @param classElement class to start
      * @return all classes up to top level
@@ -98,5 +98,37 @@ public final class ProcessorUtils {
             DeclaredType declaredType = (DeclaredType) superType;
             return findNonStaticFieldByName((TypeElement) declaredType.asElement(), fieldName);
         };
+    }
+
+    /**
+     * Get all super classes up to {@code Object}.
+     *
+     * <p>For example, suppose we have several classes
+     * <pre>{@code
+     *  class Parent {
+     *  }
+     *  class Child extends Parent {
+     *  }
+     * }</pre>
+     * {@code getInheritanceHierarchy(Child) == [Object -> Parent -> Child] }
+     *
+     * @param classElement class to start
+     * @return all classes up to object
+     */
+    public static LinerHierarchy<TypeElement> getInheritanceHierarchy(TypeElement classElement) {
+        List<TypeElement> classes = new ArrayList<>();
+        classes.add(classElement);
+
+        TypeElement current = classElement;
+
+        while (current.getSuperclass().getKind() != TypeKind.NONE) {
+            DeclaredType superType = (DeclaredType) current.getSuperclass();
+            current = (TypeElement) superType.asElement();
+            classes.add(current);
+        }
+
+        Collections.reverse(classes);
+
+        return new LinerHierarchy<>(classes);
     }
 }
