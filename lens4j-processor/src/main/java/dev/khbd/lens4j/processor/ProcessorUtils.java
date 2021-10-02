@@ -1,10 +1,17 @@
 package dev.khbd.lens4j.processor;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @author Sergei_Khadanovich
@@ -24,8 +31,7 @@ public final class ProcessorUtils {
      * @return top level class for specified one
      */
     public static TypeElement getTopLevelClass(TypeElement classElement) {
-        List<TypeElement> classes = getAllEnclosingClasses(classElement);
-        return classes.get(0);
+        return getNestedHierarchy(classElement).getHighest();
     }
 
     /**
@@ -39,12 +45,12 @@ public final class ProcessorUtils {
      *      }
      *  }
      * }</pre>
-     * {@code getAllEnclosingClasses(Inner2) == [Outer, Inner1, Inner2] }
+     * {@code getNestedHierarchy(Inner2) == [Outer -> Inner1 -> Inner2] }
      *
      * @param classElement class to start
      * @return all classes up to top level
      */
-    public static List<TypeElement> getAllEnclosingClasses(TypeElement classElement) {
+    public static LinerHierarchy<TypeElement> getNestedHierarchy(TypeElement classElement) {
         List<TypeElement> classes = new ArrayList<>();
         classes.add(classElement);
 
@@ -57,6 +63,72 @@ public final class ProcessorUtils {
 
         Collections.reverse(classes);
 
-        return classes;
+        return new LinerHierarchy<>(classes);
+    }
+
+    /**
+     * Find non-static field by name in specified class or any super classes.
+     *
+     * @param classElement class to start search
+     * @param fieldName    field name
+     * @return found field or empty
+     */
+    public static Optional<Element> findNonStaticFieldByName(TypeElement classElement,
+                                                             String fieldName) {
+        return findNonStaticFieldInClass(classElement, fieldName)
+                .or(findNonStaticFieldInSuperClass(classElement, fieldName));
+    }
+
+    private static Optional<Element> findNonStaticFieldInClass(TypeElement classElement, String fieldName) {
+        return classElement.getEnclosedElements().stream()
+                .filter(e -> e.getKind() == ElementKind.FIELD)
+                .filter(e -> !e.getModifiers().contains(Modifier.STATIC))
+                .filter(e -> e.getSimpleName().toString().equals(fieldName))
+                .map(Element.class::cast)
+                .findFirst();
+    }
+
+    private static Supplier<Optional<Element>> findNonStaticFieldInSuperClass(TypeElement classElement,
+                                                                              String fieldName) {
+        return () -> {
+            TypeMirror superType = classElement.getSuperclass();
+            if (superType.getKind() == TypeKind.NONE) {
+                return Optional.empty();
+            }
+            DeclaredType declaredType = (DeclaredType) superType;
+            return findNonStaticFieldByName((TypeElement) declaredType.asElement(), fieldName);
+        };
+    }
+
+    /**
+     * Get all super classes up to {@code Object}.
+     *
+     * <p>For example, suppose we have several classes
+     * <pre>{@code
+     *  class Parent {
+     *  }
+     *  class Child extends Parent {
+     *  }
+     * }</pre>
+     * {@code getInheritanceHierarchy(Child) == [Object -> Parent -> Child] }
+     *
+     * @param classElement class to start
+     * @return all classes up to object
+     */
+    public static LinerHierarchy<TypeElement> getInheritanceHierarchy(TypeElement classElement) {
+        List<TypeElement> classes = new ArrayList<>();
+        classes.add(classElement);
+
+        TypeElement current = classElement;
+
+        while (current.getSuperclass().getKind() != TypeKind.NONE) {
+            DeclaredType superType = (DeclaredType) current.getSuperclass();
+            current = (TypeElement) superType.asElement();
+            classes.add(current);
+        }
+
+        Collections.reverse(classes);
+
+        return new LinerHierarchy<>(classes);
     }
 }
