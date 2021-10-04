@@ -157,7 +157,7 @@ For maven-based projects, add the following to your `pom.xml` file:
 ```xml
 <!-- version property -->
 <properties>
-    <lens4j.version>0.1.3</lens4j.version>
+    <lens4j.version>0.1.4</lens4j.version>
 </properties>
 ```
 
