@@ -3,6 +3,7 @@ package dev.khbd.lens4j.processor;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeVariable;
 
 /**
@@ -11,6 +12,10 @@ import javax.lang.model.type.TypeVariable;
 public final class MessageFactory {
 
     private MessageFactory() {
+    }
+
+    public static Message unsupportedTypeKind(TypeKind typeKind) {
+        return Message.of("Unsupported type kind: " + typeKind);
     }
 
     public static Message actualTypeParameterNotFound(DeclaredType classType, int index) {
