@@ -301,7 +301,7 @@ public class LensProcessorTest {
 
     @Test
     public void generate_classIsGeneric_compilationError() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/generic_class/GenericClass.java");
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/generic/generic_class/GenericClass.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
                         .compile(fileObject);

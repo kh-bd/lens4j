@@ -200,8 +200,8 @@ public class LensProcessor extends AbstractProcessor {
         TypeMirror fieldType = field.asType();
         if (fieldType.getKind() == TypeKind.TYPEVAR) {
             TypeVariable typeVariable = (TypeVariable) fieldType;
-            return new FieldGenericTypeResolver(classElement)
-                    .resolveGenericType((TypeElement) field.getEnclosingElement(),
+            return new TypeVariableResolver(classElement)
+                    .resolveType((TypeElement) field.getEnclosingElement(),
                             typeVariable);
         }
         return fieldType;

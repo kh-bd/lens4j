@@ -11,58 +11,58 @@ import java.util.List;
 /**
  * @author Sergei_Khadanovich
  */
-public class FieldGenericTypeResolver {
+public class TypeVariableResolver {
 
     private final LinerHierarchy<TypeElement> hierarchy;
 
-    public FieldGenericTypeResolver(TypeElement rootClass) {
+    public TypeVariableResolver(TypeElement rootClass) {
         this.hierarchy = ProcessorUtils.getInheritanceHierarchy(rootClass);
     }
 
     /**
      * Resolve actual type of type variable.
      *
-     * @param fieldClass field containing class
-     * @param fieldType  field type variable
+     * @param typeVarClass class containing type variable
+     * @param typeVar      type variable
      * @return resolved type
      */
-    public TypeMirror resolveGenericType(TypeElement fieldClass,
-                                         TypeVariable fieldType) {
-        int index = findFormalParameterIndex(fieldClass, fieldType);
-        return resolveGenericTypeByIndex(hierarchy, fieldClass, index);
+    public TypeMirror resolveType(TypeElement typeVarClass,
+                                  TypeVariable typeVar) {
+        int index = findFormalParameterIndex(typeVarClass, typeVar);
+        return resolveTypeVariableByIndex(hierarchy, typeVarClass, index);
     }
 
-    private TypeMirror resolveGenericTypeByIndex(LinerHierarchy<TypeElement> hierarchy,
-                                                 TypeElement fieldClass,
-                                                 int index) {
-        TypeElement child = hierarchy.findFirstUnder(fieldClass)
-                .orElseThrow(() -> new LensProcessingException(MessageFactory.noSubClassInHierarchy(fieldClass)));
+    private TypeMirror resolveTypeVariableByIndex(LinerHierarchy<TypeElement> hierarchy,
+                                                  TypeElement typeVarClass,
+                                                  int index) {
+        TypeElement child = hierarchy.findFirstUnder(typeVarClass)
+                .orElseThrow(() -> new LensProcessingException(MessageFactory.noSubClassInHierarchy(typeVarClass)));
 
         DeclaredType childSuperClassType = (DeclaredType) child.getSuperclass();
 
         TypeMirror actualParameterType = findActualParameterByIndex(childSuperClassType, index);
         if (actualParameterType.getKind() == TypeKind.TYPEVAR) {
             int childIndex = findFormalParameterIndex(child, (TypeVariable) actualParameterType);
-            return resolveGenericTypeByIndex(hierarchy, child, childIndex);
+            return resolveTypeVariableByIndex(hierarchy, child, childIndex);
         }
 
         return actualParameterType;
     }
 
-    private int findFormalParameterIndex(TypeElement classElement,
-                                         TypeVariable type) {
-        List<? extends TypeParameterElement> parameters = classElement.getTypeParameters();
+    private int findFormalParameterIndex(TypeElement typeVarClass,
+                                         TypeVariable typeVar) {
+        List<? extends TypeParameterElement> parameters = typeVarClass.getTypeParameters();
         for (int i = 0; i < parameters.size(); i++) {
             TypeParameterElement parameter = parameters.get(i);
-            if (matches(parameter, type)) {
+            if (matches(parameter, typeVar)) {
                 return i;
             }
         }
-        throw new LensProcessingException(MessageFactory.formalTypeParameterWasNotFound(classElement, type));
+        throw new LensProcessingException(MessageFactory.formalTypeParameterWasNotFound(typeVarClass, typeVar));
     }
 
-    private boolean matches(TypeParameterElement parameter, TypeVariable type) {
-        return parameter.toString().equals(type.toString());
+    private boolean matches(TypeParameterElement parameter, TypeVariable typeVariable) {
+        return parameter.toString().equals(typeVariable.toString());
     }
 
     private TypeMirror findActualParameterByIndex(DeclaredType classType,
