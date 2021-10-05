@@ -13,11 +13,6 @@ public final class MessageFactory {
     private MessageFactory() {
     }
 
-    public static Message noSubClassInHierarchy(TypeElement classElement) {
-        String msg = String.format("There is no sub class of %s in hierarchy", classElement);
-        return Message.of(msg, classElement);
-    }
-
     public static Message actualTypeParameterNotFound(DeclaredType classType, int index) {
         String msg = String.format("Type %s does not have type parameter at index %d", classType.toString(), index);
         return Message.of(msg, classType.asElement());
