@@ -17,6 +17,22 @@ import java.util.List;
 public class LensProcessorTest {
 
     @Test
+    public void generate_fieldTypeIsDeclaredWithKnownTypeVar_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(List.of(
+                                JavaFileObjects.forResource("cases/generic/field_type_declared_with_known_type_param/Box.java"),
+                                JavaFileObjects.forResource("cases/generic/field_type_declared_with_known_type_param/Payment.java"),
+                                JavaFileObjects.forResource("common/Currency.java")
+                        ));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/generic/field_type_declared_with_known_type_param/PaymentLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/field_type_declared_with_known_type_param/PaymentLenses.java"));
+    }
+
+    @Test
     public void generate_genericResolvedToGenericBasedType_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
@@ -33,7 +49,6 @@ public class LensProcessorTest {
                 .generatedSourceFile("cases/generic/type_resolved_to_generic_based_type/CurrencyPairLenses")
                 .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type/CurrencyPairLenses.java"));
     }
-
 
     @Test
     public void generate_childResolveGenericWithSimpleClass_generateValidFactory() {
@@ -301,7 +316,7 @@ public class LensProcessorTest {
 
     @Test
     public void generate_classIsGeneric_compilationError() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/generic_class/GenericClass.java");
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/generic/generic_class/GenericClass.java");
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
                         .compile(fileObject);

@@ -1,4 +1,4 @@
-package cases.generic_class;
+package cases.generic.generic_class;
 
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;

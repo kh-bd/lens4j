@@ -1,17 +1,17 @@
 package dev.khbd.lens4j.processor;
 
-import javax.lang.model.type.TypeMirror;
-
 /**
  * @author Alexey_Bodyak
  */
 public class LensPartMeta {
 
-    private final TypeMirror sourceType;
-    private final TypeMirror propertyType;
+    private final ResolvedParametrizedTypeMirror sourceType;
+    private final ResolvedParametrizedTypeMirror propertyType;
     private final String propertyName;
 
-    public LensPartMeta(TypeMirror sourceType, TypeMirror propertyType, String propertyName) {
+    public LensPartMeta(ResolvedParametrizedTypeMirror sourceType,
+                        ResolvedParametrizedTypeMirror propertyType,
+                        String propertyName) {
         this.sourceType = sourceType;
         this.propertyType = propertyType;
         this.propertyName = propertyName;
@@ -22,7 +22,7 @@ public class LensPartMeta {
      *
      * @return source type mirror
      */
-    public TypeMirror getSourceType() {
+    public ResolvedParametrizedTypeMirror getSourceType() {
         return sourceType;
     }
 
@@ -31,7 +31,7 @@ public class LensPartMeta {
      *
      * @return property type mirror
      */
-    public TypeMirror getPropertyType() {
+    public ResolvedParametrizedTypeMirror getPropertyType() {
         return propertyType;
     }
 

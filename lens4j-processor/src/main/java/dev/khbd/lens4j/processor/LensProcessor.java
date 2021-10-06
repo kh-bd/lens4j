@@ -21,7 +21,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import java.io.IOException;
 import java.util.HashSet;
@@ -173,22 +172,26 @@ public class LensProcessor extends AbstractProcessor {
         String lensName = makeLensName(annotation.lensName(), annotation.type(), properties);
 
         LensMeta meta = new LensMeta(lensName, annotation.type());
+
         TypeElement currentClassElement = classElement;
+        ResolvedParametrizedTypeMirror currentClassType = new ResolvedParametrizedTypeMirror(currentClassElement.asType());
 
         for (int i = 0; i < properties.length; i++) {
             String property = properties[i];
 
             Element field = findFieldByName(currentClassElement, property);
-            TypeMirror fieldType = resolveFieldType(currentClassElement, field);
+            ResolvedParametrizedTypeMirror fieldType = resolveFieldType(currentClassElement, currentClassType, field);
 
-            LensPartMeta part = new LensPartMeta(currentClassElement.asType(), fieldType, property);
+            LensPartMeta part = new LensPartMeta(currentClassType, fieldType, property);
             meta.addLensPart(part);
 
             if (i != properties.length - 1) { // not last element in path
-                if (fieldType.getKind() != TypeKind.DECLARED) {
+                if (fieldType.getTypeMirror().getKind() != TypeKind.DECLARED) {
                     throw new LensProcessingException(MessageFactory.nonDeclaredTypeFound(classElement));
                 }
-                DeclaredType declaredType = (DeclaredType) fieldType;
+                currentClassType = fieldType;
+
+                DeclaredType declaredType = (DeclaredType) fieldType.getTypeMirror();
                 currentClassElement = (TypeElement) declaredType.asElement();
             }
         }
@@ -196,15 +199,12 @@ public class LensProcessor extends AbstractProcessor {
         return meta;
     }
 
-    private TypeMirror resolveFieldType(TypeElement classElement, Element field) {
+    private ResolvedParametrizedTypeMirror resolveFieldType(TypeElement classElement,
+                                                            ResolvedParametrizedTypeMirror currentClassType,
+                                                            Element field) {
         TypeMirror fieldType = field.asType();
-        if (fieldType.getKind() == TypeKind.TYPEVAR) {
-            TypeVariable typeVariable = (TypeVariable) fieldType;
-            return new FieldGenericTypeResolver(classElement)
-                    .resolveGenericType((TypeElement) field.getEnclosingElement(),
-                            typeVariable);
-        }
-        return fieldType;
+        return new TypeResolver(classElement, currentClassType.getActualTypeArguments())
+                .resolveType((TypeElement) field.getEnclosingElement(), fieldType);
     }
 
     private String makeLensName(String userLensName, LensType lensType, String[] properties) {

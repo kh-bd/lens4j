@@ -17,9 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.Generated;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import java.util.Map;
 
@@ -32,10 +29,10 @@ public class LensGenerator {
 
     private static final String UNSUPPORTED_METHOD_MSG = "Can not create instance of factory class";
 
-    private final Types typeUtils;
+    private final TypeNameBuilder typeNameBuilder;
 
     public LensGenerator(Types typeUtils) {
-        this.typeUtils = typeUtils;
+        this.typeNameBuilder = new TypeNameBuilder(typeUtils);
     }
 
     /**
@@ -91,7 +88,7 @@ public class LensGenerator {
     private CodeBlock makeLensCodeBlock(LensPartMeta lensPartMeta, LensType lensType) {
         Map<String, Object> params = Map.of(
                 "lenses", ClassName.get(Lenses.class),
-                "sourceType", TypeName.get(lensPartMeta.getSourceType()),
+                "sourceType", typeNameBuilder.buildTypeName(lensPartMeta.getSourceType()),
                 "fieldName", StringUtils.capitalize(lensPartMeta.getPropertyName())
         );
         return CodeBlock.builder()
@@ -123,25 +120,17 @@ public class LensGenerator {
     private TypeName makeLensReadType(LensMeta lensMeta) {
         return ParameterizedTypeName.get(
                 ClassName.get(ReadLens.class),
-                TypeName.get(lensMeta.getFirstLensPart().getSourceType()),
-                resolvePropertyType(lensMeta.getLastLensPart().getPropertyType())
+                typeNameBuilder.buildTypeName(lensMeta.getFirstLensPart().getSourceType()),
+                typeNameBuilder.buildTypeName(lensMeta.getLastLensPart().getPropertyType())
         );
     }
 
     private TypeName makeLensReadWriteType(LensMeta lensMeta) {
         return ParameterizedTypeName.get(
                 ClassName.get(ReadWriteLens.class),
-                TypeName.get(lensMeta.getFirstLensPart().getSourceType()),
-                resolvePropertyType(lensMeta.getLastLensPart().getPropertyType())
+                typeNameBuilder.buildTypeName(lensMeta.getFirstLensPart().getSourceType()),
+                typeNameBuilder.buildTypeName(lensMeta.getLastLensPart().getPropertyType())
         );
-    }
-
-    private TypeName resolvePropertyType(TypeMirror typeMirror) {
-        TypeKind typeKind = typeMirror.getKind();
-        if (typeKind.isPrimitive()) {
-            return TypeName.get(typeUtils.boxedClass((PrimitiveType) typeMirror).asType());
-        }
-        return TypeName.get(typeMirror);
     }
 
     private MethodSpec makeConstructor() {

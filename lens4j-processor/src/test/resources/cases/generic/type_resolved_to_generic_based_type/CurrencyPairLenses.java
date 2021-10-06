@@ -11,7 +11,7 @@ import javax.annotation.processing.Generated;
 final class CurrencyPairLenses {
     public static final ReadLens<CurrencyPair, String> LEFT_VALUE_CODE_READ_LENS = Lenses.readLens(CurrencyPair::getLeft).andThen(Lenses.readLens(BoxedCurrency::getValue)).andThen(Lenses.readLens(Currency::getCode));
 
-    public static final ReadLens<CurrencyPair, String> RIGHT_VALUE_CODE_READ_LENS = Lenses.readLens(CurrencyPair::getRight).andThen(Lenses.readLens(BoxedCurrency::getValue)).andThen(Lenses.readLens(Currency::getCode));
+    public static final ReadLens<CurrencyPair, String> RIGHT_VALUE_CODE_READ_LENS = Lenses.readLens(CurrencyPair::getRight).andThen(Lenses.readLens(Box<Currency>::getValue)).andThen(Lenses.readLens(Currency::getCode));
 
     private CurrencyPairLenses() {
         throw new UnsupportedOperationException("Can not create instance of factory class");
