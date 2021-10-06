@@ -17,6 +17,23 @@ import java.util.List;
 public class LensProcessorTest {
 
     @Test
+    public void generate_genericHasProjectionAtDeclarationSite_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(List.of(
+                                JavaFileObjects.forResource("cases/generic/projection/From.java"),
+                                JavaFileObjects.forResource("cases/generic/projection/StrFrom.java"),
+                                JavaFileObjects.forResource("cases/generic/projection/AbstractPayment.java"),
+                                JavaFileObjects.forResource("cases/generic/projection/Payment.java")
+                        ));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/generic/projection/PaymentLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/projection/PaymentLenses.java"));
+    }
+
+    @Test
     public void generate_fieldTypeIsDeclaredWithKnownTypeVar_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
