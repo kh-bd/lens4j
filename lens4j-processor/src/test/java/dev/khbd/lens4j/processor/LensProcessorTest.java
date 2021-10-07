@@ -34,6 +34,23 @@ public class LensProcessorTest {
     }
 
     @Test
+    public void generate_fieldTypeIsDeclaredWithUnKnownTypeVar_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(List.of(
+                                JavaFileObjects.forResource("cases/generic/field_type_declared_with_unknown_type_param/Box.java"),
+                                JavaFileObjects.forResource("cases/generic/field_type_declared_with_unknown_type_param/AbstractPayment.java"),
+                                JavaFileObjects.forResource("cases/generic/field_type_declared_with_unknown_type_param/Payment.java"),
+                                JavaFileObjects.forResource("common/Currency.java")
+                        ));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/generic/field_type_declared_with_unknown_type_param/PaymentLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/field_type_declared_with_unknown_type_param/PaymentLenses.java"));
+    }
+
+    @Test
     public void generate_fieldTypeIsDeclaredWithKnownTypeVar_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
