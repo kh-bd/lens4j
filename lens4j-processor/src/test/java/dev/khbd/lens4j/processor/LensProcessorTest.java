@@ -34,6 +34,29 @@ public class LensProcessorTest {
     }
 
     @Test
+    public void generate_resolvedTypeIsDeclaredWithUnKnownTypeVar_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(List.of(
+                                JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/Box.java"),
+                                JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/AbstractPayment.java"),
+                                JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/BoxedToPayment.java"),
+                                JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/Payments.java")
+                        ));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/StrPaymentLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/StrPaymentLenses.java"));
+        assertThat(compilation)
+                .generatedSourceFile("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/ArrayPaymentLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/ArrayPaymentLenses.java"));
+        assertThat(compilation)
+                .generatedSourceFile("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/GenPaymentLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/GenPaymentLenses.java"));
+    }
+
+    @Test
     public void generate_fieldTypeIsDeclaredWithUnKnownTypeVar_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
