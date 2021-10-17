@@ -192,3 +192,10 @@ For maven-based projects, add the following to your `pom.xml` file:
     </plugins>
 </build>
 ```
+
+# Intellij IDEA support
+
+***
+
+To add lens4j support for Intellij,
+install [Lens4j intellij plugin](https://github.com/KhadanovichSergey/lens4j-intellij-plugin)
