@@ -9,6 +9,7 @@ import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OperationsPerInvocation;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -23,35 +24,38 @@ import java.util.concurrent.TimeUnit;
 @Fork(value = 1, warmups = 5)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
+@OperationsPerInvocation(ReadBenchmark.OPS)
 public class ReadBenchmark {
 
+    public static final int OPS = 100_000;
+
     @Benchmark
-    public void argumentIsNull_manual(Blackhole hole, PaymentNullState state) {
-        for (int i = 0; i < state.iterations; i++) {
-            String code = PaymentUtil.manualGet(state.payment);
+    public void argumentIsNull_manual(Blackhole hole) {
+        for (int i = 0; i < OPS; i++) {
+            String code = PaymentUtil.manualGet(null);
             hole.consume(code);
         }
     }
 
     @Benchmark
-    public void argumentIsNull_optional(Blackhole hole, PaymentNullState state) {
-        for (int i = 0; i < state.iterations; i++) {
-            String code = PaymentUtil.optionalGet(state.payment);
+    public void argumentIsNull_optional(Blackhole hole) {
+        for (int i = 0; i < OPS; i++) {
+            String code = PaymentUtil.optionalGet(null);
             hole.consume(code);
         }
     }
 
     @Benchmark
-    public void argumentIsNull_lens(Blackhole hole, PaymentNullState state) {
-        for (int i = 0; i < state.iterations; i++) {
-            String code = PaymentUtil.lensGet(state.payment);
+    public void argumentIsNull_lens(Blackhole hole) {
+        for (int i = 0; i < OPS; i++) {
+            String code = PaymentUtil.lensGet(null);
             hole.consume(code);
         }
     }
 
     @Benchmark
     public void allNotNull_manual(Blackhole hole, AllNotNullState state) {
-        for (int i = 0; i < state.iterations; i++) {
+        for (int i = 0; i < OPS; i++) {
             String code = PaymentUtil.manualGet(state.payment);
             hole.consume(code);
         }
@@ -59,7 +63,7 @@ public class ReadBenchmark {
 
     @Benchmark
     public void allNotNull_optional(Blackhole hole, AllNotNullState state) {
-        for (int i = 0; i < state.iterations; i++) {
+        for (int i = 0; i < OPS; i++) {
             String code = PaymentUtil.optionalGet(state.payment);
             hole.consume(code);
         }
@@ -67,23 +71,16 @@ public class ReadBenchmark {
 
     @Benchmark
     public void allNotNull_lens(Blackhole hole, AllNotNullState state) {
-        for (int i = 0; i < state.iterations; i++) {
+        for (int i = 0; i < OPS; i++) {
             String code = PaymentUtil.lensGet(state.payment);
             hole.consume(code);
         }
     }
 
-    public static class ExecutionPlan {
-        public int iterations = 100_000;
+    @State(Scope.Benchmark)
+    public static class AllNotNullState {
+
         public Payment payment;
-    }
-
-    @State(Scope.Benchmark)
-    public static class PaymentNullState extends ExecutionPlan {
-    }
-
-    @State(Scope.Benchmark)
-    public static class AllNotNullState extends ExecutionPlan {
 
         @Setup(Level.Trial)
         public void setUp() {
