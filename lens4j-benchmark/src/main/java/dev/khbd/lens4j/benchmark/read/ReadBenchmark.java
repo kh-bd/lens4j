@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Fork(value = 1, warmups = 5)
 @BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
 @OperationsPerInvocation(ReadBenchmark.OPS)
 public class ReadBenchmark {
 
