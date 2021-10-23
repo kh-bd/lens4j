@@ -197,5 +197,19 @@ For maven-based projects, add the following to your `pom.xml` file:
 
 ***
 
-To add lens4j support for Intellij,
+To add lens4j support to Intellij,
 install [Lens4j intellij plugin](https://github.com/KhadanovichSergey/lens4j-intellij-plugin)
+
+# How to run benchmarks?
+
+***
+
+To run benchmarks do several steps:
+
+- pull project to your machine
+- run from root directory `mvn package -Pbenchmark`
+- go to `lens4j-benchmark/target` directory. `lens4j-benchmark-${version}-jar-with-dependencies.jar` should be generated
+- run
+  command `java -cp ./lens4j-benchmark-${version}-jar-with-dependencies.jar dev.khbd.lens4j.benchmark.BenchmarkRunner -rf json`
+- `jmh-result.json` report should be generated
+- view it through [jmh visualizer](https://jmh.morethan.io/)
