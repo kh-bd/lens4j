@@ -17,6 +17,21 @@ import java.util.List;
 public class LensProcessorTest {
 
     @Test
+    public void generate_userOverrideLensModifiers_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(List.of(
+                                JavaFileObjects.forResource("cases/lens_modifiers/Account.java"),
+                                JavaFileObjects.forResource("common/Currency.java")
+                        ));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/lens_modifiers/AccountLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/lens_modifiers/AccountLenses.java"));
+    }
+
+    @Test
     public void generate_genericHasProjectionAtDeclarationSite_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())

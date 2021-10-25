@@ -23,6 +23,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -171,7 +172,7 @@ public class LensProcessor extends AbstractProcessor {
         String[] properties = path.split("\\.");
         String lensName = makeLensName(annotation.lensName(), annotation.type(), properties);
 
-        LensMeta meta = new LensMeta(lensName, annotation.type());
+        LensMeta meta = new LensMeta(lensName, annotation.type(), getLensModifiers(annotation));
 
         TypeElement currentClassElement = classElement;
         ResolvedParametrizedTypeMirror currentClassType = new ResolvedParametrizedTypeMirror(currentClassElement.asType());
@@ -216,6 +217,19 @@ public class LensProcessor extends AbstractProcessor {
 
     private String deriveLensNameByPath(String[] properties, LensType lensType) {
         return String.format("%s_%s_%s", joinProperties(properties), lensType, LENS_NAME_SUFFIX);
+    }
+
+    private Set<Modifier> getLensModifiers(Lens lens) {
+        Set<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
+
+        modifiers.add(Modifier.FINAL);
+        modifiers.add(Modifier.STATIC);
+
+        if (lens.accessLevel() == Lens.AccessLevel.PUBLIC) {
+            modifiers.add(Modifier.PUBLIC);
+        }
+
+        return modifiers;
     }
 
     private String joinProperties(String[] properties) {
