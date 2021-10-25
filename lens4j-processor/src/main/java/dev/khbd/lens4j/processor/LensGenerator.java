@@ -29,6 +29,11 @@ public class LensGenerator {
 
     private static final String UNSUPPORTED_METHOD_MSG = "Can not create instance of factory class";
 
+    private static final String READ_LENS_CODE_BLOCK_TEMPLATE =
+            "$lenses:T.readLens($sourceType:T::get$fieldName:L)";
+    private static final String READ_WRITE_LENS_CODE_BLOCK_TEMPLATE =
+            "$lenses:T.readWriteLens($sourceType:T::get$fieldName:L, $sourceType:T::set$fieldName:L)";
+
     private final TypeNameBuilder typeNameBuilder;
 
     public LensGenerator(Types typeUtils) {
@@ -64,7 +69,7 @@ public class LensGenerator {
 
     private FieldSpec makeLens(LensMeta lensMeta) {
         return FieldSpec.builder(makeLensType(lensMeta), lensMeta.getLensName())
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                .addModifiers(lensMeta.getModifiers().toArray(Modifier[]::new))
                 .initializer(makeExpression(lensMeta))
                 .build();
     }
@@ -98,16 +103,8 @@ public class LensGenerator {
 
     private String getLensCodeBlockTemplate(LensType lensType) {
         return lensType == LensType.READ
-                ? getReadLensCodeBlockTemplate()
-                : getReadWriteLensCodeBlockTemplate();
-    }
-
-    private String getReadLensCodeBlockTemplate() {
-        return "$lenses:T.readLens($sourceType:T::get$fieldName:L)";
-    }
-
-    private String getReadWriteLensCodeBlockTemplate() {
-        return "$lenses:T.readWriteLens($sourceType:T::get$fieldName:L, $sourceType:T::set$fieldName:L)";
+                ? READ_LENS_CODE_BLOCK_TEMPLATE
+                : READ_WRITE_LENS_CODE_BLOCK_TEMPLATE;
     }
 
     private TypeName makeLensType(LensMeta lensMeta) {

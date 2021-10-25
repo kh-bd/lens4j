@@ -2,8 +2,10 @@ package dev.khbd.lens4j.processor;
 
 import dev.khbd.lens4j.core.annotations.LensType;
 
+import javax.lang.model.element.Modifier;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -16,10 +18,12 @@ public class LensMeta {
     private final String lensName;
     private final LensType lensType;
     private final LinkedList<LensPartMeta> lensParts = new LinkedList<>();
+    private final Set<Modifier> modifiers;
 
-    public LensMeta(String lensName, LensType lensType) {
+    public LensMeta(String lensName, LensType lensType, Set<Modifier> modifiers) {
         this.lensName = lensName;
         this.lensType = lensType;
+        this.modifiers = modifiers;
     }
 
     /**
@@ -50,15 +54,6 @@ public class LensMeta {
     }
 
     /**
-     * Get all lens parts.
-     *
-     * @return all lens parts
-     */
-    public List<LensPartMeta> getLensParts() {
-        return lensParts;
-    }
-
-    /**
      * Get lens parts without first and last element.
      *
      * @return lens parts
@@ -79,21 +74,19 @@ public class LensMeta {
         return lensParts.size() == 1;
     }
 
-    /**
-     * Get lens name.
-     *
-     * @return lens name
-     */
     public String getLensName() {
         return lensName;
     }
 
-    /**
-     * Get lens type.
-     *
-     * @return lens type
-     */
     public LensType getLensType() {
         return lensType;
+    }
+
+    public List<LensPartMeta> getLensParts() {
+        return lensParts;
+    }
+
+    public Set<Modifier> getModifiers() {
+        return modifiers;
     }
 }

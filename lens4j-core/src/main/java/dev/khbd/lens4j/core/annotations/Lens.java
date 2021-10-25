@@ -13,7 +13,7 @@ public @interface Lens {
     String path();
 
     /**
-     * If lensName is empty, it will be generated from {@link Lens#path}.
+     * If lensName is empty, it will be derived from {@link Lens#path}.
      *
      * @return name of lens
      */
@@ -25,4 +25,17 @@ public @interface Lens {
      * @return type of lens
      */
     LensType type() default LensType.READ;
+
+    /**
+     * What access level should be used for lens instance.
+     */
+    AccessLevel accessLevel() default AccessLevel.PUBLIC;
+
+    /**
+     * Lens instance access level.
+     */
+    enum AccessLevel {
+        PUBLIC,
+        PACKAGE
+    }
 }
