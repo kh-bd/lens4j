@@ -53,7 +53,7 @@ public final class MessageFactory {
         return Message.of("Lens names for type should be unique", element);
     }
 
-    public static Message pathIsEmpty(Element element) {
-        return Message.of("Lens path should be not empty", element);
+    public static Message pathIsIncorrect(Element element) {
+        return Message.of("Lens path is incorrect", element);
     }
 }

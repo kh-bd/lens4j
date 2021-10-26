@@ -1,4 +1,4 @@
-package dev.khbd.lens4j.processor;
+package dev.khbd.lens4j.processor.meta;
 
 import dev.khbd.lens4j.core.annotations.LensType;
 

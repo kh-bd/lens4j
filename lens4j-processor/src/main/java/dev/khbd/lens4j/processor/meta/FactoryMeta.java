@@ -1,4 +1,4 @@
-package dev.khbd.lens4j.processor;
+package dev.khbd.lens4j.processor.meta;
 
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;

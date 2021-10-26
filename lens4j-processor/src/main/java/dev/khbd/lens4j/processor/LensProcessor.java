@@ -1,11 +1,12 @@
 package dev.khbd.lens4j.processor;
 
 import com.google.auto.service.AutoService;
-import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.JavaFile;
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
-import dev.khbd.lens4j.core.annotations.LensType;
+import dev.khbd.lens4j.processor.generator.LensGenerator;
+import dev.khbd.lens4j.processor.meta.FactoryMeta;
+import dev.khbd.lens4j.processor.meta.LensMeta;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -18,18 +19,13 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Annotation processor for generating lens.
@@ -40,7 +36,6 @@ import java.util.stream.Stream;
 public class LensProcessor extends AbstractProcessor {
 
     private static final String DEFAULT_FACTORY_SUFFIX = "Lenses";
-    private static final String LENS_NAME_SUFFIX = "LENS";
 
     private LensGenerator lensGenerator;
     private Filer filer;
@@ -108,15 +103,15 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private FactoryMeta makeFactoryMetaFromClassElement(TypeElement classElement, GenLenses annotation) {
-        checkLensPath(classElement, List.of(annotation.lenses()));
-
         FactoryMeta factory = new FactoryMeta(getPackage(classElement),
                 makeFactoryName(classElement, annotation), getClassModifiers(classElement));
 
+        LensMetaBuilder metaBuilder = new LensMetaBuilder(classElement);
         for (Lens lens : annotation.lenses()) {
-            factory.addLens(makeLensMeta(classElement, lens));
+            factory.addLens(metaBuilder.build(lens));
         }
         checkLensNames(classElement, factory.getLenses());
+
         return factory;
     }
 
@@ -125,14 +120,6 @@ public class LensProcessor extends AbstractProcessor {
         for (Map.Entry<String, List<LensMeta>> entry : lensNames.entrySet()) {
             if (entry.getValue().size() > 1) {
                 throw new LensProcessingException(MessageFactory.existNotUniqueLensName(classElement));
-            }
-        }
-    }
-
-    private void checkLensPath(Element classElement, List<Lens> lenses) {
-        for (Lens lens : lenses) {
-            if (StringUtils.isBlank(lens.path())) {
-                throw new LensProcessingException(MessageFactory.pathIsEmpty(classElement));
             }
         }
     }
@@ -165,82 +152,6 @@ public class LensProcessor extends AbstractProcessor {
 
     private String getPackage(TypeElement classElement) {
         return elementUtil.getPackageOf(classElement).toString();
-    }
-
-    private LensMeta makeLensMeta(TypeElement classElement, Lens annotation) {
-        String path = annotation.path();
-        String[] properties = path.split("\\.");
-        String lensName = makeLensName(annotation.lensName(), annotation.type(), properties);
-
-        LensMeta meta = new LensMeta(lensName, annotation.type(), getLensModifiers(annotation));
-
-        TypeElement currentClassElement = classElement;
-        ResolvedParametrizedTypeMirror currentClassType = new ResolvedParametrizedTypeMirror(currentClassElement.asType());
-
-        for (int i = 0; i < properties.length; i++) {
-            String property = properties[i];
-
-            Element field = findFieldByName(currentClassElement, property);
-            ResolvedParametrizedTypeMirror fieldType = resolveFieldType(currentClassElement, currentClassType, field);
-
-            LensPartMeta part = new LensPartMeta(currentClassType, fieldType, property);
-            meta.addLensPart(part);
-
-            if (i != properties.length - 1) { // not last element in path
-                if (fieldType.getTypeMirror().getKind() != TypeKind.DECLARED) {
-                    throw new LensProcessingException(MessageFactory.nonDeclaredTypeFound(classElement));
-                }
-                currentClassType = fieldType;
-
-                DeclaredType declaredType = (DeclaredType) fieldType.getTypeMirror();
-                currentClassElement = (TypeElement) declaredType.asElement();
-            }
-        }
-
-        return meta;
-    }
-
-    private ResolvedParametrizedTypeMirror resolveFieldType(TypeElement classElement,
-                                                            ResolvedParametrizedTypeMirror currentClassType,
-                                                            Element field) {
-        TypeMirror fieldType = field.asType();
-        return new TypeResolver(classElement, currentClassType.getActualTypeArguments())
-                .resolveType((TypeElement) field.getEnclosingElement(), fieldType);
-    }
-
-    private String makeLensName(String userLensName, LensType lensType, String[] properties) {
-        if (StringUtils.isNotBlank(userLensName)) {
-            return userLensName;
-        }
-        return deriveLensNameByPath(properties, lensType);
-    }
-
-    private String deriveLensNameByPath(String[] properties, LensType lensType) {
-        return String.format("%s_%s_%s", joinProperties(properties), lensType, LENS_NAME_SUFFIX);
-    }
-
-    private Set<Modifier> getLensModifiers(Lens lens) {
-        Set<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
-
-        modifiers.add(Modifier.FINAL);
-        modifiers.add(Modifier.STATIC);
-
-        if (lens.accessLevel() == Lens.AccessLevel.PUBLIC) {
-            modifiers.add(Modifier.PUBLIC);
-        }
-
-        return modifiers;
-    }
-
-    private String joinProperties(String[] properties) {
-        return Stream.of(properties)
-                .map(it -> CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, it))
-                .collect(Collectors.joining("_"));
-    }
-
-    private Element findFieldByName(TypeElement classElement, String fieldName) {
-        return ProcessorUtils.findNonStaticFieldByName(classElement, fieldName)
-                .orElseThrow(() -> new LensProcessingException(MessageFactory.fieldNotFound(classElement, fieldName)));
     }
 
     private Set<? extends Element> findLensElements(RoundEnvironment roundEnv) {

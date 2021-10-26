@@ -1,4 +1,4 @@
-package dev.khbd.lens4j.processor;
+package dev.khbd.lens4j.processor.path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

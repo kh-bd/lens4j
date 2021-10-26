@@ -1,4 +1,4 @@
-package dev.khbd.lens4j.processor;
+package dev.khbd.lens4j.processor.path;
 
 import dev.khbd.lens4j.common.Path;
 import dev.khbd.lens4j.common.PathPart;

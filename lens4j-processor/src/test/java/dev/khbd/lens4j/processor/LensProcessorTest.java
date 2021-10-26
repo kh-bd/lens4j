@@ -324,7 +324,7 @@ public class LensProcessorTest {
                         .compile(withPathObjects(fileObject));
 
         assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Lens path should be not empty");
+        assertThat(compilation).hadErrorContaining("Lens path is incorrect");
     }
 
     @Test
