@@ -6,15 +6,17 @@ package dev.khbd.lens4j.processor.meta;
 public class LensPartMeta {
 
     private final ResolvedParametrizedTypeMirror sourceType;
-    private final ResolvedParametrizedTypeMirror propertyType;
-    private final String propertyName;
+    private final ResolvedParametrizedTypeMirror targetType;
+    private final String name;
+
+    private Shape shape = Shape.ACCESSORS;
 
     public LensPartMeta(ResolvedParametrizedTypeMirror sourceType,
-                        ResolvedParametrizedTypeMirror propertyType,
-                        String propertyName) {
+                        ResolvedParametrizedTypeMirror targetType,
+                        String name) {
         this.sourceType = sourceType;
-        this.propertyType = propertyType;
-        this.propertyName = propertyName;
+        this.targetType = targetType;
+        this.name = name;
     }
 
     /**
@@ -31,8 +33,8 @@ public class LensPartMeta {
      *
      * @return property type mirror
      */
-    public ResolvedParametrizedTypeMirror getPropertyType() {
-        return propertyType;
+    public ResolvedParametrizedTypeMirror getTargetType() {
+        return targetType;
     }
 
     /**
@@ -40,7 +42,53 @@ public class LensPartMeta {
      *
      * @return property name
      */
-    public String getPropertyName() {
-        return propertyName;
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Get lens part shape.
+     *
+     * @return part shape
+     */
+    public Shape getShape() {
+        return shape;
+    }
+
+    /**
+     * Change lens part shape.
+     *
+     * @param shape new shape
+     * @return self for chaining
+     */
+    public LensPartMeta withShape(Shape shape) {
+        this.shape = shape;
+        return this;
+    }
+
+    /**
+     * Lens part shape.
+     *
+     * <p>Shape means which way will be used to generated lens parts.
+     */
+    public enum Shape {
+
+        /**
+         * Accessors-based lambda will be used.
+         *
+         * <p>For example, if we have lens part for type {@code O} and {@code name == "property"},
+         * accessors-based read lens will have such structure: <br>
+         * {@code Lenses.readLens(O::getProperty)}
+         */
+        ACCESSORS,
+
+        /**
+         * Method-based lambda will be used.
+         *
+         * <p>For example, if we have lens part for type {@code O} and {@code name == "method"},
+         * method-based read lens will have such structure: <br>
+         * {@code Lenses.readLens(O::method)}
+         */
+        METHOD
     }
 }

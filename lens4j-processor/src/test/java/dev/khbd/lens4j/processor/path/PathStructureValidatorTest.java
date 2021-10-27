@@ -35,8 +35,22 @@ public class PathStructureValidatorTest {
     }
 
     @Test
+    public void validate_startsFromPointButWithMethod_returnFalse() {
+        Path path = pathParser.parse(".pr()");
+
+        assertThat(PathStructureValidator.validate(path)).isFalse();
+    }
+
+    @Test
     public void validate_severalPointsInTheMiddle_returnFalse() {
         Path path = pathParser.parse("pr1...pr2");
+
+        assertThat(PathStructureValidator.validate(path)).isFalse();
+    }
+
+    @Test
+    public void validate_severalPointsInTheMiddleButWithMethod_returnFalse() {
+        Path path = pathParser.parse("pr1()...pr2()");
 
         assertThat(PathStructureValidator.validate(path)).isFalse();
     }
@@ -49,8 +63,22 @@ public class PathStructureValidatorTest {
     }
 
     @Test
+    public void validate_endsWithPointButWithMethods_returnFalse() {
+        Path path = pathParser.parse("pr1().pr2().");
+
+        assertThat(PathStructureValidator.validate(path)).isFalse();
+    }
+
+    @Test
     public void validate_severalProperties_returnTrue() {
         Path path = pathParser.parse("pr1.pr2.pr3.pr4");
+
+        assertThat(PathStructureValidator.validate(path)).isTrue();
+    }
+
+    @Test
+    public void validate_severalMethods_returnTrue() {
+        Path path = pathParser.parse("pr1().pr2().pr3().pr4()");
 
         assertThat(PathStructureValidator.validate(path)).isTrue();
     }

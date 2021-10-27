@@ -9,7 +9,6 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import dev.khbd.lens4j.core.Lenses;
 import dev.khbd.lens4j.core.ReadLens;
 import dev.khbd.lens4j.core.ReadWriteLens;
 import dev.khbd.lens4j.core.annotations.LensType;
@@ -17,31 +16,32 @@ import dev.khbd.lens4j.processor.LensProcessor;
 import dev.khbd.lens4j.processor.meta.FactoryMeta;
 import dev.khbd.lens4j.processor.meta.LensMeta;
 import dev.khbd.lens4j.processor.meta.LensPartMeta;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.Generated;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
+import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Lens generator.
  *
  * @author Alexey_Bodyak
  */
-public class LensGenerator {
+public class LensFactoryGenerator {
 
     private static final String UNSUPPORTED_METHOD_MSG = "Can not create instance of factory class";
 
-    private static final String READ_LENS_CODE_BLOCK_TEMPLATE =
-            "$lenses:T.readLens($sourceType:T::get$fieldName:L)";
-    private static final String READ_WRITE_LENS_CODE_BLOCK_TEMPLATE =
-            "$lenses:T.readWriteLens($sourceType:T::get$fieldName:L, $sourceType:T::set$fieldName:L)";
-
     private final TypeNameBuilder typeNameBuilder;
+    private final Map<LensPartMeta.Shape, LensPartGenerationStrategy> partGenerationStrategies;
 
-    public LensGenerator(Types typeUtils) {
-        this.typeNameBuilder = new TypeNameBuilder(typeUtils);
+    public LensFactoryGenerator(Types typeUtils) {
+        typeNameBuilder = new TypeNameBuilder(typeUtils);
+
+        partGenerationStrategies = new EnumMap<>(LensPartMeta.Shape.class);
+        partGenerationStrategies.put(LensPartMeta.Shape.ACCESSORS, new AccessorsLensPartGenerationStrategy(typeNameBuilder));
+        partGenerationStrategies.put(LensPartMeta.Shape.METHOD, new MethodLensPartGenerationStrategy(typeNameBuilder));
     }
 
     /**
@@ -95,20 +95,12 @@ public class LensGenerator {
     }
 
     private CodeBlock makeLensCodeBlock(LensPartMeta lensPartMeta, LensType lensType) {
-        Map<String, Object> params = Map.of(
-                "lenses", ClassName.get(Lenses.class),
-                "sourceType", typeNameBuilder.buildTypeName(lensPartMeta.getSourceType()),
-                "fieldName", StringUtils.capitalize(lensPartMeta.getPropertyName())
-        );
-        return CodeBlock.builder()
-                .addNamed(getLensCodeBlockTemplate(lensType), params)
-                .build();
-    }
-
-    private String getLensCodeBlockTemplate(LensType lensType) {
-        return lensType == LensType.READ
-                ? READ_LENS_CODE_BLOCK_TEMPLATE
-                : READ_WRITE_LENS_CODE_BLOCK_TEMPLATE;
+        LensPartMeta.Shape shape = lensPartMeta.getShape();
+        LensPartGenerationStrategy strategy = partGenerationStrategies.get(shape);
+        if (Objects.isNull(strategy)) {
+            throw new RuntimeException(String.format("Lens part generation strategy was not found for shape = %s", shape));
+        }
+        return strategy.generate(lensPartMeta.getSourceType(), lensPartMeta.getName(), lensType);
     }
 
     private TypeName makeLensType(LensMeta lensMeta) {
@@ -122,7 +114,7 @@ public class LensGenerator {
         return ParameterizedTypeName.get(
                 ClassName.get(ReadLens.class),
                 typeNameBuilder.buildTypeName(lensMeta.getFirstLensPart().getSourceType()),
-                typeNameBuilder.buildTypeName(lensMeta.getLastLensPart().getPropertyType())
+                typeNameBuilder.buildTypeName(lensMeta.getLastLensPart().getTargetType())
         );
     }
 
@@ -130,7 +122,7 @@ public class LensGenerator {
         return ParameterizedTypeName.get(
                 ClassName.get(ReadWriteLens.class),
                 typeNameBuilder.buildTypeName(lensMeta.getFirstLensPart().getSourceType()),
-                typeNameBuilder.buildTypeName(lensMeta.getLastLensPart().getPropertyType())
+                typeNameBuilder.buildTypeName(lensMeta.getLastLensPart().getTargetType())
         );
     }
 

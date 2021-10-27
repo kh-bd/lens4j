@@ -5,6 +5,7 @@ import static com.google.testing.compile.Compiler.javac;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import javax.tools.JavaFileObject;
@@ -15,6 +16,53 @@ import java.util.List;
  * @author Alexey_Bodyak
  */
 public class LensProcessorTest {
+
+    @Test(dataProvider = "methodExistsButNotApplicableProvider")
+    public void generate_methodExistButNotApplicable_compileError(String path) {
+        JavaFileObject fileObject = JavaFileObjects.forResource(path);
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(withPathObjects(fileObject));
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("Method 'payer' was not found in class 'Payment'");
+
+    }
+
+    @DataProvider
+    public static Object[][] methodExistsButNotApplicableProvider() {
+        return new Object[][]{
+                {"cases/method/not_found/_static/Payment.java"},
+                {"cases/method/not_found/not_visible/Payment.java"},
+                {"cases/method/not_found/return_void/Payment.java"},
+                {"cases/method/not_found/with_arguments/Payment.java"}
+        };
+    }
+
+    @Test
+    public void generate_methodUsedCorrectly_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(withPathObjects(
+                                JavaFileObjects.forResource("cases/method/found/Payment.java")
+                        ));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/method/found/PaymentLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/method/found/PaymentLenses.java"));
+    }
+
+    @Test
+    public void generate_methodAtFirstPositionInSinglePartLens_compilationError() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/method/wrong_position/single_part_path/Payment.java");
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(withPathObjects(fileObject));
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("Methods are not allowed at last position of read-write lenses");
+    }
 
     @Test
     public void generate_userOverrideLensModifiers_generateValidFactory() {

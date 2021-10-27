@@ -33,6 +33,16 @@ public final class MessageFactory {
         return Message.of(msg, classElement);
     }
 
+    public static Message methodNotFound(Element classElement, String methodName) {
+        String msg = String.format("Method '%s' was not found in class '%s'", methodName, classElement.getSimpleName());
+        return Message.of(msg, classElement);
+    }
+
+    public static Message methodAtWrongPosition(Element classElement) {
+        String msg = "Methods are not allowed at last position of read-write lenses";
+        return Message.of(msg, classElement);
+    }
+
     public static Message nonDeclaredTypeFound(Element classElement) {
         return Message.of("Non-declared types are allowed only at last position in path", classElement);
     }

@@ -45,6 +45,20 @@ public class PathParserTest {
     }
 
     @Test
+    public void parse_validPathWithMethods_returnPath() {
+        Path path = pathParser.parse("pr1().pr2.pr3()");
+
+        assertThat(path).isEqualTo(
+                new Path()
+                        .addPart(new Method("pr1", 0))
+                        .addParts(new Point(5))
+                        .addPart(new Property("pr2", 6))
+                        .addPart(new Point(9))
+                        .addPart(new Method("pr3", 10))
+        );
+    }
+
+    @Test
     public void parse_pathWithSeveralPointsAtTheEnd_returnPath() {
         Path path = pathParser.parse("pr1..");
 
