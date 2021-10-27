@@ -1,5 +1,6 @@
 package dev.khbd.lens4j.processor.path;
 
+import dev.khbd.lens4j.common.Method;
 import dev.khbd.lens4j.common.Path;
 import dev.khbd.lens4j.common.PathPart;
 import dev.khbd.lens4j.common.PathVisitor;
@@ -29,13 +30,22 @@ public class PathStructureValidator implements PathVisitor {
 
     @Override
     public void visitProperty(Property property) {
+        visitNamed(property);
+    }
+
+    @Override
+    public void visitMethod(Method method) {
+        visitNamed(method);
+    }
+
+    private void visitNamed(PathPart part) {
         if (fail) {
             return;
         }
-        if (Objects.nonNull(previous) && previous.isProperty()) {
+        if (Objects.nonNull(previous) && !previous.isPoint()) {
             fail = true;
         }
-        previous = property;
+        previous = part;
     }
 
     @Override
