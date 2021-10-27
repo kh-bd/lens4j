@@ -41,6 +41,7 @@ public class LensFactoryGenerator {
 
         partGenerationStrategies = new EnumMap<>(LensPartMeta.Shape.class);
         partGenerationStrategies.put(LensPartMeta.Shape.ACCESSORS, new AccessorsLensPartGenerationStrategy(typeNameBuilder));
+        partGenerationStrategies.put(LensPartMeta.Shape.METHOD, new MethodLensPartGenerationStrategy(typeNameBuilder));
     }
 
     /**

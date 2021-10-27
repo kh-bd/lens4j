@@ -80,6 +80,15 @@ public class LensPartMeta {
          * accessors-based read lens will have such structure: <br>
          * {@code Lenses.readLens(O::getProperty)}
          */
-        ACCESSORS
+        ACCESSORS,
+
+        /**
+         * Method-based lambda will be used.
+         *
+         * <p>For example, if we have lens part for type {@code O} and {@code name == "method"},
+         * method-based read lens will have such structure: <br>
+         * {@code Lenses.readLens(O::method)}
+         */
+        METHOD
     }
 }
