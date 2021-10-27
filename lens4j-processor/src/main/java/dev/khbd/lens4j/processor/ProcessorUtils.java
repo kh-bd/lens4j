@@ -1,9 +1,10 @@
 package dev.khbd.lens4j.processor;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -12,6 +13,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Sergei_Khadanovich
@@ -73,23 +76,23 @@ public final class ProcessorUtils {
      * @param fieldName    field name
      * @return found field or empty
      */
-    public static Optional<Element> findNonStaticFieldByName(TypeElement classElement,
-                                                             String fieldName) {
+    public static Optional<VariableElement> findNonStaticFieldByName(TypeElement classElement,
+                                                                     String fieldName) {
         return findNonStaticFieldInClass(classElement, fieldName)
                 .or(findNonStaticFieldInSuperClass(classElement, fieldName));
     }
 
-    private static Optional<Element> findNonStaticFieldInClass(TypeElement classElement, String fieldName) {
+    private static Optional<VariableElement> findNonStaticFieldInClass(TypeElement classElement, String fieldName) {
         return classElement.getEnclosedElements().stream()
                 .filter(e -> e.getKind() == ElementKind.FIELD)
                 .filter(e -> !e.getModifiers().contains(Modifier.STATIC))
                 .filter(e -> e.getSimpleName().toString().equals(fieldName))
-                .map(Element.class::cast)
+                .map(VariableElement.class::cast)
                 .findFirst();
     }
 
-    private static Supplier<Optional<Element>> findNonStaticFieldInSuperClass(TypeElement classElement,
-                                                                              String fieldName) {
+    private static Supplier<Optional<VariableElement>> findNonStaticFieldInSuperClass(TypeElement classElement,
+                                                                                      String fieldName) {
         return () -> {
             TypeMirror superType = classElement.getSuperclass();
             if (superType.getKind() == TypeKind.NONE) {
@@ -98,6 +101,30 @@ public final class ProcessorUtils {
             DeclaredType declaredType = (DeclaredType) superType;
             return findNonStaticFieldByName((TypeElement) declaredType.asElement(), fieldName);
         };
+    }
+
+    /**
+     * Find non-static methods by name in specified class or any super classes.
+     *
+     * @param classElement class to start search
+     * @param methodName   method name
+     * @return all found methods with specified name
+     */
+    public static List<ExecutableElement> findNonStaticMethodsByName(TypeElement classElement,
+                                                                     String methodName) {
+        return getInheritanceHierarchy(classElement)
+                .stream()
+                .flatMap(ce -> findNonStaticMethodsByNameInClass(ce, methodName))
+                .collect(Collectors.toList());
+    }
+
+    private static Stream<ExecutableElement> findNonStaticMethodsByNameInClass(TypeElement classElement,
+                                                                               String methodName) {
+        return classElement.getEnclosedElements().stream()
+                .filter(e -> e.getKind().equals(ElementKind.METHOD))
+                .filter(e -> !e.getModifiers().contains(Modifier.STATIC))
+                .filter(e -> e.getSimpleName().toString().equals(methodName))
+                .map(ExecutableElement.class::cast);
     }
 
     /**

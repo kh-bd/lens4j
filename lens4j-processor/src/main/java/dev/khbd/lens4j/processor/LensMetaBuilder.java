@@ -1,6 +1,7 @@
 package dev.khbd.lens4j.processor;
 
 import com.google.common.base.CaseFormat;
+import dev.khbd.lens4j.common.Method;
 import dev.khbd.lens4j.common.Path;
 import dev.khbd.lens4j.common.PathParser;
 import dev.khbd.lens4j.common.PathVisitor;
@@ -14,8 +15,10 @@ import dev.khbd.lens4j.processor.path.PathStructureValidator;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -52,7 +55,8 @@ public class LensMetaBuilder {
 
         private final LensMeta meta;
 
-        private ResolvedParametrizedTypeMirror lastResolvedType = new ResolvedParametrizedTypeMirror(rootClassElement.asType());
+        private ResolvedParametrizedTypeMirror lastResolvedType =
+                new ResolvedParametrizedTypeMirror(rootClassElement.asType());
 
         public LensPartResolver(LensMeta meta) {
             this.meta = meta;
@@ -60,31 +64,63 @@ public class LensMetaBuilder {
 
         @Override
         public void visitProperty(Property property) {
-            String propertyName = property.getName();
-
             TypeElement currentClassElement = resolveTypeElement(lastResolvedType.getTypeMirror());
 
-            Element field = findFieldByName(currentClassElement, propertyName);
+            VariableElement fieldElement = findField(currentClassElement, property.getName());
             ResolvedParametrizedTypeMirror fieldType =
-                    resolveFieldType(currentClassElement, lastResolvedType.getActualTypeArguments(), field);
+                    resolveType(currentClassElement, lastResolvedType.getActualTypeArguments(),
+                            fieldElement, fieldElement.asType());
 
-            LensPartMeta part = new LensPartMeta(lastResolvedType, fieldType, propertyName);
+            LensPartMeta part = new LensPartMeta(lastResolvedType, fieldType, property.getName());
             meta.addLensPart(part);
 
             lastResolvedType = fieldType;
         }
 
-        private Element findFieldByName(TypeElement classElement, String fieldName) {
+        @Override
+        public void visitMethod(Method method) {
+            TypeElement currentClassElement = resolveTypeElement(lastResolvedType.getTypeMirror());
+
+            ExecutableElement methodElement = findMethod(currentClassElement, method.getName());
+            ResolvedParametrizedTypeMirror methodReturnType =
+                    resolveType(currentClassElement, lastResolvedType.getActualTypeArguments(),
+                            methodElement, methodElement.getReturnType());
+
+            LensPartMeta part = new LensPartMeta(lastResolvedType, methodReturnType, method.getName());
+            meta.addLensPart(part.withShape(LensPartMeta.Shape.METHOD));
+
+            lastResolvedType = methodReturnType;
+        }
+
+        @Override
+        public void finish() {
+            if (meta.getLensType() == LensType.READ_WRITE
+                    && meta.getLastLensPart().getShape() == LensPartMeta.Shape.METHOD) {
+                throw new LensProcessingException(MessageFactory.methodAtWrongPosition(rootClassElement));
+            }
+        }
+
+        private VariableElement findField(TypeElement classElement, String fieldName) {
             return ProcessorUtils.findNonStaticFieldByName(classElement, fieldName)
                     .orElseThrow(() -> new LensProcessingException(MessageFactory.fieldNotFound(classElement, fieldName)));
         }
 
-        private ResolvedParametrizedTypeMirror resolveFieldType(TypeElement classElement,
-                                                                List<ResolvedParametrizedTypeMirror> actualTypeArguments,
-                                                                Element field) {
-            TypeMirror fieldType = field.asType();
-            return new TypeResolver(classElement, actualTypeArguments)
-                    .resolveType((TypeElement) field.getEnclosingElement(), fieldType);
+        private ExecutableElement findMethod(TypeElement classElement, String methodName) {
+            return ProcessorUtils.findNonStaticMethodsByName(classElement, methodName)
+                    .stream()
+                    .filter(m -> m.getReturnType().getKind() != TypeKind.VOID)
+                    .filter(m -> m.getParameters().isEmpty())
+                    .filter(m -> !m.getModifiers().contains(Modifier.PRIVATE))
+                    .findFirst()
+                    .orElseThrow(() -> new LensProcessingException(MessageFactory.methodNotFound(classElement, methodName)));
+        }
+
+        private ResolvedParametrizedTypeMirror resolveType(TypeElement rootClass,
+                                                           List<ResolvedParametrizedTypeMirror> actualTypeArguments,
+                                                           Element element,
+                                                           TypeMirror type) {
+            return new TypeResolver(rootClass, actualTypeArguments)
+                    .resolveType((TypeElement) element.getEnclosingElement(), type);
         }
 
         private TypeElement resolveTypeElement(TypeMirror typeMirror) {
