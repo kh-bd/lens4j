@@ -41,10 +41,6 @@ public final class MessageFactory {
         return Message.of("@GenLenses is not allowed here", element);
     }
 
-    public static Message genLensNotAllowedOnInnerClasses(Element element) {
-        return Message.of("@GenLenses is not allowed on inner classes", element);
-    }
-
     public static Message genLensNotAllowedOnGenericClasses(Element element) {
         return Message.of("@GenLenses is not allowed on generic classes", element);
     }
