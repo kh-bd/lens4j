@@ -1,9 +1,12 @@
-package dev.khbd.lens4j.processor;
+package dev.khbd.lens4j.processor.generator;
 
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import dev.khbd.lens4j.processor.LensProcessingException;
+import dev.khbd.lens4j.processor.MessageFactory;
+import dev.khbd.lens4j.processor.meta.ResolvedParametrizedTypeMirror;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;

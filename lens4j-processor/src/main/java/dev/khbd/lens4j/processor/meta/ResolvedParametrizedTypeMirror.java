@@ -1,4 +1,4 @@
-package dev.khbd.lens4j.processor;
+package dev.khbd.lens4j.processor.meta;
 
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;

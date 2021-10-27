@@ -1,4 +1,4 @@
-package dev.khbd.lens4j.processor;
+package dev.khbd.lens4j.processor.generator;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -13,6 +13,10 @@ import dev.khbd.lens4j.core.Lenses;
 import dev.khbd.lens4j.core.ReadLens;
 import dev.khbd.lens4j.core.ReadWriteLens;
 import dev.khbd.lens4j.core.annotations.LensType;
+import dev.khbd.lens4j.processor.LensProcessor;
+import dev.khbd.lens4j.processor.meta.FactoryMeta;
+import dev.khbd.lens4j.processor.meta.LensMeta;
+import dev.khbd.lens4j.processor.meta.LensPartMeta;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.Generated;

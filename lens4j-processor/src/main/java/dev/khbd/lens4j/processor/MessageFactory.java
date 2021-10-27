@@ -41,10 +41,6 @@ public final class MessageFactory {
         return Message.of("@GenLenses is not allowed here", element);
     }
 
-    public static Message genLensNotAllowedOnInnerClasses(Element element) {
-        return Message.of("@GenLenses is not allowed on inner classes", element);
-    }
-
     public static Message genLensNotAllowedOnGenericClasses(Element element) {
         return Message.of("@GenLenses is not allowed on generic classes", element);
     }
@@ -53,7 +49,7 @@ public final class MessageFactory {
         return Message.of("Lens names for type should be unique", element);
     }
 
-    public static Message pathIsEmpty(Element element) {
-        return Message.of("Lens path should be not empty", element);
+    public static Message pathIsIncorrect(Element element) {
+        return Message.of("Lens path is incorrect", element);
     }
 }

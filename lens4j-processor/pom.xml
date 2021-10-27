@@ -17,6 +17,10 @@
             <artifactId>lens4j-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>dev.khbd.lens4j</groupId>
+            <artifactId>lens4j-common</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.squareup</groupId>
             <artifactId>javapoet</artifactId>
         </dependency>

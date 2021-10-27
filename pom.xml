@@ -15,6 +15,7 @@
         <module>lens4j-core</module>
         <module>lens4j-processor</module>
         <module>lens4j-benchmark</module>
+        <module>lens4j-common</module>
     </modules>
 
     <name>lens4j</name>
@@ -74,6 +75,11 @@
             <dependency>
                 <groupId>dev.khbd.lens4j</groupId>
                 <artifactId>lens4j-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.khbd.lens4j</groupId>
+                <artifactId>lens4j-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
