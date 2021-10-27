@@ -4,7 +4,7 @@ import com.google.auto.service.AutoService;
 import com.squareup.javapoet.JavaFile;
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
-import dev.khbd.lens4j.processor.generator.LensGenerator;
+import dev.khbd.lens4j.processor.generator.LensFactoryGenerator;
 import dev.khbd.lens4j.processor.meta.FactoryMeta;
 import dev.khbd.lens4j.processor.meta.LensMeta;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +37,7 @@ public class LensProcessor extends AbstractProcessor {
 
     private static final String DEFAULT_FACTORY_SUFFIX = "Lenses";
 
-    private LensGenerator lensGenerator;
+    private LensFactoryGenerator lensGenerator;
     private Filer filer;
     private Logger logger;
     private Elements elementUtil;
@@ -47,7 +47,7 @@ public class LensProcessor extends AbstractProcessor {
         super.init(processingEnv);
 
         this.filer = processingEnv.getFiler();
-        this.lensGenerator = new LensGenerator(processingEnv.getTypeUtils());
+        this.lensGenerator = new LensFactoryGenerator(processingEnv.getTypeUtils());
         this.logger = new Logger(processingEnv.getMessager());
         this.elementUtil = processingEnv.getElementUtils();
     }

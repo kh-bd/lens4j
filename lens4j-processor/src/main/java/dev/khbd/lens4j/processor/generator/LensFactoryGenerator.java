@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @author Alexey_Bodyak
  */
-public class LensGenerator {
+public class LensFactoryGenerator {
 
     private static final String UNSUPPORTED_METHOD_MSG = "Can not create instance of factory class";
 
@@ -40,7 +40,7 @@ public class LensGenerator {
 
     private final TypeNameBuilder typeNameBuilder;
 
-    public LensGenerator(Types typeUtils) {
+    public LensFactoryGenerator(Types typeUtils) {
         this.typeNameBuilder = new TypeNameBuilder(typeUtils);
     }
 
