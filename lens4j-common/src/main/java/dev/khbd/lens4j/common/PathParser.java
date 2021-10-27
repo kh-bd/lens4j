@@ -30,7 +30,7 @@ public final class PathParser {
             char current = chars[i];
             if (current == '.') {
                 if (buffer.length() != 0) {
-                    path.addPart(new Property(buffer.toString(), start));
+                    path.addPart(createNamedPart(buffer.toString(), start));
                     buffer = new StringBuilder();
                 }
                 path.addPart(new Point(i));
@@ -43,10 +43,18 @@ public final class PathParser {
         }
 
         if (buffer.length() != 0) {
-            path.addPart(new Property(buffer.toString(), start));
+            path.addPart(createNamedPart(buffer.toString(), start));
         }
 
         return path;
+    }
+
+    private PathPart createNamedPart(String name, int start) {
+        if (name.endsWith("()")) {
+            return new Method(name.substring(0, name.length() - 2), start);
+        } else {
+            return new Property(name, start);
+        }
     }
 
     public static PathParser getInstance() {

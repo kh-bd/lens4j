@@ -7,5 +7,6 @@ package dev.khbd.lens4j.common;
  */
 public enum PathPartKind {
     POINT,
-    PROPERTY
+    PROPERTY,
+    METHOD
 }

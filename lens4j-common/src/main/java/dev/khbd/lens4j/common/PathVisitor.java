@@ -16,6 +16,9 @@ public interface PathVisitor {
     default void visitProperty(Property property) {
     }
 
+    default void visitMethod(Method method) {
+    }
+
     default void finish() {
     }
 }
