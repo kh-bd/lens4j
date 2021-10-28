@@ -26,7 +26,10 @@ class AccessorsLensPartGenerationStrategy implements LensPartGenerationStrategy 
     }
 
     @Override
-    public CodeBlock generate(ResolvedParametrizedTypeMirror sourceType, String name, LensType lensType) {
+    public CodeBlock generate(ResolvedParametrizedTypeMirror sourceType,
+                              ResolvedParametrizedTypeMirror ignore,
+                              String name,
+                              LensType lensType) {
         Map<String, Object> params = Map.of(
                 "lenses", ClassName.get(Lenses.class),
                 "sourceType", typeNameBuilder.buildTypeName(sourceType),

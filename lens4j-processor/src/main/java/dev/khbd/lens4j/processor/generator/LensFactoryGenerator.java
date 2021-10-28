@@ -100,7 +100,7 @@ public class LensFactoryGenerator {
         if (Objects.isNull(strategy)) {
             throw new RuntimeException(String.format("Lens part generation strategy was not found for shape = %s", shape));
         }
-        return strategy.generate(lensPartMeta.getSourceType(), lensPartMeta.getName(), lensType);
+        return strategy.generate(lensPartMeta.getSourceType(), lensPartMeta.getTargetType(), lensPartMeta.getName(), lensType);
     }
 
     private TypeName makeLensType(LensMeta lensMeta) {
