@@ -89,6 +89,15 @@ public class LensPartMeta {
          * method-based read lens will have such structure: <br>
          * {@code Lenses.readLens(O::method)}
          */
-        METHOD
+        METHOD,
+
+        /**
+         * Field-based lambda will be used.
+         *
+         * <p>For example, if we have lens part for type {@code O} and {@code name = "field"},
+         * field-based read lens will have such structure: <br>
+         * {@code Lenses.readLens((O o) -> o.field)}
+         */
+        FIELD
     }
 }
