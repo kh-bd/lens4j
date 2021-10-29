@@ -161,10 +161,19 @@ public class LensMetaBuilder {
 
         @Override
         public void visitProperty(Property property) {
+            visitNamed(property.getName());
+        }
+
+        @Override
+        public void visitMethod(Method method) {
+            visitNamed(method.getName());
+        }
+
+        private void visitNamed(String name) {
             if (builder.length() != 0) {
                 builder.append("_");
             }
-            builder.append(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, property.getName()));
+            builder.append(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, name));
         }
 
         @Override

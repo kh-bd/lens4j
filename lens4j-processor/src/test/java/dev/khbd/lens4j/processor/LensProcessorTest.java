@@ -17,6 +17,20 @@ import java.util.List;
  */
 public class LensProcessorTest {
 
+    @Test
+    public void generate_methodReturnTypeIsGenericAndGenericsFromClass_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(List.of(
+                                JavaFileObjects.forResource("cases/method/generic/class_generics/Payment.java")
+                        ));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/method/generic/class_generics/PaymentLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/method/generic/class_generics/PaymentLenses.java"));
+    }
+
     @Test(dataProvider = "methodExistsButNotApplicableProvider")
     public void generate_methodExistButNotApplicable_compileError(String path) {
         JavaFileObject fileObject = JavaFileObjects.forResource(path);
