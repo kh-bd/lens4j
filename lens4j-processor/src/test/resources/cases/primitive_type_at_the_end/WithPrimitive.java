@@ -25,14 +25,14 @@ import dev.khbd.lens4j.core.annotations.LensType;
         }
 )
 public class WithPrimitive {
-    byte b;
-    short sh;
-    int i;
-    long l;
-    float f;
-    double d;
-    char ch;
-    boolean bool;
+    private byte b;
+    private short sh;
+    private int i;
+    private long l;
+    private float f;
+    private double d;
+    private char ch;
+    private boolean bool;
 
     void setI(int i) {
         this.i= i;

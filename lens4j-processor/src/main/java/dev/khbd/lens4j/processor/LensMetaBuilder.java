@@ -72,6 +72,11 @@ public class LensMetaBuilder {
                             fieldElement, fieldElement.asType());
 
             LensPartMeta part = new LensPartMeta(lastResolvedType, fieldType, property.getName());
+
+            if (!fieldElement.getModifiers().contains(Modifier.PRIVATE)) {
+                part.withShape(LensPartMeta.Shape.FIELD);
+            }
+
             meta.addLensPart(part);
 
             lastResolvedType = fieldType;

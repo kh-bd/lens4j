@@ -445,6 +445,19 @@ public class LensProcessorTest {
         assertThat(compilation).hadErrorContaining("@GenLenses is not allowed on generic classes");
     }
 
+    @Test
+    public void generate_someFieldsAreNotPrivate_generateValidFactory() {
+        JavaFileObject fileObject = JavaFileObjects.forResource("cases/field_strategy/Payment.java");
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(fileObject);
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/field_strategy/PaymentLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/field_strategy/PaymentLenses.java"));
+    }
+
     private List<JavaFileObject> withPathObjects(JavaFileObject... objects) {
         List<JavaFileObject> result = new ArrayList<>(List.of(objects));
         result.addAll(

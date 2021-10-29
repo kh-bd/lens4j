@@ -14,10 +14,14 @@ interface LensPartGenerationStrategy {
     /**
      * Generate lens part.
      *
-     * @param sourceType source entity type for generated lens
+     * @param sourceType input type for generated lens
+     * @param targetType output type for generated lens
      * @param name       property or method name which was used in {@code Lens#path}
      * @param lensType   lens type
      * @return generated code block for specified lens part
      */
-    CodeBlock generate(ResolvedParametrizedTypeMirror sourceType, String name, LensType lensType);
+    CodeBlock generate(ResolvedParametrizedTypeMirror sourceType,
+                       ResolvedParametrizedTypeMirror targetType,
+                       String name,
+                       LensType lensType);
 }

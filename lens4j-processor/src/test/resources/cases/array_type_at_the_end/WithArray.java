@@ -13,8 +13,8 @@ import dev.khbd.lens4j.core.annotations.LensType;
         }
 )
 public class WithArray {
-    byte[] primitiveArray;
-    String[] declarArray;
+    private byte[] primitiveArray;
+    private String[] declarArray;
 
     public byte[] getPrimitiveArray() {
         return primitiveArray;

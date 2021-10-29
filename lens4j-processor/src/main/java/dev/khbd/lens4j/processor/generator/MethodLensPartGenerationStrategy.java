@@ -22,7 +22,10 @@ class MethodLensPartGenerationStrategy implements LensPartGenerationStrategy {
     }
 
     @Override
-    public CodeBlock generate(ResolvedParametrizedTypeMirror sourceType, String name, LensType lensType) {
+    public CodeBlock generate(ResolvedParametrizedTypeMirror sourceType,
+                              ResolvedParametrizedTypeMirror ignore,
+                              String name,
+                              LensType lensType) {
         verifyReadOnly(lensType);
 
         Map<String, Object> params = Map.of(
