@@ -5,61 +5,77 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeVariable;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 /**
  * @author Sergei_Khadanovich
  */
 public final class MessageFactory {
 
+    private static final ResourceBundle MESSAGE_BUNDLE = ResourceBundle.getBundle("messages.message");
+
     private MessageFactory() {
     }
 
     public static Message unsupportedTypeKind(TypeKind typeKind) {
-        return Message.of("Unsupported type kind: " + typeKind);
+        return Message.of(makeMessage("unsupported_type_kind", typeKind));
     }
 
     public static Message actualTypeParameterNotFound(DeclaredType classType, int index) {
-        String msg = String.format("Type %s does not have type parameter at index %d", classType.toString(), index);
-        return Message.of(msg, classType.asElement());
+        return Message.of(
+                makeMessage("actual_type_parameter_not_found", classType.toString(), index),
+                classType.asElement()
+        );
     }
 
     public static Message formalTypeParameterWasNotFound(TypeElement classElement, TypeVariable typeVar) {
-        String msg = String.format("Type variable %s was not found in class %s", typeVar, classElement.getSimpleName());
-        return Message.of(msg, classElement);
+        return Message.of(
+                makeMessage("formal_type_parameter_was_not_found", typeVar, classElement.getSimpleName()),
+                classElement
+        );
     }
 
     public static Message fieldNotFound(Element classElement, String fieldName) {
-        String msg = String.format("Field '%s' was not found in class '%s'", fieldName, classElement.getSimpleName());
-        return Message.of(msg, classElement);
+        return Message.of(
+                makeMessage("field_not_found", fieldName, classElement.getSimpleName()),
+                classElement
+        );
     }
 
     public static Message methodNotFound(Element classElement, String methodName) {
-        String msg = String.format("Method '%s' was not found in class '%s'", methodName, classElement.getSimpleName());
-        return Message.of(msg, classElement);
+        return Message.of(
+                makeMessage("method_not_found", methodName, classElement.getSimpleName()),
+                classElement
+        );
     }
 
     public static Message methodAtWrongPosition(Element classElement) {
-        String msg = "Methods are not allowed at last position of read-write lenses";
-        return Message.of(msg, classElement);
+        return Message.of(makeMessage("method_at_wrong_position"), classElement);
     }
 
     public static Message nonDeclaredTypeFound(Element classElement) {
-        return Message.of("Non-declared types are allowed only at last position in path", classElement);
+        return Message.of(makeMessage("non_declared_type_found"), classElement);
     }
 
     public static Message genLensNotAllowedHere(Element element) {
-        return Message.of("@GenLenses is not allowed here", element);
+        return Message.of(makeMessage("gen_lens_not_allowed_here"), element);
     }
 
     public static Message genLensNotAllowedOnGenericClasses(Element element) {
-        return Message.of("@GenLenses is not allowed on generic classes", element);
+        return Message.of(makeMessage("gen_lens_not_allowed_on_generic_classes"), element);
     }
 
     public static Message existNotUniqueLensName(Element element) {
-        return Message.of("Lens names for type should be unique", element);
+        return Message.of(makeMessage("exist_not_unique_lens_name"), element);
     }
 
     public static Message pathIsIncorrect(Element element) {
-        return Message.of("Lens path is incorrect", element);
+        return Message.of(makeMessage("path_is_incorrect"), element);
+    }
+
+    private static String makeMessage(String key, Object... params) {
+        String pattern = MESSAGE_BUNDLE.getString(key);
+        return MessageFormat.format(pattern, params);
     }
 }
