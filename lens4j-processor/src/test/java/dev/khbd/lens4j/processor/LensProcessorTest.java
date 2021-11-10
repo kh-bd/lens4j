@@ -68,6 +68,20 @@ public class LensProcessorTest {
     }
 
     @Test
+    public void generate_arrayLengthIsSupported_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(withPathObjects(
+                                JavaFileObjects.forResource("cases/array_length_support/Payment.java")
+                        ));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/array_length_support/PaymentLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/array_length_support/PaymentLenses.java"));
+    }
+
+    @Test
     public void generate_methodAtFirstPositionInSinglePartLens_compilationError() {
         JavaFileObject fileObject = JavaFileObjects.forResource("cases/method/wrong_position/single_part_path/Payment.java");
         Compilation compilation =
@@ -225,17 +239,6 @@ public class LensProcessorTest {
         assertThat(compilation)
                 .generatedSourceFile("cases/array_type_at_the_end/WithArrayLenses")
                 .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/array_type_at_the_end/WithArrayLenses.java"));
-    }
-
-    @Test
-    public void generate_lensPathHasArrayTypeInTheMiddle_compilationError() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/array_type_in_the_middle/WithArray.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(fileObject);
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Non-declared types are allowed only at last position in path");
     }
 
     @Test

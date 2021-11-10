@@ -22,6 +22,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class LensMetaBuilder {
         this.rootClassElement = rootClassElement;
     }
 
-    public LensMeta build(Lens annotation) {
+    public LensMeta build(Lens annotation, Types typeUtil) {
         Path path = PathParser.getInstance().parse(annotation.path());
 
         if (!PathStructureValidator.validate(path)) {
@@ -47,39 +48,30 @@ public class LensMetaBuilder {
         }
 
         LensMeta meta = new LensMeta(makeLensName(annotation, path), annotation.type(), getLensModifiers(annotation));
-        path.visit(new LensPartResolver(meta));
+        path.visit(new LensPartResolver(meta, typeUtil));
         return meta;
     }
 
     class LensPartResolver implements PathVisitor {
 
         private final LensMeta meta;
+        private final Types typeUtil;
 
         private ResolvedParametrizedTypeMirror lastResolvedType =
                 new ResolvedParametrizedTypeMirror(rootClassElement.asType());
 
-        public LensPartResolver(LensMeta meta) {
+        public LensPartResolver(LensMeta meta, Types typeUtil) {
             this.meta = meta;
+            this.typeUtil = typeUtil;
         }
 
         @Override
         public void visitProperty(Property property) {
-            TypeElement currentClassElement = resolveTypeElement(lastResolvedType.getTypeMirror());
-
-            VariableElement fieldElement = findField(currentClassElement, property.getName());
-            ResolvedParametrizedTypeMirror fieldType =
-                    resolveType(currentClassElement, lastResolvedType.getActualTypeArguments(),
-                            fieldElement, fieldElement.asType());
-
-            LensPartMeta part = new LensPartMeta(lastResolvedType, fieldType, property.getName());
-
-            if (!fieldElement.getModifiers().contains(Modifier.PRIVATE)) {
-                part.withShape(LensPartMeta.Shape.FIELD);
+            if (elementIsArray(property)) {
+                meta.addLensPart(makeArrayLensPartMeta(property));
+            } else {
+                meta.addLensPart(makePropertyLensPartMeta(property));
             }
-
-            meta.addLensPart(part);
-
-            lastResolvedType = fieldType;
         }
 
         @Override
@@ -103,6 +95,36 @@ public class LensMetaBuilder {
                     && meta.getLastLensPart().getShape() == LensPartMeta.Shape.METHOD) {
                 throw new LensProcessingException(MessageFactory.methodAtWrongPosition(rootClassElement));
             }
+        }
+
+        private LensPartMeta makeArrayLensPartMeta(Property property) {
+            return new LensPartMeta(
+                    lastResolvedType,
+                    new ResolvedParametrizedTypeMirror(typeUtil.getPrimitiveType(TypeKind.INT)),
+                    property.getName()
+            ).withShape(LensPartMeta.Shape.FIELD);
+        }
+
+        private LensPartMeta makePropertyLensPartMeta(Property property) {
+            TypeElement currentClassElement = resolveTypeElement(lastResolvedType.getTypeMirror());
+
+            VariableElement fieldElement = findField(currentClassElement, property.getName());
+            ResolvedParametrizedTypeMirror fieldType =
+                    resolveType(currentClassElement, lastResolvedType.getActualTypeArguments(),
+                            fieldElement, fieldElement.asType());
+
+            LensPartMeta part = new LensPartMeta(lastResolvedType, fieldType, property.getName());
+
+            if (!fieldElement.getModifiers().contains(Modifier.PRIVATE)) {
+                part.withShape(LensPartMeta.Shape.FIELD);
+            }
+            lastResolvedType = fieldType;
+            return part;
+        }
+
+        private boolean elementIsArray(Property property) {
+            return lastResolvedType.getTypeMirror().getKind() == TypeKind.ARRAY
+                    && property.getName().equals("length");
         }
 
         private VariableElement findField(TypeElement classElement, String fieldName) {
