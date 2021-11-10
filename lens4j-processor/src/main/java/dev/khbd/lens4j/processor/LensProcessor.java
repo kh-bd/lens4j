@@ -109,9 +109,9 @@ public class LensProcessor extends AbstractProcessor {
         FactoryMeta factory = new FactoryMeta(getPackage(classElement),
                 makeFactoryName(classElement, annotation), getClassModifiers(classElement));
 
-        LensMetaBuilder metaBuilder = new LensMetaBuilder(classElement);
+        LensMetaBuilder metaBuilder = new LensMetaBuilder(classElement, typeUtil);
         for (Lens lens : annotation.lenses()) {
-            factory.addLens(metaBuilder.build(lens, typeUtil));
+            factory.addLens(metaBuilder.build(lens));
         }
         checkLensNames(classElement, factory.getLenses());
 

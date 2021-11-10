@@ -82,6 +82,30 @@ public class LensProcessorTest {
     }
 
     @Test
+    public void generate_notSupportedArrayProperty_compilationError() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(withPathObjects(
+                                JavaFileObjects.forResource("cases/array_without_supported_property/Payment.java")
+                        ));
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("Arrays property 'length1' is not supported");
+    }
+
+    @Test
+    public void generate_notSupportedPropertyAfterLengthArrayProperty_compilationError() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(withPathObjects(
+                                JavaFileObjects.forResource("cases/array_without_supported_property/PaymentWithPropertyAfterLength.java")
+                        ));
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("Non-declared types are allowed only at last position in path");
+    }
+
+    @Test
     public void generate_methodAtFirstPositionInSinglePartLens_compilationError() {
         JavaFileObject fileObject = JavaFileObjects.forResource("cases/method/wrong_position/single_part_path/Payment.java");
         Compilation compilation =

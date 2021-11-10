@@ -6,10 +6,10 @@ import dev.khbd.lens4j.core.annotations.Lens;
 
 @GenLenses(
         lenses = {
-                @Lens(path = "payers.length", lensName = "ARRAY_LENGTH_READ_LENS")
+                @Lens(path = "payers.length.someProperty", lensName = "ARRAY_LENGTH_READ_LENS")
         }
 )
-public class Payment {
+public class PaymentWithPropertyAfterLength {
     private Payer[] payers;
 
     public Payer[] getPayers() {
