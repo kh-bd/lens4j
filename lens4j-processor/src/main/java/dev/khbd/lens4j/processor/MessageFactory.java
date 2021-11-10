@@ -74,6 +74,11 @@ public final class MessageFactory {
         return Message.of(makeMessage("path_is_incorrect"), element);
     }
 
+
+    public static Message arraysPropertyIsNotSupported(String fieldName) {
+        return Message.of(makeMessage("arrays_property_is_not_supported", fieldName));
+    }
+
     private static String makeMessage(String key, Object... params) {
         String pattern = MESSAGE_BUNDLE.getString(key);
         return MessageFormat.format(pattern, params);

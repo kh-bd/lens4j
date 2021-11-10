@@ -21,6 +21,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +43,7 @@ public class LensProcessor extends AbstractProcessor {
     private Filer filer;
     private Logger logger;
     private Elements elementUtil;
+    private Types typeUtil;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -51,6 +53,7 @@ public class LensProcessor extends AbstractProcessor {
         this.lensGenerator = new LensFactoryGenerator(processingEnv.getTypeUtils());
         this.logger = new Logger(processingEnv.getMessager());
         this.elementUtil = processingEnv.getElementUtils();
+        this.typeUtil = processingEnv.getTypeUtils();
     }
 
     @Override
@@ -107,7 +110,7 @@ public class LensProcessor extends AbstractProcessor {
         FactoryMeta factory = new FactoryMeta(getPackage(classElement),
                 makeFactoryName(classElement, annotation), getClassModifiers(classElement));
 
-        LensMetaBuilder metaBuilder = new LensMetaBuilder(classElement);
+        LensMetaBuilder metaBuilder = new LensMetaBuilder(classElement, typeUtil);
         for (Lens lens : annotation.lenses()) {
             factory.addLens(metaBuilder.build(lens));
         }
