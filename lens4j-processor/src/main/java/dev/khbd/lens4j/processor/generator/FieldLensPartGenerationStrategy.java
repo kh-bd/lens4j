@@ -1,5 +1,6 @@
 package dev.khbd.lens4j.processor.generator;
 
+import com.google.common.collect.ImmutableMap;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import dev.khbd.lens4j.core.Lenses;
@@ -29,7 +30,7 @@ class FieldLensPartGenerationStrategy implements LensPartGenerationStrategy {
                               ResolvedParametrizedTypeMirror targetType,
                               String name,
                               LensType lensType) {
-        Map<String, Object> params = Map.of(
+        Map<String, Object> params = ImmutableMap.of(
                 "lenses", ClassName.get(Lenses.class),
                 "sourceType", typeNameBuilder.buildTypeName(sourceType),
                 "targetType", typeNameBuilder.buildTypeName(targetType),
