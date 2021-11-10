@@ -22,6 +22,8 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -32,11 +34,14 @@ import java.util.Set;
 public class LensMetaBuilder {
 
     private static final String LENS_NAME_SUFFIX = "LENS";
+    private static final List<String> SUPPORTED_ARRAYS_PROPERTIES = Collections.singletonList("length");
 
     private final TypeElement rootClassElement;
+    private final Types typeUtil;
 
-    public LensMetaBuilder(TypeElement rootClassElement) {
+    public LensMetaBuilder(TypeElement rootClassElement, Types typeUtil) {
         this.rootClassElement = rootClassElement;
+        this.typeUtil = typeUtil;
     }
 
     public LensMeta build(Lens annotation) {
@@ -64,22 +69,14 @@ public class LensMetaBuilder {
 
         @Override
         public void visitProperty(Property property) {
-            TypeElement currentClassElement = resolveTypeElement(lastResolvedType.getTypeMirror());
-
-            VariableElement fieldElement = findField(currentClassElement, property.getName());
-            ResolvedParametrizedTypeMirror fieldType =
-                    resolveType(currentClassElement, lastResolvedType.getActualTypeArguments(),
-                            fieldElement, fieldElement.asType());
-
-            LensPartMeta part = new LensPartMeta(lastResolvedType, fieldType, property.getName());
-
-            if (!fieldElement.getModifiers().contains(Modifier.PRIVATE)) {
-                part.withShape(LensPartMeta.Shape.FIELD);
+            if (lastResolvedTypeIsArray()) {
+                if (!SUPPORTED_ARRAYS_PROPERTIES.contains(property.getName())) {
+                    throw new LensProcessingException(MessageFactory.arraysPropertyIsNotSupported(property.getName()));
+                }
+                meta.addLensPart(makeArrayLensPartMeta(property));
+            } else {
+                meta.addLensPart(makeTypeLensPartMeta(property));
             }
-
-            meta.addLensPart(part);
-
-            lastResolvedType = fieldType;
         }
 
         @Override
@@ -103,6 +100,37 @@ public class LensMetaBuilder {
                     && meta.getLastLensPart().getShape() == LensPartMeta.Shape.METHOD) {
                 throw new LensProcessingException(MessageFactory.methodAtWrongPosition(rootClassElement));
             }
+        }
+
+        private LensPartMeta makeArrayLensPartMeta(Property property) {
+            ResolvedParametrizedTypeMirror fieldType = new ResolvedParametrizedTypeMirror(
+                    typeUtil.getPrimitiveType(TypeKind.INT)
+            );
+            LensPartMeta lensPartMeta = new LensPartMeta(lastResolvedType, fieldType, property.getName())
+                    .withShape(LensPartMeta.Shape.FIELD);
+            lastResolvedType = fieldType;
+            return lensPartMeta;
+        }
+
+        private LensPartMeta makeTypeLensPartMeta(Property property) {
+            TypeElement currentClassElement = resolveTypeElement(lastResolvedType.getTypeMirror());
+
+            VariableElement fieldElement = findField(currentClassElement, property.getName());
+            ResolvedParametrizedTypeMirror fieldType =
+                    resolveType(currentClassElement, lastResolvedType.getActualTypeArguments(),
+                            fieldElement, fieldElement.asType());
+
+            LensPartMeta part = new LensPartMeta(lastResolvedType, fieldType, property.getName());
+
+            if (!fieldElement.getModifiers().contains(Modifier.PRIVATE)) {
+                part.withShape(LensPartMeta.Shape.FIELD);
+            }
+            lastResolvedType = fieldType;
+            return part;
+        }
+
+        private boolean lastResolvedTypeIsArray() {
+            return lastResolvedType.getTypeMirror().getKind() == TypeKind.ARRAY;
         }
 
         private VariableElement findField(TypeElement classElement, String fieldName) {
