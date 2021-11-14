@@ -28,6 +28,8 @@ public @interface Lens {
 
     /**
      * What access level should be used for lens instance.
+     *
+     * @return generated lens access level
      */
     AccessLevel accessLevel() default AccessLevel.PUBLIC;
 
