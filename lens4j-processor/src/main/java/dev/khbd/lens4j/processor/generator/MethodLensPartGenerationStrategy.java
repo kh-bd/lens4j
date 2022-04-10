@@ -1,6 +1,5 @@
 package dev.khbd.lens4j.processor.generator;
 
-import com.google.common.collect.ImmutableMap;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import dev.khbd.lens4j.core.Lenses;
@@ -29,7 +28,7 @@ class MethodLensPartGenerationStrategy implements LensPartGenerationStrategy {
                               LensType lensType) {
         verifyReadOnly(lensType);
 
-        Map<String, Object> params = ImmutableMap.of(
+        Map<String, Object> params = Map.of(
                 "lenses", ClassName.get(Lenses.class),
                 "sourceType", typeNameBuilder.buildTypeName(sourceType),
                 "methodName", name

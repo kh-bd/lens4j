@@ -17,7 +17,7 @@ import dev.khbd.lens4j.processor.meta.FactoryMeta;
 import dev.khbd.lens4j.processor.meta.LensMeta;
 import dev.khbd.lens4j.processor.meta.LensPartMeta;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
 import java.util.EnumMap;
@@ -74,7 +74,7 @@ public class LensFactoryGenerator {
 
     private FieldSpec makeLens(LensMeta lensMeta) {
         return FieldSpec.builder(makeLensType(lensMeta), lensMeta.getLensName())
-                .addModifiers(lensMeta.getModifiers().toArray(new Modifier[]{}))
+                .addModifiers(lensMeta.getModifiers().toArray(Modifier[]::new))
                 .initializer(makeExpression(lensMeta))
                 .build();
     }

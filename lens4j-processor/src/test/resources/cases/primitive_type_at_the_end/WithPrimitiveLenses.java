@@ -12,7 +12,7 @@ import java.lang.Integer;
 import java.lang.Long;
 import java.lang.Short;
 import java.lang.UnsupportedOperationException;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 @Generated("dev.khbd.lens4j.processor.LensProcessor")
 public final class WithPrimitiveLenses {

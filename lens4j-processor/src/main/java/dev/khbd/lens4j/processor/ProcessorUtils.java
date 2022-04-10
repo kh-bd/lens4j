@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,11 +78,8 @@ public final class ProcessorUtils {
      */
     public static Optional<VariableElement> findNonStaticFieldByName(TypeElement classElement,
                                                                      String fieldName) {
-        Optional<VariableElement> nonStaticFieldInClass = findNonStaticFieldInClass(classElement, fieldName);
-        if (nonStaticFieldInClass.isPresent()) {
-            return nonStaticFieldInClass;
-        }
-        return findNonStaticFieldInSuperClass(classElement, fieldName);
+        return findNonStaticFieldInClass(classElement, fieldName)
+                .or(findNonStaticFieldInSuperClass(classElement, fieldName));
     }
 
     private static Optional<VariableElement> findNonStaticFieldInClass(TypeElement classElement, String fieldName) {
@@ -93,14 +91,16 @@ public final class ProcessorUtils {
                 .findFirst();
     }
 
-    private static Optional<VariableElement> findNonStaticFieldInSuperClass(TypeElement classElement,
-                                                                            String fieldName) {
-        TypeMirror superType = classElement.getSuperclass();
-        if (superType.getKind() == TypeKind.NONE) {
-            return Optional.empty();
-        }
-        DeclaredType declaredType = (DeclaredType) superType;
-        return findNonStaticFieldByName((TypeElement) declaredType.asElement(), fieldName);
+    private static Supplier<Optional<VariableElement>> findNonStaticFieldInSuperClass(TypeElement classElement,
+                                                                                      String fieldName) {
+        return () -> {
+            TypeMirror superType = classElement.getSuperclass();
+            if (superType.getKind() == TypeKind.NONE) {
+                return Optional.empty();
+            }
+            DeclaredType declaredType = (DeclaredType) superType;
+            return findNonStaticFieldByName((TypeElement) declaredType.asElement(), fieldName);
+        };
     }
 
     /**

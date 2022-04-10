@@ -10,8 +10,6 @@ import org.testng.annotations.Test;
 
 import javax.tools.JavaFileObject;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +21,7 @@ public class LensProcessorTest {
     public void generate_methodReturnTypeIsGenericAndGenericsFromClass_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(Collections.singletonList(
+                        .compile(List.of(
                                 JavaFileObjects.forResource("cases/method/generic/class_generics/Payment.java")
                         ));
 
@@ -122,7 +120,7 @@ public class LensProcessorTest {
     public void generate_userOverrideLensModifiers_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(Arrays.asList(
+                        .compile(List.of(
                                 JavaFileObjects.forResource("cases/lens_modifiers/Account.java"),
                                 JavaFileObjects.forResource("common/Currency.java")
                         ));
@@ -137,7 +135,7 @@ public class LensProcessorTest {
     public void generate_genericHasProjectionAtDeclarationSite_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(Arrays.asList(
+                        .compile(List.of(
                                 JavaFileObjects.forResource("cases/generic/projection/From.java"),
                                 JavaFileObjects.forResource("cases/generic/projection/StrFrom.java"),
                                 JavaFileObjects.forResource("cases/generic/projection/AbstractPayment.java"),
@@ -154,7 +152,7 @@ public class LensProcessorTest {
     public void generate_resolvedTypeIsDeclaredWithUnKnownTypeVar_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(Arrays.asList(
+                        .compile(List.of(
                                 JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/Box.java"),
                                 JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/AbstractPayment.java"),
                                 JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/BoxedToPayment.java"),
@@ -177,7 +175,7 @@ public class LensProcessorTest {
     public void generate_fieldTypeIsDeclaredWithUnKnownTypeVar_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(Arrays.asList(
+                        .compile(List.of(
                                 JavaFileObjects.forResource("cases/generic/field_type_declared_with_unknown_type_param/Box.java"),
                                 JavaFileObjects.forResource("cases/generic/field_type_declared_with_unknown_type_param/AbstractPayment.java"),
                                 JavaFileObjects.forResource("cases/generic/field_type_declared_with_unknown_type_param/Payment.java"),
@@ -194,7 +192,7 @@ public class LensProcessorTest {
     public void generate_fieldTypeIsDeclaredWithKnownTypeVar_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(Arrays.asList(
+                        .compile(List.of(
                                 JavaFileObjects.forResource("cases/generic/field_type_declared_with_known_type_param/Box.java"),
                                 JavaFileObjects.forResource("cases/generic/field_type_declared_with_known_type_param/Payment.java"),
                                 JavaFileObjects.forResource("common/Currency.java")
@@ -210,7 +208,7 @@ public class LensProcessorTest {
     public void generate_genericResolvedToGenericBasedType_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(Arrays.asList(
+                        .compile(List.of(
                                 JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type/Box.java"),
                                 JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type/BoxedCurrency.java"),
                                 JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type/CurrencyPair.java"),
@@ -228,7 +226,7 @@ public class LensProcessorTest {
     public void generate_childResolveGenericWithSimpleClass_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(Arrays.asList(
+                        .compile(List.of(
                                 JavaFileObjects.forResource("cases/generic/first_sub_class_supplied_simple_type/Base.java"),
                                 JavaFileObjects.forResource("cases/generic/first_sub_class_supplied_simple_type/Child.java")
                         ));
@@ -243,7 +241,7 @@ public class LensProcessorTest {
     public void generate_secondChildResolveGenericWithSimpleClass_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
-                        .compile(Arrays.asList(
+                        .compile(List.of(
                                 JavaFileObjects.forResource("cases/generic/second_sub_class_supplied_simple_type/Base.java"),
                                 JavaFileObjects.forResource("cases/generic/second_sub_class_supplied_simple_type/FirstChild.java"),
                                 JavaFileObjects.forResource("cases/generic/second_sub_class_supplied_simple_type/SecondChild.java")
@@ -502,9 +500,9 @@ public class LensProcessorTest {
     }
 
     private List<JavaFileObject> withPathObjects(JavaFileObject... objects) {
-        List<JavaFileObject> result = new ArrayList<>(Arrays.asList(objects));
+        List<JavaFileObject> result = new ArrayList<>(List.of(objects));
         result.addAll(
-                Arrays.asList(
+                List.of(
                         JavaFileObjects.forResource("common/Bank.java"),
                         JavaFileObjects.forResource("common/Currency.java"),
                         JavaFileObjects.forResource("common/Payer.java"),
