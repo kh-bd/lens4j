@@ -2,8 +2,8 @@ package dev.khbd.lens4j.processor;
 
 import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * {@link Messager} wrapper to log messages more conveniently.
@@ -24,7 +24,7 @@ public class Logger {
      * @param messages messages
      */
     public void error(Message... messages) {
-        error(Arrays.asList(messages));
+        error(List.of(messages));
     }
 
     /**
@@ -42,7 +42,7 @@ public class Logger {
      * @param messages messages
      */
     public void warn(Message... messages) {
-        warn(Arrays.asList(messages));
+        warn(List.of(messages));
     }
 
     /**

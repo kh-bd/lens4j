@@ -1,7 +1,6 @@
 package dev.khbd.lens4j.common;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -56,7 +55,7 @@ public class Path {
      * @return self for chaining
      */
     public Path addParts(PathPart... parts) {
-        this.parts.addAll(Arrays.asList(parts));
+        this.parts.addAll(List.of(parts));
         return this;
     }
 

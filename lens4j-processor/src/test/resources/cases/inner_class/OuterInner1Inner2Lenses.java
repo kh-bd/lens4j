@@ -5,7 +5,7 @@ import dev.khbd.lens4j.core.Lenses;
 import dev.khbd.lens4j.core.ReadLens;
 import java.lang.String;
 import java.lang.UnsupportedOperationException;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 @Generated("dev.khbd.lens4j.processor.LensProcessor")
 final class OuterInner1Inner2Lenses {

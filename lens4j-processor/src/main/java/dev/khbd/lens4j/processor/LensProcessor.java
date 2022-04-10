@@ -1,7 +1,6 @@
 package dev.khbd.lens4j.processor;
 
 import com.google.auto.service.AutoService;
-import com.google.common.collect.ImmutableSet;
 import com.squareup.javapoet.JavaFile;
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
@@ -58,7 +57,7 @@ public class LensProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return ImmutableSet.of(GenLenses.class.getName());
+        return Set.of(GenLenses.class.getName());
     }
 
     @Override
