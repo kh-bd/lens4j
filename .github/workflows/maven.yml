@@ -22,7 +22,7 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
-        cache: maven
+#        cache: maven
 
     - name: Build and Test with Maven
       run: mvn clean package

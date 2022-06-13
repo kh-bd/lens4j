@@ -198,7 +198,7 @@ For maven-based projects, add the following to your `pom.xml` file:
 ***
 
 To add lens4j support to Intellij,
-install [Lens4j intellij plugin](https://github.com/KhadanovichSergey/lens4j-intellij-plugin)
+install [Lens4j intellij plugin](https://github.com/kh-bd/lens4j-intellij-plugin)
 
 # How to run benchmarks?
 
