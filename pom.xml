@@ -9,7 +9,7 @@
 
     <description>Lens4j is a lightweight lens library for Java</description>
 
-    <url>https://github.com/KhadanovichSergey/lens4j</url>
+    <url>https://github.com/kh-bd/lens4j</url>
 
     <modules>
         <module>lens4j-core</module>
@@ -41,9 +41,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:KhadanovichSergey/lens4j.git</connection>
-        <developerConnection>scm:git:ssh://github.com:KhadanovichSergey/lens4j.git</developerConnection>
-        <url>https://github.com/KhadanovichSergey/lens4j/tree/main</url>
+        <connection>scm:git:git@github.com:kh-bd/lens4j.git</connection>
+        <developerConnection>scm:git:ssh://github.com:kh-bd/lens4j.git</developerConnection>
+        <url>https://github.com/kh-bd/lens4j/tree/main</url>
     </scm>
 
     <properties>
