@@ -200,7 +200,23 @@ For maven-based projects, add the following to your `pom.xml` file:
 To add lens4j support to Intellij,
 install [Lens4j intellij plugin](https://github.com/kh-bd/lens4j-intellij-plugin)
 
-# How to run benchmarks?
+# Benchmarks
+
+***
+
+All benchmarks were run on:
+
+- Machine: MacBook Pro 2015
+- Processor: 2.2 GHz Quad-Core Intel Core i7
+- Memory: 16 GB 1600MHz DDR3
+
+![Benchmark results](readme/imgs/benchmark_result.png)
+
+As you can see, manually written code is several times faster so keep that in mind when uses lenses in
+performance critical part of you code base. Lenses' performance is a subject for father optimization.
+Any help is welcome :)
+
+## How to run benchmarks on your own machine?
 
 ***
 
