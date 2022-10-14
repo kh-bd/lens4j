@@ -46,9 +46,17 @@ public class ReadBenchmark {
     }
 
     @Benchmark
-    public void argumentIsNull_lens(Blackhole hole) {
+    public void argumentIsNull_generatedLens(Blackhole hole) {
         for (int i = 0; i < OPS; i++) {
-            String code = PaymentUtil.lensGet(null);
+            String code = PaymentUtil.generatedLensGet(null);
+            hole.consume(code);
+        }
+    }
+
+    @Benchmark
+    public void argumentIsNull_manualLens(Blackhole hole) {
+        for (int i = 0; i < OPS; i++) {
+            String code = PaymentUtil.manualLensGet(null);
             hole.consume(code);
         }
     }
@@ -70,9 +78,17 @@ public class ReadBenchmark {
     }
 
     @Benchmark
-    public void allNotNull_lens(Blackhole hole, AllNotNullState state) {
+    public void allNotNull_generatedLens(Blackhole hole, AllNotNullState state) {
         for (int i = 0; i < OPS; i++) {
-            String code = PaymentUtil.lensGet(state.payment);
+            String code = PaymentUtil.generatedLensGet(state.payment);
+            hole.consume(code);
+        }
+    }
+
+    @Benchmark
+    public void allNotNull_manualLens(Blackhole hole, AllNotNullState state) {
+        for (int i = 0; i < OPS; i++) {
+            String code = PaymentUtil.manualLensGet(state.payment);
             hole.consume(code);
         }
     }
