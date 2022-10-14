@@ -119,7 +119,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private void checkLensNames(Element classElement, List<LensMeta> lenses) {
-        Map<String, List<LensMeta>> lensNames = lenses.stream().collect(Collectors.groupingBy(LensMeta::getLensName));
+        Map<String, List<LensMeta>> lensNames = lenses.stream().collect(Collectors.groupingBy(LensMeta::getName));
         for (Map.Entry<String, List<LensMeta>> entry : lensNames.entrySet()) {
             if (entry.getValue().size() > 1) {
                 throw new LensProcessingException(MessageFactory.existNotUniqueLensName(classElement));

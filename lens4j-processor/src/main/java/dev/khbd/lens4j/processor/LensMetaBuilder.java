@@ -73,9 +73,9 @@ public class LensMetaBuilder {
                 if (!SUPPORTED_ARRAYS_PROPERTIES.contains(property.getName())) {
                     throw new LensProcessingException(MessageFactory.arraysPropertyIsNotSupported(property.getName()));
                 }
-                meta.addLensPart(makeArrayLensPartMeta(property));
+                meta.addPart(makeArrayLensPartMeta(property));
             } else {
-                meta.addLensPart(makeTypeLensPartMeta(property));
+                meta.addPart(makeTypeLensPartMeta(property));
             }
         }
 
@@ -89,15 +89,15 @@ public class LensMetaBuilder {
                             methodElement, methodElement.getReturnType());
 
             LensPartMeta part = new LensPartMeta(lastResolvedType, methodReturnType, method.getName());
-            meta.addLensPart(part.withShape(LensPartMeta.Shape.METHOD));
+            meta.addPart(part.withShape(LensPartMeta.Shape.METHOD));
 
             lastResolvedType = methodReturnType;
         }
 
         @Override
         public void finish() {
-            if (meta.getLensType() == LensType.READ_WRITE
-                    && meta.getLastLensPart().getShape() == LensPartMeta.Shape.METHOD) {
+            if (meta.getType() == LensType.READ_WRITE
+                    && meta.getLastPart().getShape() == LensPartMeta.Shape.METHOD) {
                 throw new LensProcessingException(MessageFactory.methodAtWrongPosition(rootClassElement));
             }
         }

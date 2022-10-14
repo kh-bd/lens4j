@@ -57,7 +57,7 @@ public class LensFactoryGenerator {
 
     private TypeSpec makeType(FactoryMeta factoryMeta) {
         TypeSpec.Builder builder = TypeSpec.classBuilder(factoryMeta.getFactoryName());
-        builder.addModifiers(factoryMeta.getFactoryModifiers().toArray(new Modifier[0]));
+        builder.addModifiers(factoryMeta.getModifiers().toArray(new Modifier[0]));
         builder.addAnnotation(makeGeneratedAnnotation());
         builder.addMethod(makeConstructor());
         for (LensMeta lensMeta : factoryMeta.getLenses()) {
@@ -73,7 +73,7 @@ public class LensFactoryGenerator {
     }
 
     private FieldSpec makeLens(LensMeta lensMeta) {
-        return FieldSpec.builder(makeLensType(lensMeta), lensMeta.getLensName())
+        return FieldSpec.builder(makeLensType(lensMeta), lensMeta.getName())
                 .addModifiers(lensMeta.getModifiers().toArray(Modifier[]::new))
                 .initializer(makeExpression(lensMeta))
                 .build();
@@ -83,15 +83,15 @@ public class LensFactoryGenerator {
         CodeBlock.Builder builder = CodeBlock.builder();
 
         if (lensMeta.isSinglePart()) {
-            builder.add(makeLensCodeBlock(lensMeta.getFirstLensPart(), lensMeta.getLensType()));
+            builder.add(makeLensCodeBlock(lensMeta.getFirstPart(), lensMeta.getType()));
             return builder.build();
         }
 
-        builder.add(makeLensCodeBlock(lensMeta.getFirstLensPart(), LensType.READ));
-        for (LensPartMeta part : lensMeta.getLensPartsWithoutEnds()) {
+        builder.add(makeLensCodeBlock(lensMeta.getFirstPart(), LensType.READ));
+        for (LensPartMeta part : lensMeta.getPartsWithoutEnds()) {
             builder.add(".andThen($L)", makeLensCodeBlock(part, LensType.READ));
         }
-        builder.add(".andThen($L)", makeLensCodeBlock(lensMeta.getLastLensPart(), lensMeta.getLensType()));
+        builder.add(".andThen($L)", makeLensCodeBlock(lensMeta.getLastPart(), lensMeta.getType()));
         return builder.build();
     }
 
@@ -105,7 +105,7 @@ public class LensFactoryGenerator {
     }
 
     private TypeName makeLensType(LensMeta lensMeta) {
-        if (lensMeta.getLensType() == LensType.READ) {
+        if (lensMeta.getType() == LensType.READ) {
             return makeLensReadType(lensMeta);
         }
         return makeLensReadWriteType(lensMeta);
@@ -114,16 +114,16 @@ public class LensFactoryGenerator {
     private TypeName makeLensReadType(LensMeta lensMeta) {
         return ParameterizedTypeName.get(
                 ClassName.get(ReadLens.class),
-                typeNameBuilder.buildTypeName(lensMeta.getFirstLensPart().getSourceType()),
-                typeNameBuilder.buildTypeName(lensMeta.getLastLensPart().getTargetType())
+                typeNameBuilder.buildTypeName(lensMeta.getFirstPart().getSourceType()),
+                typeNameBuilder.buildTypeName(lensMeta.getLastPart().getTargetType())
         );
     }
 
     private TypeName makeLensReadWriteType(LensMeta lensMeta) {
         return ParameterizedTypeName.get(
                 ClassName.get(ReadWriteLens.class),
-                typeNameBuilder.buildTypeName(lensMeta.getFirstLensPart().getSourceType()),
-                typeNameBuilder.buildTypeName(lensMeta.getLastLensPart().getTargetType())
+                typeNameBuilder.buildTypeName(lensMeta.getFirstPart().getSourceType()),
+                typeNameBuilder.buildTypeName(lensMeta.getLastPart().getTargetType())
         );
     }
 

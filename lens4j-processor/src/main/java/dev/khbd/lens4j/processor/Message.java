@@ -9,8 +9,8 @@ import javax.lang.model.element.Element;
  */
 public class Message {
 
-    String msg;
-    Element element;
+    private final String msg;
+    private final Element element;
 
     private Message(String msg, Element element) {
         this.msg = msg;

@@ -3,6 +3,8 @@ package dev.khbd.lens4j.common;
 import java.util.Objects;
 
 /**
+ * Path part which represents point in lens path.
+ *
  * @author Sergei_Khadanovich
  */
 public class Point implements PathPart {

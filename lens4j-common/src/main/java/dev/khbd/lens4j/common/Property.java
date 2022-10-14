@@ -3,6 +3,8 @@ package dev.khbd.lens4j.common;
 import java.util.Objects;
 
 /**
+ * Path part which represents property access in lens path.
+ *
  * @author Sergei_Khadanovich
  */
 public class Property implements PathPart {

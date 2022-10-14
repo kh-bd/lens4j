@@ -14,14 +14,15 @@ public class FactoryMeta {
 
     private final String packageName;
     private final String factoryName;
-    private final Set<Modifier> factoryModifiers;
+    private final Set<Modifier> modifiers;
     private final List<LensMeta> lenses = new ArrayList<>();
 
-    public FactoryMeta(String packageName, String factoryName,
-                       Set<Modifier> factoryModifiers) {
+    public FactoryMeta(String packageName,
+                       String factoryName,
+                       Set<Modifier> modifiers) {
         this.packageName = packageName;
         this.factoryName = factoryName;
-        this.factoryModifiers = factoryModifiers;
+        this.modifiers = modifiers;
     }
 
     /**
@@ -56,8 +57,8 @@ public class FactoryMeta {
      *
      * @return factory modifiers
      */
-    public Set<Modifier> getFactoryModifiers() {
-        return factoryModifiers;
+    public Set<Modifier> getModifiers() {
+        return modifiers;
     }
 
     /**

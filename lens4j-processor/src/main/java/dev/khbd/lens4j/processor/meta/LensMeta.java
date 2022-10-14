@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
  */
 public class LensMeta {
 
-    private final String lensName;
-    private final LensType lensType;
-    private final LinkedList<LensPartMeta> lensParts = new LinkedList<>();
+    private final String name;
+    private final LensType type;
+    private final LinkedList<LensPartMeta> parts = new LinkedList<>();
     private final Set<Modifier> modifiers;
 
-    public LensMeta(String lensName, LensType lensType, Set<Modifier> modifiers) {
-        this.lensName = lensName;
-        this.lensType = lensType;
+    public LensMeta(String name, LensType type, Set<Modifier> modifiers) {
+        this.name = name;
+        this.type = type;
         this.modifiers = modifiers;
     }
 
@@ -31,8 +31,8 @@ public class LensMeta {
      *
      * @param part lens part
      */
-    public void addLensPart(LensPartMeta part) {
-        lensParts.add(part);
+    public void addPart(LensPartMeta part) {
+        parts.add(part);
     }
 
     /**
@@ -40,8 +40,8 @@ public class LensMeta {
      *
      * @return last part in lens chain
      */
-    public LensPartMeta getLastLensPart() {
-        return lensParts.getLast();
+    public LensPartMeta getLastPart() {
+        return parts.getLast();
     }
 
     /**
@@ -49,8 +49,8 @@ public class LensMeta {
      *
      * @return first part in lens chain
      */
-    public LensPartMeta getFirstLensPart() {
-        return lensParts.getFirst();
+    public LensPartMeta getFirstPart() {
+        return parts.getFirst();
     }
 
     /**
@@ -58,10 +58,10 @@ public class LensMeta {
      *
      * @return lens parts
      */
-    public List<LensPartMeta> getLensPartsWithoutEnds() {
-        return lensParts.stream()
+    public List<LensPartMeta> getPartsWithoutEnds() {
+        return parts.stream()
                 .skip(1)
-                .limit(lensParts.size() - 2)
+                .limit(parts.size() - 2)
                 .collect(Collectors.toList());
     }
 
@@ -71,19 +71,19 @@ public class LensMeta {
      * @return {@code true} if single part {@code false} otherwise
      */
     public boolean isSinglePart() {
-        return lensParts.size() == 1;
+        return parts.size() == 1;
     }
 
-    public String getLensName() {
-        return lensName;
+    public String getName() {
+        return name;
     }
 
-    public LensType getLensType() {
-        return lensType;
+    public LensType getType() {
+        return type;
     }
 
-    public List<LensPartMeta> getLensParts() {
-        return lensParts;
+    public List<LensPartMeta> getParts() {
+        return parts;
     }
 
     public Set<Modifier> getModifiers() {

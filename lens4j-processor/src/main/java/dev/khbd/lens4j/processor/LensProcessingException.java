@@ -10,7 +10,7 @@ public class LensProcessingException extends RuntimeException {
     private final Message error;
 
     public LensProcessingException(Message error) {
-        super(error.msg);
+        super(error.getMsg());
         this.error = error;
     }
 
