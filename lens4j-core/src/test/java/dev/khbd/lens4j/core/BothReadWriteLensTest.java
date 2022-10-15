@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 /**
  * @author Sergei_Khadanovich
  */
-public class BothReadWriteLensImplTest {
+public class BothReadWriteLensTest {
 
     private static final ReadWriteLens<Person, String> NAME_LENS =
             Lenses.readWriteLens(Person::getName, Person::setName);

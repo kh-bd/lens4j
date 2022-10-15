@@ -15,7 +15,7 @@ import java.util.function.Function;
  * @param <R>  result type
  * @author Sergei_Khadanovich
  */
-class BothReadWriteLensImpl<O, P1, P2, R> implements ReadWriteLens<O, R> {
+class BothReadWriteLens<O, P1, P2, R> implements ReadWriteLens<O, R> {
 
     private final ReadWriteLens<? super O, P1> lens1;
     private final ReadWriteLens<? super O, P2> lens2;
@@ -23,11 +23,11 @@ class BothReadWriteLensImpl<O, P1, P2, R> implements ReadWriteLens<O, R> {
     private final Function<? super R, ? extends P1> extractorF1;
     private final Function<? super R, ? extends P2> extractorF2;
 
-    BothReadWriteLensImpl(ReadWriteLens<? super O, P1> lens1,
-                          ReadWriteLens<? super O, P2> lens2,
-                          BiFunction<? super P1, ? super P2, ? extends R> combineF,
-                          Function<? super R, ? extends P1> extractorF1,
-                          Function<? super R, ? extends P2> extractorF2) {
+    BothReadWriteLens(ReadWriteLens<? super O, P1> lens1,
+                      ReadWriteLens<? super O, P2> lens2,
+                      BiFunction<? super P1, ? super P2, ? extends R> combineF,
+                      Function<? super R, ? extends P1> extractorF1,
+                      Function<? super R, ? extends P2> extractorF2) {
         this.lens1 = lens1;
         this.lens2 = lens2;
         this.combineF = combineF;

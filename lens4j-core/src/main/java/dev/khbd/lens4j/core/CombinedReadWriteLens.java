@@ -7,13 +7,13 @@ package dev.khbd.lens4j.core;
  * @param <P1> first property type
  * @param <P2> second property type
  */
-class CombinedReadWriteLensImpl<O, P1, P2> implements ReadWriteLens<O, P2> {
+class CombinedReadWriteLens<O, P1, P2> implements ReadWriteLens<O, P2> {
 
     private final ReadLens<? super O, ? extends P1> base;
     private final ReadWriteLens<? super P1, P2> next;
 
-    CombinedReadWriteLensImpl(ReadLens<? super O, ? extends P1> base,
-                              ReadWriteLens<? super P1, P2> next) {
+    CombinedReadWriteLens(ReadLens<? super O, ? extends P1> base,
+                          ReadWriteLens<? super P1, P2> next) {
         this.base = base;
         this.next = next;
     }

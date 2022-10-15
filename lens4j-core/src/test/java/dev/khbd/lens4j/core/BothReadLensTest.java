@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 /**
  * @author Sergei_Khadanovich
  */
-public class BothReadLensImplTest {
+public class BothReadLensTest {
 
     private static final ReadLens<Person, String> LENS =
             Lenses.both(Lenses.readLens(Person::getName),

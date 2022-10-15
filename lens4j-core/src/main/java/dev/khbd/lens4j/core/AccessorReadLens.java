@@ -9,11 +9,11 @@ import java.util.function.Function;
  * @param <O> object type
  * @param <P> property type
  */
-class ReadLensImpl<O, P> implements ReadLens<O, P> {
+class AccessorReadLens<O, P> implements ReadLens<O, P> {
 
     private final Function<? super O, ? extends P> getter;
 
-    ReadLensImpl(Function<? super O, ? extends P> getter) {
+    AccessorReadLens(Function<? super O, ? extends P> getter) {
         this.getter = getter;
     }
 

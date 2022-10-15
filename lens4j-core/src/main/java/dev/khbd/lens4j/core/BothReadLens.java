@@ -14,15 +14,15 @@ import java.util.function.BiFunction;
  * @param <R>  result type
  * @author Sergei_Khadanovich
  */
-class BothReadLensImpl<O, P1, P2, R> implements ReadLens<O, R> {
+class BothReadLens<O, P1, P2, R> implements ReadLens<O, R> {
 
     private final ReadLens<? super O, ? extends P1> lens1;
     private final ReadLens<? super O, ? extends P2> lens2;
     private final BiFunction<? super P1, ? super P2, ? extends R> combineF;
 
-    BothReadLensImpl(ReadLens<? super O, ? extends P1> lens1,
-                     ReadLens<? super O, ? extends P2> lens2,
-                     BiFunction<? super P1, ? super P2, ? extends R> combineF) {
+    BothReadLens(ReadLens<? super O, ? extends P1> lens1,
+                 ReadLens<? super O, ? extends P2> lens2,
+                 BiFunction<? super P1, ? super P2, ? extends R> combineF) {
         this.lens1 = lens1;
         this.lens2 = lens2;
         this.combineF = combineF;

@@ -10,12 +10,12 @@ import java.util.function.Function;
  * @param <O> object type
  * @param <P> property type
  */
-class ReadWriteLensImpl<O, P> extends ReadLensImpl<O, P> implements ReadWriteLens<O, P> {
+class AccessorReadWriteLens<O, P> extends AccessorReadLens<O, P> implements ReadWriteLens<O, P> {
 
     private final BiConsumer<? super O, ? super P> setter;
 
-    ReadWriteLensImpl(Function<? super O, ? extends P> getter,
-                      BiConsumer<? super O, ? super P> setter) {
+    AccessorReadWriteLens(Function<? super O, ? extends P> getter,
+                          BiConsumer<? super O, ? super P> setter) {
         super(getter);
         this.setter = setter;
     }

@@ -93,7 +93,7 @@ public class Lenses {
      * @return read lens
      */
     public static <O, P> ReadLens<O, P> readLens(Function<? super O, ? extends P> getter) {
-        return new ReadLensImpl<>(getter);
+        return new AccessorReadLens<>(getter);
     }
 
     /**
@@ -107,7 +107,7 @@ public class Lenses {
      */
     public static <O, P> ReadWriteLens<O, P> readWriteLens(Function<? super O, ? extends P> getter,
                                                            BiConsumer<? super O, ? super P> setter) {
-        return new ReadWriteLensImpl<>(getter, setter);
+        return new AccessorReadWriteLens<>(getter, setter);
     }
 
     /**
@@ -122,7 +122,7 @@ public class Lenses {
      */
     public static <O, P1, P2> ReadLens<O, P2> combine(ReadLens<? super O, ? extends P1> base,
                                                       ReadLens<? super P1, ? extends P2> next) {
-        return new CombinedReadLensImpl<>(base, next);
+        return new CombinedReadLens<>(base, next);
     }
 
     /**
@@ -137,7 +137,7 @@ public class Lenses {
      */
     public static <O, P1, P2> ReadWriteLens<O, P2> combine(ReadLens<? super O, ? extends P1> base,
                                                            ReadWriteLens<? super P1, P2> next) {
-        return new CombinedReadWriteLensImpl<>(base, next);
+        return new CombinedReadWriteLens<>(base, next);
     }
 
     /**
@@ -158,7 +158,7 @@ public class Lenses {
     public static <O, P1, P2, R> ReadLens<O, R> both(ReadLens<? super O, ? extends P1> lens1,
                                                      ReadLens<? super O, ? extends P2> lens2,
                                                      BiFunction<? super P1, ? super P2, ? extends R> combineF) {
-        return new BothReadLensImpl<>(lens1, lens2, combineF);
+        return new BothReadLens<>(lens1, lens2, combineF);
     }
 
     /**
@@ -183,6 +183,6 @@ public class Lenses {
                                                           BiFunction<? super P1, ? super P2, ? extends R> combineF,
                                                           Function<? super R, ? extends P1> extractorF1,
                                                           Function<? super R, ? extends P2> extractorF2) {
-        return new BothReadWriteLensImpl<>(lens1, lens2, combineF, extractorF1, extractorF2);
+        return new BothReadWriteLens<>(lens1, lens2, combineF, extractorF1, extractorF2);
     }
 }

@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 /**
  * @author Sergei_Khadanovich
  */
-public class CombinedReadWriteLensImplTest {
+public class CombinedReadWriteLensTest {
 
     private static final ReadWriteLens<Account, String> ACCOUNT_CUR_CODE_LENS =
             Lenses.readLens(Account::getCurrency)
