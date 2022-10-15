@@ -37,6 +37,7 @@ public class LensFactoryMetaBuilder {
      * Build factory metadata by annotated element.
      *
      * @param element element
+     * @return built factory metadata
      */
     public FactoryMeta build(Element element) {
         if (element.getKind() == ElementKind.CLASS) {
