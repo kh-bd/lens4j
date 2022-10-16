@@ -61,7 +61,7 @@ public class LensFactoryMetaBuilder {
 
     private FactoryMeta makeFactoryMetaFromClassElement(TypeElement classElement, GenLenses annotation) {
         FactoryMeta factory = new FactoryMeta(getPackage(classElement),
-                makeFactoryName(classElement, annotation), getClassModifiers(classElement));
+                makeFactoryName(classElement, annotation), getClassModifiers(classElement, annotation));
 
         LensMetaBuilder metaBuilder = new LensMetaBuilder(classElement, typeUtil);
         for (Lens lens : annotation.lenses()) {
@@ -92,14 +92,26 @@ public class LensFactoryMetaBuilder {
         return elementUtil.getPackageOf(classElement).toString();
     }
 
-    private Set<Modifier> getClassModifiers(TypeElement classElement) {
+    private Set<Modifier> getClassModifiers(TypeElement classElement, GenLenses annotation) {
         Set<Modifier> modifiers = new HashSet<>();
         modifiers.add(Modifier.FINAL);
 
-        TypeElement topLevelClass = ProcessorUtils.getTopLevelClass(classElement);
-        if (topLevelClass.getModifiers().contains(Modifier.PUBLIC)) {
-            modifiers.add(Modifier.PUBLIC);
+        switch (annotation.accessLevel()) {
+            case PUBLIC:
+                modifiers.add(Modifier.PUBLIC);
+                break;
+            case INHERIT:
+                TypeElement topLevelClass = ProcessorUtils.getTopLevelClass(classElement);
+                if (topLevelClass.getModifiers().contains(Modifier.PUBLIC)) {
+                    modifiers.add(Modifier.PUBLIC);
+                }
+                break;
+            case PACKAGE:
+                break;
+            default:
+                throw new IllegalStateException(annotation.accessLevel().name() + " is unknown GenLenses#AccessLevel.");
         }
+
         return modifiers;
     }
 

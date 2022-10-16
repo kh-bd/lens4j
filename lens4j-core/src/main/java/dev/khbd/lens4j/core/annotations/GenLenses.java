@@ -55,4 +55,32 @@ public @interface GenLenses {
      * @return lenses
      */
     Lens[] lenses() default {};
+
+    /**
+     * Generated factory access level.
+     *
+     * @return access level
+     */
+    AccessLevel accessLevel() default AccessLevel.INHERIT;
+
+    /**
+     * Factory access level.
+     */
+    enum AccessLevel {
+
+        /**
+         * Generated factory will be public class.
+         */
+        PUBLIC,
+
+        /**
+         * Generated factory will be package-private.
+         */
+        PACKAGE,
+
+        /**
+         * Generated factory visibility modified will be the same as annotated class.
+         */
+        INHERIT
+    }
 }

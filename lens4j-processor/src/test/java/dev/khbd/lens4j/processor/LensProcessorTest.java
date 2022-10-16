@@ -18,6 +18,34 @@ import java.util.List;
 public class LensProcessorTest {
 
     @Test
+    public void generate_classIsPackageButFactoryMarkedAsPublic_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(List.of(
+                                JavaFileObjects.forResource("cases/factory_modifiers/public_factory/Account.java")
+                        ));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/factory_modifiers/public_factory/AccountLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/factory_modifiers/public_factory/AccountLenses.java"));
+    }
+
+    @Test
+    public void generate_classIsPublicButFactoryMarkedAsPackage_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(List.of(
+                                JavaFileObjects.forResource("cases/factory_modifiers/package_factory/Account.java")
+                        ));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/factory_modifiers/package_factory/AccountLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/factory_modifiers/package_factory/AccountLenses.java"));
+    }
+
+    @Test
     public void generate_methodReturnTypeIsGenericAndGenericsFromClass_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
