@@ -215,6 +215,8 @@ All benchmarks were run on:
 
 ![Benchmark results](readme/imgs/benchmark_result.png)
 
+See latest benchmark result [here](https://jmh.morethan.io/?source=https://raw.githubusercontent.com/kh-bd/lens4j/main/lens4j-benchmark/src/main/resources/benchmark/result/jmh_v_017_result.json).
+
 As you can see, manually written code is several times faster so keep that in mind when uses lenses in
 performance critical part of you code base. Lenses' performance is a subject for father optimization.
 Any help is welcome :)
