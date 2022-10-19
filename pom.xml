@@ -57,6 +57,7 @@
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
         <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
         <maven-assembly-plugin.version>3.4.2</maven-assembly-plugin.version>
+        <maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
 
         <!-- dependencies versions -->
         <testng.version>7.6.1</testng.version>
