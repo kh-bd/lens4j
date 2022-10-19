@@ -18,6 +18,20 @@ import java.util.List;
 public class LensProcessorTest {
 
     @Test
+    public void generate_classIsRecordAndMethodAccessed_generateValidFactory() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(List.of(
+                                JavaFileObjects.forResource("cases/record/method/Account.java")
+                        ));
+
+        assertThat(compilation).succeeded();
+        assertThat(compilation)
+                .generatedSourceFile("cases/record/method/AccountLenses")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/record/method/AccountLenses.java"));
+    }
+
+    @Test
     public void generate_classIsPackageButFactoryMarkedAsPublic_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
