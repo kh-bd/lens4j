@@ -15,6 +15,7 @@ import dev.khbd.lens4j.processor.path.PathStructureValidator;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -122,9 +123,12 @@ public class LensMetaBuilder {
 
             LensPartMeta part = new LensPartMeta(lastResolvedType, fieldType, property.getName());
 
-            if (!fieldElement.getModifiers().contains(Modifier.PRIVATE)) {
+            if (currentClassElement.getKind() == ElementKind.RECORD) {
+                part.withShape(LensPartMeta.Shape.METHOD);
+            } else if (!fieldElement.getModifiers().contains(Modifier.PRIVATE)) {
                 part.withShape(LensPartMeta.Shape.FIELD);
             }
+
             lastResolvedType = fieldType;
             return part;
         }

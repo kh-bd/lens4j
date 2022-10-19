@@ -40,7 +40,7 @@ public class LensFactoryMetaBuilder {
      * @return built factory metadata
      */
     public FactoryMeta build(Element element) {
-        if (element.getKind() == ElementKind.CLASS) {
+        if (element.getKind() == ElementKind.CLASS || element.getKind() == ElementKind.RECORD) {
             return makeFactoryMetaFromClassElement((TypeElement) element);
         }
         throw new LensProcessingException(MessageFactory.genLensNotAllowedHere(element));
