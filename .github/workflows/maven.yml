@@ -5,9 +5,9 @@ name: Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ backport-java11 ]
   pull_request:
-    branches: [ main ]
+    branches: [ backport-java11 ]
 
 jobs:
   build:
