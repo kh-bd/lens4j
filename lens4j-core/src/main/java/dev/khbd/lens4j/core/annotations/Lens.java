@@ -10,6 +10,11 @@ import java.lang.annotation.Documented;
 @Documented
 public @interface Lens {
 
+    /**
+     * Lens path.
+     *
+     * @return lens path
+     */
     String path();
 
     /**
@@ -37,7 +42,15 @@ public @interface Lens {
      * Lens instance access level.
      */
     enum AccessLevel {
+
+        /**
+         * Generated lens will be public.
+         */
         PUBLIC,
+
+        /**
+         * Generated lens will be package-private.
+         */
         PACKAGE
     }
 }

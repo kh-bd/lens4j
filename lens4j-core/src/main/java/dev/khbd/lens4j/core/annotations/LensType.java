@@ -6,6 +6,14 @@ package dev.khbd.lens4j.core.annotations;
  * @author Sergei_Khadanovich
  */
 public enum LensType {
+
+    /**
+     * Read lens.
+     */
     READ,
+
+    /**
+     * Read-write lens.
+     */
     READ_WRITE
 }
