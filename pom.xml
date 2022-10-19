@@ -51,12 +51,12 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- plugins versions -->
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-        <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
-        <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
+        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
         <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
-        <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
+        <maven-assembly-plugin.version>3.4.2</maven-assembly-plugin.version>
 
         <!-- dependencies versions -->
         <testng.version>7.6.1</testng.version>
@@ -154,7 +154,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <release>11</release>
+                    <release>17</release>
                 </configuration>
             </plugin>
             <plugin>
@@ -198,7 +198,10 @@
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
-                    <argLine>-Dfile.encoding=UTF-8 --illegal-access=permit</argLine>
+<!--                    add-opens is needed here to bypass google-testing problems-->
+<!--                    with accessing internal jdk classes. This problem might be fixed in-->
+<!--                    any future release.-->
+                    <argLine>-Dfile.encoding=UTF-8 --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</argLine>
                     <useSystemClassLoader>false</useSystemClassLoader>
                 </configuration>
             </plugin>
