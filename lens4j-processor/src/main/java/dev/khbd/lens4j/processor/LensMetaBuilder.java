@@ -19,6 +19,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -85,6 +86,7 @@ public class LensMetaBuilder {
             TypeElement currentClassElement = resolveTypeElement(lastResolvedType.getTypeMirror());
 
             ExecutableElement methodElement = findMethod(currentClassElement, method.getName());
+            verifyMethod(methodElement);
             ResolvedParametrizedTypeMirror methodReturnType =
                     resolveType(currentClassElement, lastResolvedType.getActualTypeArguments(),
                             methodElement, methodElement.getReturnType());
@@ -93,6 +95,13 @@ public class LensMetaBuilder {
             meta.addPart(part.withShape(LensPartMeta.Shape.METHOD));
 
             lastResolvedType = methodReturnType;
+        }
+
+        private void verifyMethod(ExecutableElement method) {
+            List<? extends TypeParameterElement> params = method.getTypeParameters();
+            if (!params.isEmpty()) {
+                throw new LensProcessingException(MessageFactory.parametrizedMethodIsNotAllowed(method));
+            }
         }
 
         @Override
