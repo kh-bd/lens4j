@@ -18,6 +18,10 @@ public final class MessageFactory {
     private MessageFactory() {
     }
 
+    public static Message parametrizedMethodIsNotAllowed(Element element) {
+        return Message.of(makeMessage("parametrized_method_is_not_allowed"), element);
+    }
+
     public static Message unsupportedTypeKind(TypeKind typeKind) {
         return Message.of(makeMessage("unsupported_type_kind", typeKind));
     }
