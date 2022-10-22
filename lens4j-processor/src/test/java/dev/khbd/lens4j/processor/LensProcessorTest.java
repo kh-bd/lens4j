@@ -46,6 +46,18 @@ public class LensProcessorTest {
     }
 
     @Test
+    public void generate_parametrizedMethodIsUsed_compilationFailed() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(List.of(
+                                JavaFileObjects.forResource("cases/method/generic/method_generics/Payment.java")
+                        ));
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("Parametrized methods are not allowed");
+    }
+
+    @Test
     public void generate_methodReturnTypeIsGenericAndGenericsFromClass_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())
