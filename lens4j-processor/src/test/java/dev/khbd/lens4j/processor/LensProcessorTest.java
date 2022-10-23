@@ -46,6 +46,18 @@ public class LensProcessorTest {
     }
 
     @Test
+    public void generate_recordFieldAtLastPositionInWriteLens_fail() {
+        Compilation compilation =
+                javac().withProcessors(new LensProcessor())
+                        .compile(List.of(
+                                JavaFileObjects.forResource("cases/record/at_last_position/Account.java")
+                        ));
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("Record properties are not allowed at last position of read-write lenses");
+    }
+
+    @Test
     public void generate_classIsPackageButFactoryMarkedAsPublic_generateValidFactory() {
         Compilation compilation =
                 javac().withProcessors(new LensProcessor())

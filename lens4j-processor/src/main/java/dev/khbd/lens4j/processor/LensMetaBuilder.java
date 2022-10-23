@@ -106,9 +106,25 @@ public class LensMetaBuilder {
 
         @Override
         public void finish() {
-            if (meta.getType() == LensType.READ_WRITE
-                    && meta.getLastPart().getShape() == LensPartMeta.Shape.METHOD) {
+            if (meta.getType() == LensType.READ_WRITE) {
+                verifyRecordPropertyAtLastPosition();
+                verifyMethodAtLastPosition();
+            }
+        }
+
+        private void verifyMethodAtLastPosition() {
+            if (meta.getLastPart().getShape() == LensPartMeta.Shape.METHOD) {
                 throw new LensProcessingException(MessageFactory.methodAtWrongPosition(rootClassElement));
+            }
+        }
+
+        private void verifyRecordPropertyAtLastPosition() {
+            TypeMirror sourceMirror = meta.getLastPart().getSourceType().getTypeMirror();
+            if (sourceMirror.getKind() == TypeKind.DECLARED) {
+                DeclaredType declaredType = (DeclaredType) sourceMirror;
+                if (declaredType.asElement().getKind() == ElementKind.RECORD) {
+                    throw new LensProcessingException(MessageFactory.recordPropertyAtWrongPosition(rootClassElement));
+                }
             }
         }
 

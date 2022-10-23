@@ -58,6 +58,10 @@ public final class MessageFactory {
         return Message.of(makeMessage("method_at_wrong_position"), classElement);
     }
 
+    public static Message recordPropertyAtWrongPosition(Element classElement) {
+        return Message.of(makeMessage("record_property_at_wrong_position"), classElement);
+    }
+
     public static Message nonDeclaredTypeFound(Element classElement) {
         return Message.of(makeMessage("non_declared_type_found"), classElement);
     }
