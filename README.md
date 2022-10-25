@@ -1,7 +1,7 @@
 # Lens4j is a lightweight lens library for Java
 
 [![Lens4j Maven](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j)
-[![CI](https://github.com/kh-bd/lens4j/actions/workflows/maven.yml/badge.svg)](https://github.com/kh-bd/lens4j/actions/workflows/maven.yml)
+[![CI](https://github.com/kh-bd/lens4j/actions/workflows/main-tests.yml/badge.svg)](https://github.com/kh-bd/lens4j/actions/workflows/main-tests.yml)
 
 # What is a lens?
 
