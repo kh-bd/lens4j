@@ -5,7 +5,7 @@
     <groupId>dev.khbd.lens4j</groupId>
     <artifactId>lens4j</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.0</version>
+    <version>LATEST-SNAPSHOT</version>
 
     <description>Lens4j is a lightweight lens library for Java</description>
 
@@ -155,7 +155,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <release>17</release>
+                    <release>19</release>
                 </configuration>
             </plugin>
             <plugin>
