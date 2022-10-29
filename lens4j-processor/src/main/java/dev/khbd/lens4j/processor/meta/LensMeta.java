@@ -66,6 +66,17 @@ public class LensMeta {
     }
 
     /**
+     * Get lens parts without first element.
+     *
+     * @return lens parts
+     */
+    public List<LensPartMeta> getPartsWithoutLast() {
+        return parts.stream()
+                .limit(parts.size() - 1)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Is single part or not.
      *
      * @return {@code true} if single part {@code false} otherwise
@@ -80,10 +91,6 @@ public class LensMeta {
 
     public LensType getType() {
         return type;
-    }
-
-    public List<LensPartMeta> getParts() {
-        return parts;
     }
 
     public Set<Modifier> getModifiers() {
