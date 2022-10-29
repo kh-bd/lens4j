@@ -1,16 +1,14 @@
 package dev.khbd.lens4j.processor;
 
-import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
-
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import javax.tools.JavaFileObject;
-import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.testing.compile.CompilationSubject.assertThat;
+import static com.google.testing.compile.Compiler.javac;
 
 /**
  * @author Alexey_Bodyak
@@ -19,108 +17,71 @@ public class LensProcessorTest {
 
     @Test
     public void generate_classIsRecordAndMethodAccessed_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/record/method/Account.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/record/method/AccountLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/record/method/AccountLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/record/method/Account.java")
+                .compile()
+                .success()
+                .generated("cases/record/method/AccountLenses", "cases/record/method/AccountLenses.java");
     }
 
     @Test
     public void generate_classIsRecordAndFieldAccessed_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/record/field/Account.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/record/field/AccountLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/record/field/AccountLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/record/field/Account.java")
+                .compile()
+                .success()
+                .generated("cases/record/field/AccountLenses", "cases/record/field/AccountLenses.java");
     }
 
     @Test
     public void generate_recordFieldAtLastPositionInWriteLens_fail() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/record/at_last_position/Account.java")
-                        ));
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Record properties are not allowed at last position of read-write lenses");
+        CompilationDescription.of()
+                .withFile("cases/record/at_last_position/Account.java")
+                .compile()
+                .failed("Record properties are not allowed at last position of read-write lenses");
     }
 
     @Test
     public void generate_classIsPackageButFactoryMarkedAsPublic_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/factory_modifiers/public_factory/Account.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/factory_modifiers/public_factory/AccountLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/factory_modifiers/public_factory/AccountLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/factory_modifiers/public_factory/Account.java")
+                .compile()
+                .success()
+                .generated("cases/factory_modifiers/public_factory/AccountLenses", "cases/factory_modifiers/public_factory/AccountLenses.java");
     }
 
     @Test
     public void generate_classIsPublicButFactoryMarkedAsPackage_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/factory_modifiers/package_factory/Account.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/factory_modifiers/package_factory/AccountLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/factory_modifiers/package_factory/AccountLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/factory_modifiers/package_factory/Account.java")
+                .compile()
+                .success()
+                .generated("cases/factory_modifiers/package_factory/AccountLenses", "cases/factory_modifiers/package_factory/AccountLenses.java");
     }
 
     @Test
     public void generate_parametrizedMethodIsUsed_compilationFailed() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/method/generic/method_generics/Payment.java")
-                        ));
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Parametrized methods are not allowed");
+        CompilationDescription.of()
+                .withFile("cases/method/generic/method_generics/Payment.java")
+                .compile()
+                .failed("Parametrized methods are not allowed");
     }
 
     @Test
     public void generate_methodReturnTypeIsGenericAndGenericsFromClass_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/method/generic/class_generics/Payment.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/method/generic/class_generics/PaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/method/generic/class_generics/PaymentLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/method/generic/class_generics/Payment.java")
+                .compile()
+                .success()
+                .generated("cases/method/generic/class_generics/PaymentLenses", "cases/method/generic/class_generics/PaymentLenses.java");
     }
 
     @Test(dataProvider = "methodExistsButNotApplicableProvider")
     public void generate_methodExistButNotApplicable_compileError(String path) {
-        JavaFileObject fileObject = JavaFileObjects.forResource(path);
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Method 'payer' was not found in class 'Payment'");
-
+        CompilationDescription.of()
+                .withFile(path)
+                .compile()
+                .failed("Method 'payer' was not found in class 'Payment'");
     }
 
     @DataProvider
@@ -135,120 +96,88 @@ public class LensProcessorTest {
 
     @Test
     public void generate_methodUsedCorrectly_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(
-                                JavaFileObjects.forResource("cases/method/found/Payment.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/method/found/PaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/method/found/PaymentLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/method/found/Payment.java")
+                .withCommons()
+                .compile()
+                .success()
+                .generated("cases/method/found/PaymentLenses", "cases/method/found/PaymentLenses.java");
     }
 
     @Test
     public void generate_arrayLengthIsSupported_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(
-                                JavaFileObjects.forResource("cases/array_length_support/Payment.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/array_length_support/PaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/array_length_support/PaymentLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/array_length_support/Payment.java")
+                .withCommons()
+                .compile()
+                .success()
+                .generated("cases/array_length_support/PaymentLenses");
     }
 
     @Test
     public void generate_notSupportedArrayProperty_compilationError() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(
-                                JavaFileObjects.forResource("cases/array_without_supported_property/Payment.java")
-                        ));
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Arrays property 'length1' is not supported");
+        CompilationDescription.of()
+                .withFile("cases/array_without_supported_property/Payment.java")
+                .compile()
+                .failed("Arrays property 'length1' is not supported");
     }
 
     @Test
     public void generate_notSupportedPropertyAfterLengthArrayProperty_compilationError() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(
-                                JavaFileObjects.forResource("cases/array_without_supported_property/PaymentWithPropertyAfterLength.java")
-                        ));
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Non-declared types are allowed only at last position in path");
+        CompilationDescription.of()
+                .withFile("cases/array_without_supported_property/PaymentWithPropertyAfterLength.java")
+                .compile()
+                .failed("Non-declared types are allowed only at last position in path");
     }
 
     @Test
     public void generate_methodAtFirstPositionInSinglePartLens_compilationError() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/method/wrong_position/single_part_path/Payment.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Methods are not allowed at last position of read-write lenses");
+        CompilationDescription.of()
+                .withFile("cases/method/wrong_position/single_part_path/Payment.java")
+                .compile()
+                .failed("Methods are not allowed at last position of read-write lenses");
     }
 
     @Test
     public void generate_userOverrideLensModifiers_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/lens_modifiers/Account.java"),
-                                JavaFileObjects.forResource("common/Currency.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/lens_modifiers/AccountLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/lens_modifiers/AccountLenses.java"));
+        CompilationDescription.of()
+                .withFiles(
+                        "cases/lens_modifiers/Account.java",
+                        "common/Currency.java"
+                )
+                .compile()
+                .success()
+                .generated("cases/lens_modifiers/AccountLenses");
     }
 
     @Test
     public void generate_genericHasProjectionAtDeclarationSite_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/generic/projection/From.java"),
-                                JavaFileObjects.forResource("cases/generic/projection/StrFrom.java"),
-                                JavaFileObjects.forResource("cases/generic/projection/AbstractPayment.java"),
-                                JavaFileObjects.forResource("cases/generic/projection/Payment.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/generic/projection/PaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/projection/PaymentLenses.java"));
+        CompilationDescription.of()
+                .withFiles(
+                        "cases/generic/projection/From.java",
+                        "cases/generic/projection/StrFrom.java",
+                        "cases/generic/projection/AbstractPayment.java",
+                        "cases/generic/projection/Payment.java"
+                )
+                .compile()
+                .success()
+                .generated("cases/generic/projection/PaymentLenses");
     }
 
     @Test
     public void generate_resolvedTypeIsDeclaredWithUnKnownTypeVar_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/Box.java"),
-                                JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/AbstractPayment.java"),
-                                JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/BoxedToPayment.java"),
-                                JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/Payments.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/StrPaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/StrPaymentLenses.java"));
-        assertThat(compilation)
-                .generatedSourceFile("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/ArrayPaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/ArrayPaymentLenses.java"));
-        assertThat(compilation)
-                .generatedSourceFile("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/GenPaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/GenPaymentLenses.java"));
+        CompilationDescription.of()
+                .withFiles(
+                        "cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/Box.java",
+                        "cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/AbstractPayment.java",
+                        "cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/BoxedToPayment.java",
+                        "cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/Payments.java"
+                )
+                .compile()
+                .success()
+                .generated("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/ArrayPaymentLenses")
+                .generated("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/GenPaymentLenses")
+                .generated("cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/StrPaymentLenses");
     }
 
     @Test
@@ -359,236 +288,168 @@ public class LensProcessorTest {
 
     @Test
     public void generate_lensPathHasPrimitiveTypeInTheMiddle_compilationError() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/primitive_type_in_the_middle/WithPrimitive.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(fileObject);
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Non-declared types are allowed only at last position in path");
+        CompilationDescription.of()
+                .withFile("cases/primitive_type_in_the_middle/WithPrimitive.java")
+                .compile()
+                .failed("Non-declared types are allowed only at last position in path");
     }
 
     @Test
     public void generate_lensesWithSinglePropertyPath_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(JavaFileObjects.forResource("cases/single_property/Account.java")));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/single_property/AccountLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/single_property/AccountLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/single_property/Account.java")
+                .withCommons()
+                .compile()
+                .success()
+                .generated("cases/single_property/AccountLenses");
     }
 
     @Test
     public void generate_classWithTwoGenReadAnnotations_generateValidPaymentFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(JavaFileObjects.forResource("cases/multi_property/Payment.java")));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/multi_property/PaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/multi_property/PaymentLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/multi_property/Payment.java")
+                .withCommons()
+                .compile()
+                .success()
+                .generated("cases/multi_property/PaymentLenses");
     }
 
     @Test
     public void generate_twoClassesWithGenLensesAnnotations_generateValidFactories() {
-        JavaFileObject accountFile = JavaFileObjects.forResource("cases/single_property/Account.java");
-        JavaFileObject paymentFile = JavaFileObjects.forResource("cases/multi_property/Payment.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(accountFile, paymentFile));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/single_property/AccountLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/single_property/AccountLenses.java"));
-        assertThat(compilation)
-                .generatedSourceFile("cases/multi_property/PaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/multi_property/PaymentLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/single_property/Account.java")
+                .withFile("cases/multi_property/Payment.java")
+                .withCommons()
+                .compile()
+                .success()
+                .generated("cases/single_property/AccountLenses")
+                .generated("cases/multi_property/PaymentLenses");
     }
 
     @Test
     public void generate_annotationWithSpecificFactoryName_generateValidSpecificFactory() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/specific_factory_name/AccountWithSpecificFactoryName.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/specific_factory_name/SpecificFactoryName")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/specific_factory_name/SpecificFactoryName.java"));
+        CompilationDescription.of()
+                .withFile("cases/specific_factory_name/AccountWithSpecificFactoryName.java")
+                .withCommons()
+                .compile()
+                .success()
+                .generated("cases/specific_factory_name/SpecificFactoryName");
     }
 
     @Test
     public void generate_annotationWithDeCapitalizeSpecificFactoryName_generateValidSpecificFactory() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/decapitalize_factory_name/AccountWithDeCapitalizeSpecificFactoryName.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/decapitalize_factory_name/SpecificFactoryName")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/decapitalize_factory_name/CapitalizeSpecificFactoryName.java"));
+        CompilationDescription.of()
+                .withFile("cases/decapitalize_factory_name/AccountWithDeCapitalizeSpecificFactoryName.java")
+                .withCommons()
+                .compile()
+                .success()
+                .generated("cases/decapitalize_factory_name/SpecificFactoryName", "cases/decapitalize_factory_name/CapitalizeSpecificFactoryName.java");
     }
 
     @Test
     public void generate_annotationWithEmptyLensName_generateValidSpecificFactory() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/empty_lens_name/AccountWithEmptyLensName.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/empty_lens_name/AccountWithEmptyLensNameLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/empty_lens_name/AccountWithEmptyLensNameLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/empty_lens_name/AccountWithEmptyLensName.java")
+                .withCommons()
+                .compile()
+                .success()
+                .generated("cases/empty_lens_name/AccountWithEmptyLensNameLenses");
     }
 
     @Test
     public void generate_annotationFromPackagePrivateClass_generateValidPackagePrivateFactory() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/package_private_class/PackagePrivateAccount.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/package_private_class/PackagePrivateAccountLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/package_private_class/PackagePrivateAccountLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/package_private_class/PackagePrivateAccount.java")
+                .withCommons()
+                .compile()
+                .success()
+                .generated("cases/package_private_class/PackagePrivateAccountLenses");
     }
 
     @Test
     public void generate_lensPathContainsPropertyFromBaseClass_generateValidFactory() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/sub_class/SubClass.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/sub_class/SubClassLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/sub_class/SubClassLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/sub_class/SubClass.java")
+                .withCommons()
+                .compile()
+                .success()
+                .generated("cases/sub_class/SubClassLenses");
     }
 
     @Test
     public void generate_typeHasNotUniqueLensNames_compilationError() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/duplicate_lens_names/DuplicateNames.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Lens names for type should be unique");
+        CompilationDescription.of()
+                .withFile("cases/duplicate_lens_names/DuplicateNames.java")
+                .compile()
+                .failed("Lens names for type should be unique");
     }
 
     @Test
     public void generate_lensPathIsEmpty_compilationError() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/lens_with_empty_path/WithEmptyPath.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Lens path is incorrect");
+        CompilationDescription.of()
+                .withFile("cases/lens_with_empty_path/WithEmptyPath.java")
+                .compile()
+                .failed("Lens path is incorrect");
     }
 
     @Test
     public void generate_annotationOnInterface_compilationError() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/on_interface/LensOnInterface.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("@GenLenses is not allowed here");
+        CompilationDescription.of()
+                .withFile("cases/on_interface/LensOnInterface.java")
+                .compile()
+                .failed("@GenLenses is not allowed here");
     }
 
     @Test
     public void generate_annotationWithoutLensPath_compilationError() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/lens_without_path/AnnotationWithoutLensPath.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("annotation @dev.khbd.lens4j.core.annotations.Lens is missing a default value for the element 'path'");
+        CompilationDescription.of()
+                .withFile("cases/lens_without_path/AnnotationWithoutLensPath.java")
+                .compile()
+                .failed("annotation @dev.khbd.lens4j.core.annotations.Lens is missing a default value for the element 'path'");
     }
 
     @Test
     public void generate_pathContainsWrongFieldName_compilationError() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/field_not_found/FieldNotFound.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("Field 'bid' was not found in class 'Currency'");
+        CompilationDescription.of()
+                .withFile("cases/field_not_found/FieldNotFound.java")
+                .compile()
+                .failed("Field 'bid' was not found in class 'Currency'");
     }
 
     @Test
     public void generate_innerClassAnnotatedGenLenses_generateFactory() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/inner_class/Outer.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/inner_class/OuterInner1Inner2Lenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/inner_class/OuterInner1Inner2Lenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/inner_class/Outer.java")
+                .withCommons()
+                .compile()
+                .success()
+                .generated("cases/inner_class/OuterInner1Inner2Lenses", "cases/inner_class/OuterInner1Inner2Lenses.java");
     }
 
     @Test
     public void generate_nessClassAnnotatedGenLenses_generateFactory() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/nested_class/Outer.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(withPathObjects(fileObject));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/nested_class/OuterInner1Inner2Lenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/nested_class/OuterInner1Inner2Lenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/nested_class/Outer.java")
+                .withCommons()
+                .compile()
+                .success()
+                .generated("cases/nested_class/OuterInner1Inner2Lenses", "cases/nested_class/OuterInner1Inner2Lenses.java");
     }
 
     @Test
     public void generate_classIsGeneric_compilationError() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/generic/generic_class/GenericClass.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(fileObject);
-
-        assertThat(compilation).failed();
-        assertThat(compilation).hadErrorContaining("@GenLenses is not allowed on generic classes");
+        CompilationDescription.of()
+                .withFile("cases/generic/generic_class/GenericClass.java")
+                .compile()
+                .failed("@GenLenses is not allowed on generic classes");
     }
 
     @Test
     public void generate_someFieldsAreNotPrivate_generateValidFactory() {
-        JavaFileObject fileObject = JavaFileObjects.forResource("cases/field_strategy/Payment.java");
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(fileObject);
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/field_strategy/PaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/field_strategy/PaymentLenses.java"));
-    }
-
-    private List<JavaFileObject> withPathObjects(JavaFileObject... objects) {
-        List<JavaFileObject> result = new ArrayList<>(List.of(objects));
-        result.addAll(
-                List.of(
-                        JavaFileObjects.forResource("common/Bank.java"),
-                        JavaFileObjects.forResource("common/Currency.java"),
-                        JavaFileObjects.forResource("common/Payer.java"),
-                        JavaFileObjects.forResource("common/Receiver.java")
-                )
-        );
-        return result;
+        CompilationDescription.of()
+                .withFile("cases/field_strategy/Payment.java")
+                .compile()
+                .success()
+                .generated("cases/field_strategy/PaymentLenses");
     }
 }
