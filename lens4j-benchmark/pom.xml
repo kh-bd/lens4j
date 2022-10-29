@@ -10,6 +10,10 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <inlined>false</inlined>
+    </properties>
+
     <artifactId>lens4j-benchmark</artifactId>
 
     <dependencies>
@@ -50,10 +54,27 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <release>19</release>
+                    <compilerArgs>
+                        <compilerArg>-Alenses.generate.inlined=${inlined}</compilerArg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <profiles>
+        <profile>
+            <id>inlined</id>
+            <properties>
+                <inlined>true</inlined>
+            </properties>
+        </profile>
         <profile>
             <id>benchmark</id>
             <build>
