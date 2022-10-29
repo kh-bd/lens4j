@@ -28,6 +28,10 @@ public class CompilationResult {
         return this;
     }
 
+    public CompilationResult generated(String fileName) {
+        return generated(fileName, fileName + ".java");
+    }
+
     public CompilationResult failed(String... messages) {
         assertThat(compilation).failed();
         for (String message : messages) {
