@@ -1,14 +1,7 @@
 package dev.khbd.lens4j.processor;
 
-import com.google.testing.compile.Compilation;
-import com.google.testing.compile.JavaFileObjects;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.util.List;
-
-import static com.google.testing.compile.CompilationSubject.assertThat;
-import static com.google.testing.compile.Compiler.javac;
 
 /**
  * @author Alexey_Bodyak
@@ -156,108 +149,87 @@ public class LensProcessorTest {
 
     @Test
     public void generate_fieldTypeIsDeclaredWithUnKnownTypeVar_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/generic/field_type_declared_with_unknown_type_param/Box.java"),
-                                JavaFileObjects.forResource("cases/generic/field_type_declared_with_unknown_type_param/AbstractPayment.java"),
-                                JavaFileObjects.forResource("cases/generic/field_type_declared_with_unknown_type_param/Payment.java"),
-                                JavaFileObjects.forResource("common/Currency.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/generic/field_type_declared_with_unknown_type_param/PaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/field_type_declared_with_unknown_type_param/PaymentLenses.java"));
+        CompilationDescription.of()
+                .withFiles(
+                        "cases/generic/field_type_declared_with_unknown_type_param/Box.java",
+                        "cases/generic/field_type_declared_with_unknown_type_param/AbstractPayment.java",
+                        "cases/generic/field_type_declared_with_unknown_type_param/Payment.java",
+                        "common/Currency.java"
+                )
+                .compile()
+                .success()
+                .generated("cases/generic/field_type_declared_with_unknown_type_param/PaymentLenses");
     }
 
     @Test
     public void generate_fieldTypeIsDeclaredWithKnownTypeVar_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/generic/field_type_declared_with_known_type_param/Box.java"),
-                                JavaFileObjects.forResource("cases/generic/field_type_declared_with_known_type_param/Payment.java"),
-                                JavaFileObjects.forResource("common/Currency.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/generic/field_type_declared_with_known_type_param/PaymentLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/field_type_declared_with_known_type_param/PaymentLenses.java"));
+        CompilationDescription.of()
+                .withFiles(
+                        "cases/generic/field_type_declared_with_known_type_param/Box.java",
+                        "cases/generic/field_type_declared_with_known_type_param/Payment.java",
+                        "common/Currency.java"
+                )
+                .compile()
+                .success()
+                .generated("cases/generic/field_type_declared_with_known_type_param/PaymentLenses");
     }
 
     @Test
     public void generate_genericResolvedToGenericBasedType_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type/Box.java"),
-                                JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type/BoxedCurrency.java"),
-                                JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type/CurrencyPair.java"),
-                                JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type/Pair.java"),
-                                JavaFileObjects.forResource("common/Currency.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/generic/type_resolved_to_generic_based_type/CurrencyPairLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/type_resolved_to_generic_based_type/CurrencyPairLenses.java"));
+        CompilationDescription.of()
+                .withFiles(
+                        "cases/generic/type_resolved_to_generic_based_type/Box.java",
+                        "cases/generic/type_resolved_to_generic_based_type/BoxedCurrency.java",
+                        "cases/generic/type_resolved_to_generic_based_type/CurrencyPair.java",
+                        "cases/generic/type_resolved_to_generic_based_type/Pair.java",
+                        "common/Currency.java"
+                )
+                .compile()
+                .success()
+                .generated("cases/generic/type_resolved_to_generic_based_type/CurrencyPairLenses");
     }
 
     @Test
     public void generate_childResolveGenericWithSimpleClass_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/generic/first_sub_class_supplied_simple_type/Base.java"),
-                                JavaFileObjects.forResource("cases/generic/first_sub_class_supplied_simple_type/Child.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/generic/first_sub_class_supplied_simple_type/ChildLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/first_sub_class_supplied_simple_type/ChildLenses.java"));
+        CompilationDescription.of()
+                .withFiles(
+                        "cases/generic/first_sub_class_supplied_simple_type/Base.java",
+                        "cases/generic/first_sub_class_supplied_simple_type/Child.java"
+                )
+                .compile()
+                .success()
+                .generated("cases/generic/first_sub_class_supplied_simple_type/ChildLenses");
     }
 
     @Test
     public void generate_secondChildResolveGenericWithSimpleClass_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(List.of(
-                                JavaFileObjects.forResource("cases/generic/second_sub_class_supplied_simple_type/Base.java"),
-                                JavaFileObjects.forResource("cases/generic/second_sub_class_supplied_simple_type/FirstChild.java"),
-                                JavaFileObjects.forResource("cases/generic/second_sub_class_supplied_simple_type/SecondChild.java")
-                        ));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/generic/second_sub_class_supplied_simple_type/SecondChildLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/generic/second_sub_class_supplied_simple_type/SecondChildLenses.java"));
+        CompilationDescription.of()
+                .withFiles(
+                        "cases/generic/second_sub_class_supplied_simple_type/Base.java",
+                        "cases/generic/second_sub_class_supplied_simple_type/FirstChild.java",
+                        "cases/generic/second_sub_class_supplied_simple_type/SecondChild.java"
+                )
+                .compile()
+                .success()
+                .generated("cases/generic/second_sub_class_supplied_simple_type/SecondChildLenses");
     }
 
     @Test
     public void generate_lensPathContainsArrayType_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("cases/array_type_at_the_end/WithArray.java"));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/array_type_at_the_end/WithArrayLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/array_type_at_the_end/WithArrayLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/array_type_at_the_end/WithArray.java")
+                .compile()
+                .success()
+                .generated("cases/array_type_at_the_end/WithArrayLenses");
     }
 
     @Test
     public void generate_lensPathContainsPrimitiveType_generateValidFactory() {
-        Compilation compilation =
-                javac().withProcessors(new LensProcessor())
-                        .compile(JavaFileObjects.forResource("cases/primitive_type_at_the_end/WithPrimitive.java"));
-
-        assertThat(compilation).succeeded();
-        assertThat(compilation)
-                .generatedSourceFile("cases/primitive_type_at_the_end/WithPrimitiveLenses")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("cases/primitive_type_at_the_end/WithPrimitiveLenses.java"));
+        CompilationDescription.of()
+                .withFile("cases/primitive_type_at_the_end/WithPrimitive.java")
+                .compile()
+                .success()
+                .generated("cases/primitive_type_at_the_end/WithPrimitiveLenses");
     }
 
     @Test
