@@ -11,7 +11,6 @@ public class LensProcessorFailTest {
     @DataProvider
     public static Object[][] failCases() {
         return new Object[][]{
-                {"cases/record/at_last_position/Account.java", "Record properties are not allowed at last position of read-write lenses"},
                 {"cases/method/generic/method_generics/Payment.java", "Parametrized methods are not allowed"},
                 {"cases/method/not_found/_static/Payment.java", "Method 'payer' was not found in class 'Payment'"},
                 {"cases/method/not_found/not_visible/Payment.java", "Method 'payer' was not found in class 'Payment'"},

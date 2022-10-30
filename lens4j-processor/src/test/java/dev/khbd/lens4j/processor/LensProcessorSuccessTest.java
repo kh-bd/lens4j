@@ -11,8 +11,6 @@ public class LensProcessorSuccessTest {
     @DataProvider
     public static Object[][] simpleSuccessCases() {
         return new Object[][]{
-                {"cases/record/method/Account.java", "cases/record/method/AccountLenses"},
-                {"cases/record/field/Account.java", "cases/record/field/AccountLenses"},
                 {"cases/factory_modifiers/public_factory/Account.java", "cases/factory_modifiers/public_factory/AccountLenses"},
                 {"cases/factory_modifiers/package_factory/Account.java", "cases/factory_modifiers/package_factory/AccountLenses"},
                 {"cases/method/generic/class_generics/Payment.java", "cases/method/generic/class_generics/PaymentLenses"},
@@ -47,8 +45,6 @@ public class LensProcessorSuccessTest {
     @DataProvider
     public static Object[][] inlinedSimpleSuccessCases() {
         return new Object[][]{
-                {"cases/record/method/Account.java", "cases/record/method/AccountLenses", "cases/record/method/AccountLensesInlined.java"},
-                {"cases/record/field/Account.java", "cases/record/field/AccountLenses", "cases/record/field/AccountLensesInlined.java"},
                 {"cases/factory_modifiers/public_factory/Account.java", "cases/factory_modifiers/public_factory/AccountLenses", "cases/factory_modifiers/public_factory/AccountLensesInlined.java"},
                 {"cases/factory_modifiers/package_factory/Account.java", "cases/factory_modifiers/package_factory/AccountLenses", "cases/factory_modifiers/package_factory/AccountLensesInlined.java"}
         };
