@@ -11,10 +11,10 @@ import javax.annotation.processing.Generated;
 
 @Generated("dev.khbd.lens4j.processor.LensProcessor")
 public final class SpecificFactoryName {
-    public static final ReadLens<AccountWithDeCapitalizeSpecificFactoryName, String> ACCOUNT_CURRENCY_CODE_READ_LENS = Lenses.readLens(AccountWithDeCapitalizeSpecificFactoryName::getCurrency)
+    public static final ReadLens<Account, String> ACCOUNT_CURRENCY_CODE_READ_LENS = Lenses.readLens(Account::getCurrency)
             .andThen(Lenses.readLens(Currency::getCode));
 
-    public static final ReadWriteLens<AccountWithDeCapitalizeSpecificFactoryName, Integer> ACCOUNT_CURRENCY_CODE_READ_WRITE_LENS = Lenses.readLens(AccountWithDeCapitalizeSpecificFactoryName::getCurrency)
+    public static final ReadWriteLens<Account, Integer> ACCOUNT_CURRENCY_CODE_READ_WRITE_LENS = Lenses.readLens(Account::getCurrency)
             .andThen(Lenses.readWriteLens(Currency::getId, Currency::setId));
 
     private SpecificFactoryName() {
