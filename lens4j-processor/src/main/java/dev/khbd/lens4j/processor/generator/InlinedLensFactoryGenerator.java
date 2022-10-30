@@ -13,6 +13,7 @@ import dev.khbd.lens4j.core.ReadLens;
 import dev.khbd.lens4j.core.ReadWriteLens;
 import dev.khbd.lens4j.core.annotations.LensType;
 import dev.khbd.lens4j.processor.LensProcessor;
+import dev.khbd.lens4j.processor.LexicalScope;
 import dev.khbd.lens4j.processor.meta.FactoryMeta;
 import dev.khbd.lens4j.processor.meta.LensMeta;
 import dev.khbd.lens4j.processor.meta.LensPartMeta;
@@ -120,13 +121,15 @@ public class InlinedLensFactoryGenerator implements LensFactoryGenerator {
     }
 
     private CodeBlock readLensLogic(LensMeta lensMeta) {
+        LexicalScope lexicalScope = new LexicalScope(SOURCE_ARGUMENT_NAME);
+
         String sourceName = SOURCE_ARGUMENT_NAME;
 
         CodeBlock.Builder builder = CodeBlock.builder();
         builder.add(nonNullReadCodeBlock(sourceName));
 
         for (LensPartMeta part : lensMeta.getPartsWithoutLast()) {
-            String propertyName = part.getName();
+            String propertyName = lexicalScope.add(part.getName());
             builder.addStatement("$T $N = $L", typeNameBuilder.buildTypeName(part.getTargetType()), propertyName, propertyRead(sourceName, part));
             builder.add(nonNullReadCodeBlock(propertyName));
 
@@ -140,13 +143,15 @@ public class InlinedLensFactoryGenerator implements LensFactoryGenerator {
     }
 
     private CodeBlock writeLensLogic(LensMeta lensMeta) {
+        LexicalScope lexicalScope = new LexicalScope(SOURCE_ARGUMENT_NAME, PROPERTY_ARGUMENT_NAME);
+
         String sourceName = SOURCE_ARGUMENT_NAME;
 
         CodeBlock.Builder builder = CodeBlock.builder();
         builder.add(nonNullWriteCodeBlock(sourceName));
 
         for (LensPartMeta part : lensMeta.getPartsWithoutLast()) {
-            String propertyName = part.getName();
+            String propertyName = lexicalScope.add(part.getName());
             builder.addStatement("$T $N = $L", typeNameBuilder.buildTypeName(part.getTargetType()), propertyName, propertyRead(sourceName, part));
             builder.add(nonNullWriteCodeBlock(propertyName));
 
