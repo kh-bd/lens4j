@@ -14,30 +14,29 @@ import java.util.stream.Collectors;
  */
 public class Options {
 
-    private static final OptionsKey<Boolean> GENERATE_INLINED_LENSES = new OptionsKey<>("lenses.generate.inlined");
+    private static final String GENERATE_INLINED_LENSES = "lenses.generate.inlined";
 
     private static final List<OptionsDescription<?>> DESCRIPTIONS = List.of(
             new OptionsDescription<>(GENERATE_INLINED_LENSES, Boolean::parseBoolean, () -> false)
     );
 
-    private final Map<OptionsKey<?>, Object> params = new HashMap<>();
+    private final Map<String, Object> params = new HashMap<>();
 
     public Options(Map<String, String> args) {
         for (String key : args.keySet()) {
-            OptionsKey<?> optionsKey = new OptionsKey<>(key);
-            OptionsDescription<?> description = findDescription(optionsKey);
+            OptionsDescription<?> description = findDescription(key);
             if (Objects.isNull(description)) {
                 continue;
             }
             String value = args.get(key);
             if (Objects.isNull(value)) {
-                params.put(optionsKey, description.defaultValue.get());
+                params.put(key, description.defaultValue.get());
             } else {
-                params.put(optionsKey, parseValueOrDefault(description, value));
+                params.put(key, parseValueOrDefault(description, value));
             }
         }
         for (OptionsDescription<?> description : DESCRIPTIONS) {
-            params.putIfAbsent(description.key(), description.defaultValue().get());
+            params.putIfAbsent(description.key, description.defaultValue.get());
         }
     }
 
@@ -57,37 +56,42 @@ public class Options {
      */
     public static Set<String> getOptionsKeys() {
         return DESCRIPTIONS.stream()
-                .map(descr -> descr.key().name())
+                .map(descr -> descr.key)
                 .collect(Collectors.toSet());
     }
 
-    private static OptionsDescription<?> findDescription(OptionsKey<?> key) {
+    private static OptionsDescription<?> findDescription(String key) {
         return DESCRIPTIONS.stream()
-                .filter(description -> description.key().equals(key))
+                .filter(description -> description.key.equals(key))
                 .findFirst()
                 .orElse(null);
     }
 
     private static Object parseValueOrDefault(OptionsDescription<?> description, String value) {
         try {
-            return description.parser().apply(value);
+            return description.parser.apply(value);
         } catch (Exception e) {
-            return description.defaultValue().get();
+            return description.defaultValue.get();
         }
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T getKeyValue(OptionsKey<T> key) {
+    private <T> T getKeyValue(String key) {
         return (T) params.get(key);
     }
 
-    private record OptionsKey<V>(String name) {
-    }
+    private static class OptionsDescription<V> {
+        final String key;
+        final Function<String, ? extends V> parser;
+        final Supplier<? extends V> defaultValue;
 
-    private record OptionsDescription<V>(
-            OptionsKey<V> key,
-            Function<String, ? extends V> parser,
-            Supplier<? extends V> defaultValue) {
+        OptionsDescription(String key,
+                           Function<String, ? extends V> parser,
+                           Supplier<? extends V> defaultValue) {
+            this.key = key;
+            this.parser = parser;
+            this.defaultValue = defaultValue;
+        }
     }
 
 }

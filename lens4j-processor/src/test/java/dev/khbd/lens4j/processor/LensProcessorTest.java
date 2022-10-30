@@ -16,32 +16,6 @@ import static com.google.testing.compile.Compiler.javac;
 public class LensProcessorTest {
 
     @Test
-    public void generate_classIsRecordAndMethodAccessed_generateValidFactory() {
-        CompilationDescription.of()
-                .withFile("cases/record/method/Account.java")
-                .compile()
-                .success()
-                .generated("cases/record/method/AccountLenses", "cases/record/method/AccountLenses.java");
-    }
-
-    @Test
-    public void generate_classIsRecordAndFieldAccessed_generateValidFactory() {
-        CompilationDescription.of()
-                .withFile("cases/record/field/Account.java")
-                .compile()
-                .success()
-                .generated("cases/record/field/AccountLenses", "cases/record/field/AccountLenses.java");
-    }
-
-    @Test
-    public void generate_recordFieldAtLastPositionInWriteLens_fail() {
-        CompilationDescription.of()
-                .withFile("cases/record/at_last_position/Account.java")
-                .compile()
-                .failed("Record properties are not allowed at last position of read-write lenses");
-    }
-
-    @Test
     public void generate_classIsPackageButFactoryMarkedAsPublic_generateValidFactory() {
         CompilationDescription.of()
                 .withFile("cases/factory_modifiers/public_factory/Account.java")
