@@ -196,6 +196,78 @@ For maven-based projects, add the following to your `pom.xml` file:
 </build>
 ```
 
+# Generating inlined lenses (experimental)
+
+Lenses can be generated in different way, so called, inlined way.
+Inlined generation is experimental and disabled by default.
+To enable inlined generation set option `lenses.generate.inlined` to `true`.
+
+For maven-based projects, add the following:
+
+```xml
+<!-- processor configuration -->
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>dev.khbd.lens4j</groupId>
+                        <artifactId>lens4j-processor</artifactId>
+                        <version>${lens4j.version}</version>
+                    </path>
+                </annotationProcessorPaths>
+                <compilerArgs>
+                    <compilerArg>-Alenses.generate.inlined=true</compilerArg>
+                </compilerArgs>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+
+Inlined lenses are look like manually written code, so instead of such code
+
+```java
+final class PaymentLenses {
+
+    public static final ReadLens<Payment, String> PAYER_ACCOUNT_CODE_LENS =
+            Lenses.readLens(Payment::getPayerAccount)
+                    .andThen(Lenses.readLens(Accout::getCurrency))
+                    .andThen(Lenses.readLens(Currency::getCode));
+}
+```
+
+something like that will be generated:
+
+```java
+
+final class PaymentLenses {
+
+    public static final ReadLens<Payment, String> PAYER_ACCOUNT_CODE_LENS = new ReadLens<>() {
+        @Override
+        String get(Payment object) {
+            if (object == null) {
+                return null;
+            }
+            Account payerAccount = payment.getPayerAccount();
+            if (payerAccount == null) {
+                return null;
+            }
+            Currency currency = payerAccount.getCurrency();
+            if (currency == null) {
+                return null;
+            }
+            return currency.getCode();
+        }
+    };
+}
+```
+
+See comparison between inlined and not-inlined lenses [here](https://jmh.morethan.io/?sources=https://raw.githubusercontent.com/kh-bd/lens4j/main/readme/benchmark/jmh_v_017_result.json,https://raw.githubusercontent.com/kh-bd/lens4j/main/readme/benchmark/jmh_latest_result.json).
+
 # Intellij IDEA support
 
 ***
@@ -213,11 +285,13 @@ All benchmarks were run on:
 - Processor: 2.2 GHz Quad-Core Intel Core i7
 - Memory: 16 GB 1600MHz DDR3
 
-See latest benchmark result [here](https://jmh.morethan.io/?source=https://raw.githubusercontent.com/kh-bd/lens4j/main/readme/benchmark/jmh_v_017_result.json).
+See latest benchmark
+result [here](https://jmh.morethan.io/?source=https://raw.githubusercontent.com/kh-bd/lens4j/main/readme/benchmark/jmh_latest_result.json)
+.
 
-As you can see, manually written code is several times faster so keep that in mind when uses lenses in
-performance critical part of you code base. Lenses' performance is a subject for father optimization.
-Any help is welcome :)
+As you can see, generated lenses are as fast as manually written code, but lenses which were build
+manually with `Lenses.compose` api are several times slower than generated ones.
+Lenses' performance is a subject for father optimization. Any help is welcome :)
 
 ## How to run benchmarks on your own machine?
 
