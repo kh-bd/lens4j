@@ -12,7 +12,7 @@ import dev.khbd.lens4j.core.annotations.LensType;
                 @Lens(path = "currency.id", lensName = "ACCOUNT_CURRENCY_CODE_READ_WRITE_LENS", type = LensType.READ_WRITE)
         }
 )
-public class AccountWithDeCapitalizeSpecificFactoryName {
+public class Account {
     private String id;
     private String accountNumber;
     private String bic;
