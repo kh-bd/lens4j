@@ -14,8 +14,8 @@ public class LensProcessorSuccessTest {
                 {"cases/record/method/Account.java", "cases/record/method/AccountLenses"},
                 {"cases/record/field/Account.java", "cases/record/field/AccountLenses"},
                 {"cases/factory_modifiers/public_factory/Account.java", "cases/factory_modifiers/public_factory/AccountLenses"},
-                {"cases/method/generic/class_generics/Payment.java", "cases/method/generic/class_generics/PaymentLenses"},
                 {"cases/factory_modifiers/package_factory/Account.java", "cases/factory_modifiers/package_factory/AccountLenses"},
+                {"cases/method/generic/class_generics/Payment.java", "cases/method/generic/class_generics/PaymentLenses"},
                 {"cases/method/found/Payment.java", "cases/method/found/PaymentLenses"},
                 {"cases/array_type_at_the_end/WithArray.java", "cases/array_type_at_the_end/WithArrayLenses"},
                 {"cases/array_length_support/Payment.java", "cases/array_length_support/PaymentLenses"},
@@ -29,17 +29,9 @@ public class LensProcessorSuccessTest {
                 {"cases/inner_class/Outer.java", "cases/inner_class/OuterInner1Inner2Lenses"},
                 {"cases/nested_class/Outer.java", "cases/nested_class/OuterInner1Inner2Lenses"},
                 {"cases/decapitalize_factory_name/Account.java", "cases/decapitalize_factory_name/SpecificFactoryName"},
-                {"cases/field_strategy/Payment.java", "cases/field_strategy/PaymentLenses"}
+                {"cases/field_strategy/Payment.java", "cases/field_strategy/PaymentLenses"},
+                {"cases/lens_modifiers/Account.java", "cases/lens_modifiers/AccountLenses"}
         };
-    }
-
-    @Test
-    public void generate_someFieldsAreNotPrivate_generateValidFactory() {
-        CompilationDescription.of()
-                .withFile("cases/field_strategy/Payment.java")
-                .compile()
-                .success()
-                .generated("cases/field_strategy/PaymentLenses");
     }
 
     @Test(dataProvider = "simpleSuccessCases")
@@ -52,16 +44,25 @@ public class LensProcessorSuccessTest {
                 .generated(factoryFile);
     }
 
-    @Test
-    public void generate_userOverrideLensModifiers_generateValidFactory() {
+    @DataProvider
+    public static Object[][] inlinedSimpleSuccessCases() {
+        return new Object[][]{
+                {"cases/record/method/Account.java", "cases/record/method/AccountLenses", "cases/record/method/AccountLensesInlined.java"},
+                {"cases/record/field/Account.java", "cases/record/field/AccountLenses", "cases/record/field/AccountLensesInlined.java"},
+                {"cases/factory_modifiers/public_factory/Account.java", "cases/factory_modifiers/public_factory/AccountLenses", "cases/factory_modifiers/public_factory/AccountLensesInlined.java"},
+                {"cases/factory_modifiers/package_factory/Account.java", "cases/factory_modifiers/package_factory/AccountLenses", "cases/factory_modifiers/package_factory/AccountLensesInlined.java"}
+        };
+    }
+
+    @Test(dataProvider = "inlinedSimpleSuccessCases")
+    public void generate_allIsOkAndInlinedFlagIsOn_generateValidFactory(String file, String factoryFile, String factoryPath) {
         CompilationDescription.of()
-                .withFiles(
-                        "cases/lens_modifiers/Account.java",
-                        "common/Currency.java"
-                )
+                .withFile(file)
+                .withCommons()
+                .withInlinedOption()
                 .compile()
                 .success()
-                .generated("cases/lens_modifiers/AccountLenses");
+                .generated(factoryFile, factoryPath);
     }
 
     @Test
