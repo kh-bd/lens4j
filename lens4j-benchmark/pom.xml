@@ -59,7 +59,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <release>19</release>
+                    <release>17</release>
                     <compilerArgs>
                         <compilerArg>-Alenses.generate.inlined=${inlined}</compilerArg>
                     </compilerArgs>
