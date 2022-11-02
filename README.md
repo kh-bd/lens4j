@@ -1,6 +1,5 @@
 # Lens4j is a lightweight lens library for Java
 
-[![Lens4j Maven](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j)
 [![CI](https://github.com/kh-bd/lens4j/actions/workflows/main-tests.yml/badge.svg)](https://github.com/kh-bd/lens4j/actions/workflows/main-tests.yml)
 
 # What is a lens?
@@ -195,6 +194,14 @@ For maven-based projects, add the following to your `pom.xml` file:
     </plugins>
 </build>
 ```
+
+## Versions
+
+| Java<br/> version | Lens version<br/> prefix | Latest release                                                                                                                                                                 |
+|-------------------|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `11`              | `0.1.*`                  | [![Maven jdk11](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionPrefix=0.1)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j) |
+| `17`              | `0.2.*`                  | [![Maven jdk17](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionPrefix=0.2)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j) |
+
 
 # Generating inlined lenses (experimental)
 
