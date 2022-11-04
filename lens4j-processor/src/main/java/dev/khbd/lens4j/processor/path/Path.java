@@ -1,6 +1,5 @@
 package dev.khbd.lens4j.processor.path;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,12 +10,8 @@ public class Path {
 
     private final List<PathPart> parts;
 
-    public Path(List<PathPart> parts) {
-        this.parts = new ArrayList<>(parts);
-    }
-
-    public Path() {
-        this.parts = new ArrayList<>();
+    Path(List<PathPart> parts) {
+        this.parts = parts;
     }
 
     public boolean isEmpty() {
@@ -30,32 +25,6 @@ public class Path {
      */
     public int length() {
         return parts.size();
-    }
-
-    /**
-     * Add part to the end of the path.
-     *
-     * <p>Be careful, this method mutates current instance.
-     *
-     * @param part part
-     * @return self for chaining
-     */
-    public Path addPart(PathPart part) {
-        parts.add(part);
-        return this;
-    }
-
-    /**
-     * Add parts to path.
-     *
-     * <p>Be careful, this method mutates current instance.
-     *
-     * @param parts parts
-     * @return self for chaining
-     */
-    public Path addParts(PathPart... parts) {
-        this.parts.addAll(List.of(parts));
-        return this;
     }
 
     /**
@@ -89,6 +58,24 @@ public class Path {
         return "Path{" +
                 "parts=" + parts +
                 '}';
+    }
+
+    /**
+     * Create empty path builder.
+     *
+     * @return builder
+     */
+    public static PathBuilder builder() {
+        return new PathBuilder();
+    }
+
+    /**
+     * Create empty path.
+     *
+     * @return empty path
+     */
+    public static Path empty() {
+        return new Path(List.of());
     }
 
 }

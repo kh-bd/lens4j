@@ -15,7 +15,7 @@ public class PathParserTest {
     public void parse_pathIsEmpty_returnEmpty() {
         Path path = pathParser.parse("");
 
-        assertThat(path).isEqualTo(new Path());
+        assertThat(path).isEqualTo(Path.empty());
     }
 
     @Test
@@ -23,10 +23,11 @@ public class PathParserTest {
         Path path = pathParser.parse("...");
 
         assertThat(path).isEqualTo(
-                new Path()
-                        .addPart(new Point(0))
-                        .addPart(new Point(1))
-                        .addPart(new Point(2))
+                Path.builder()
+                        .withPart(new Point(0))
+                        .withPart(new Point(1))
+                        .withPart(new Point(2))
+                        .build()
         );
     }
 
@@ -35,12 +36,13 @@ public class PathParserTest {
         Path path = pathParser.parse("pr1..pr2.pr3");
 
         assertThat(path).isEqualTo(
-                new Path()
-                        .addPart(new Property("pr1", 0))
-                        .addParts(new Point(3), new Point(4))
-                        .addPart(new Property("pr2", 5))
-                        .addPart(new Point(8))
-                        .addPart(new Property("pr3", 9))
+                Path.builder()
+                        .withPart(new Property("pr1", 0))
+                        .withParts(new Point(3), new Point(4))
+                        .withPart(new Property("pr2", 5))
+                        .withPart(new Point(8))
+                        .withPart(new Property("pr3", 9))
+                        .build()
         );
     }
 
@@ -49,12 +51,13 @@ public class PathParserTest {
         Path path = pathParser.parse("pr1().pr2.pr3()");
 
         assertThat(path).isEqualTo(
-                new Path()
-                        .addPart(new Method("pr1", 0))
-                        .addParts(new Point(5))
-                        .addPart(new Property("pr2", 6))
-                        .addPart(new Point(9))
-                        .addPart(new Method("pr3", 10))
+                Path.builder()
+                        .withPart(new Method("pr1", 0))
+                        .withParts(new Point(5))
+                        .withPart(new Property("pr2", 6))
+                        .withPart(new Point(9))
+                        .withPart(new Method("pr3", 10))
+                        .build()
         );
     }
 
@@ -63,9 +66,10 @@ public class PathParserTest {
         Path path = pathParser.parse("pr1..");
 
         assertThat(path).isEqualTo(
-                new Path()
-                        .addPart(new Property("pr1", 0))
-                        .addParts(new Point(3), new Point(4))
+                Path.builder()
+                        .withPart(new Property("pr1", 0))
+                        .withParts(new Point(3), new Point(4))
+                        .build()
         );
     }
 }

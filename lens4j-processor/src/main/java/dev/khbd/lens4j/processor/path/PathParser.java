@@ -16,10 +16,10 @@ public final class PathParser {
      * @return parsed path
      */
     public Path parse(String pathStr) {
-        Path path = new Path();
+        PathBuilder builder = Path.builder();
 
         if (pathStr.isEmpty()) {
-            return path;
+            return builder.build();
         }
 
         int start = 0;
@@ -30,10 +30,10 @@ public final class PathParser {
             char current = chars[i];
             if (current == '.') {
                 if (buffer.length() != 0) {
-                    path.addPart(createNamedPart(buffer.toString(), start));
+                    builder.withPart(createNamedPart(buffer.toString(), start));
                     buffer = new StringBuilder();
                 }
-                path.addPart(new Point(i));
+                builder.withPart(new Point(i));
             } else {
                 if (buffer.length() == 0) { // start new property
                     start = i;
@@ -43,10 +43,10 @@ public final class PathParser {
         }
 
         if (buffer.length() != 0) {
-            path.addPart(createNamedPart(buffer.toString(), start));
+            builder.withPart(createNamedPart(buffer.toString(), start));
         }
 
-        return path;
+        return builder.build();
     }
 
     private PathPart createNamedPart(String name, int start) {
@@ -57,6 +57,11 @@ public final class PathParser {
         }
     }
 
+    /**
+     * Get parser singleton instance.
+     *
+     * @return parser instance
+     */
     public static PathParser getInstance() {
         return INSTANCE;
     }
