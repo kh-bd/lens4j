@@ -7,6 +7,7 @@ import java.util.Objects;
  *
  * @author Sergei_Khadanovich
  */
+@Deprecated(since = "0.2.1", forRemoval = true)
 public class Property implements PathPart {
 
     private final String name;

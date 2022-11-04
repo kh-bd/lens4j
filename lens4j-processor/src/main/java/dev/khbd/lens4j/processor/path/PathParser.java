@@ -1,11 +1,10 @@
-package dev.khbd.lens4j.common;
+package dev.khbd.lens4j.processor.path;
 
 /**
  * Path parser.
  *
  * @author Sergei_Khadanovich
  */
-@Deprecated(since = "0.2.1", forRemoval = true)
 public final class PathParser {
 
     private static final PathParser INSTANCE = new PathParser();
@@ -17,11 +16,11 @@ public final class PathParser {
      * @return parsed path
      */
     public Path parse(String pathStr) {
-        Path path = new Path();
-
         if (pathStr.isEmpty()) {
-            return path;
+            return Path.empty();
         }
+
+        PathBuilder builder = Path.builder();
 
         int start = 0;
         StringBuilder buffer = new StringBuilder();
@@ -31,10 +30,10 @@ public final class PathParser {
             char current = chars[i];
             if (current == '.') {
                 if (buffer.length() != 0) {
-                    path.addPart(createNamedPart(buffer.toString(), start));
+                    builder.withPart(createNamedPart(buffer.toString(), start));
                     buffer = new StringBuilder();
                 }
-                path.addPart(new Point(i));
+                builder.withPart(new Point(i));
             } else {
                 if (buffer.length() == 0) { // start new property
                     start = i;
@@ -44,10 +43,10 @@ public final class PathParser {
         }
 
         if (buffer.length() != 0) {
-            path.addPart(createNamedPart(buffer.toString(), start));
+            builder.withPart(createNamedPart(buffer.toString(), start));
         }
 
-        return path;
+        return builder.build();
     }
 
     private PathPart createNamedPart(String name, int start) {
@@ -58,6 +57,11 @@ public final class PathParser {
         }
     }
 
+    /**
+     * Get parser singleton instance.
+     *
+     * @return parser instance
+     */
     public static PathParser getInstance() {
         return INSTANCE;
     }

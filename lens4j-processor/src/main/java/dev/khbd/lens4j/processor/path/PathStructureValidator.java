@@ -1,12 +1,5 @@
 package dev.khbd.lens4j.processor.path;
 
-import dev.khbd.lens4j.common.Method;
-import dev.khbd.lens4j.common.Path;
-import dev.khbd.lens4j.common.PathPart;
-import dev.khbd.lens4j.common.PathVisitor;
-import dev.khbd.lens4j.common.Point;
-import dev.khbd.lens4j.common.Property;
-
 import java.util.Objects;
 
 /**
