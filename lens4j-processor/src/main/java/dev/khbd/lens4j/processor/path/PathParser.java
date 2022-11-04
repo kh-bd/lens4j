@@ -16,11 +16,11 @@ public final class PathParser {
      * @return parsed path
      */
     public Path parse(String pathStr) {
-        PathBuilder builder = Path.builder();
-
         if (pathStr.isEmpty()) {
-            return builder.build();
+            return Path.empty();
         }
+
+        PathBuilder builder = Path.builder();
 
         int start = 0;
         StringBuilder buffer = new StringBuilder();
