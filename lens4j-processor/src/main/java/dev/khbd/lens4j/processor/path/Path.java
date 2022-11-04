@@ -2,7 +2,6 @@ package dev.khbd.lens4j.processor.path;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -72,44 +71,6 @@ public class Path {
         visitor.finish();
     }
 
-    /**
-     * Get last part of the path.
-     *
-     * @return last part if exists
-     */
-    public PathPart getLastPart() {
-        if (isEmpty()) {
-            throw new NoSuchElementException();
-        }
-        return parts.get(parts.size() - 1);
-    }
-
-    /**
-     * Get first part of the path.
-     *
-     * @return first part if exists
-     */
-    public PathPart getFirstPart() {
-        if (isEmpty()) {
-            throw new NoSuchElementException();
-        }
-        return parts.get(0);
-    }
-
-    /**
-     * Create new path without last part.
-     *
-     * @return new path without last part
-     */
-    public Path removeLastPart() {
-        if (isEmpty()) {
-            throw new IllegalStateException("Path is empty. Cannot remove last part");
-        }
-        List<PathPart> newParts = new ArrayList<>(parts);
-        newParts.remove(newParts.size() - 1);
-        return new Path(newParts);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -128,15 +89,6 @@ public class Path {
         return "Path{" +
                 "parts=" + parts +
                 '}';
-    }
-
-    /**
-     * Make path copy.
-     *
-     * @return copied path instance
-     */
-    public Path copy() {
-        return new Path(new ArrayList<>(parts));
     }
 
 }
