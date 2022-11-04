@@ -1,31 +1,30 @@
-package dev.khbd.lens4j.common;
+package dev.khbd.lens4j.processor.path;
 
 import java.util.Objects;
 
 /**
- * Path part which represents property access in lens path.
+ * Path part which represents method access in lens path.
  *
  * @author Sergei_Khadanovich
  */
-@Deprecated(since = "0.2.1", forRemoval = true)
-public class Property implements PathPart {
+public class Method implements PathPart {
 
     private final String name;
     private final int start;
 
-    public Property(String name, int start) {
+    public Method(String name, int start) {
         this.name = name;
         this.start = start;
     }
 
     @Override
     public void visit(PathVisitor visitor) {
-        visitor.visitProperty(this);
+        visitor.visitMethod(this);
     }
 
     @Override
     public PathPartKind getKind() {
-        return PathPartKind.PROPERTY;
+        return PathPartKind.METHOD;
     }
 
     public String getName() {
@@ -40,7 +39,7 @@ public class Property implements PathPart {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Property property = (Property) o;
+        Method property = (Method) o;
         return start == property.start && name.equals(property.name);
     }
 
@@ -51,7 +50,7 @@ public class Property implements PathPart {
 
     @Override
     public String toString() {
-        return "Property{" +
+        return "Method{" +
                 "name='" + name + '\'' +
                 ", start=" + start +
                 '}';

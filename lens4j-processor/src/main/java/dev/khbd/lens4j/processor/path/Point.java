@@ -1,4 +1,4 @@
-package dev.khbd.lens4j.common;
+package dev.khbd.lens4j.processor.path;
 
 import java.util.Objects;
 
@@ -7,7 +7,6 @@ import java.util.Objects;
  *
  * @author Sergei_Khadanovich
  */
-@Deprecated(since = "0.2.1", forRemoval = true)
 public class Point implements PathPart {
 
     private final int position;

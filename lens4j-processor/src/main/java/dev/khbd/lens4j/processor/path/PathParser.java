@@ -1,11 +1,10 @@
-package dev.khbd.lens4j.common;
+package dev.khbd.lens4j.processor.path;
 
 /**
  * Path parser.
  *
  * @author Sergei_Khadanovich
  */
-@Deprecated(since = "0.2.1", forRemoval = true)
 public final class PathParser {
 
     private static final PathParser INSTANCE = new PathParser();
