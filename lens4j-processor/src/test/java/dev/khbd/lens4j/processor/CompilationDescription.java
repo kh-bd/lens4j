@@ -25,6 +25,11 @@ public class CompilationDescription {
         return this;
     }
 
+    public CompilationDescription withFile(String fileName, String content) {
+        files.add(JavaFileObjects.forSourceString(fileName, content));
+        return this;
+    }
+
     public CompilationDescription withFiles(String... files) {
         for (String file : files) {
             withFile(file);

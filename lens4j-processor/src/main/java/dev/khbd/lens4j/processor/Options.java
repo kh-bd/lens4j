@@ -17,7 +17,7 @@ public class Options {
     private static final OptionsKey<Boolean> GENERATE_INLINED_LENSES = new OptionsKey<>("lenses.generate.inlined");
 
     private static final List<OptionsDescription<?>> DESCRIPTIONS = List.of(
-            new OptionsDescription<>(GENERATE_INLINED_LENSES, Boolean::parseBoolean, () -> false)
+            new OptionsDescription<>(GENERATE_INLINED_LENSES, Boolean::parseBoolean, () -> true)
     );
 
     private final Map<OptionsKey<?>, Object> params = new HashMap<>();

@@ -43,7 +43,7 @@ public class LensProcessorSuccessTest {
                 .composed()
                 .compile()
                 .success()
-                .generated(factoryFile, factoryFile + ".java");
+                .pathGenerated(factoryFile, factoryFile + ".java");
     }
 
     @Test(dataProvider = "singleFileSuccessCases")
@@ -54,7 +54,7 @@ public class LensProcessorSuccessTest {
                 .inlined()
                 .compile()
                 .success()
-                .generated(factoryFile, factoryFile + "Inlined.java");
+                .pathGenerated(factoryFile, factoryFile + "Inlined.java");
     }
 
 
@@ -152,7 +152,7 @@ public class LensProcessorSuccessTest {
 
         result.success();
         for (String factoryFile : expected) {
-            result.generated(factoryFile, factoryFile + ".java");
+            result.pathGenerated(factoryFile, factoryFile + ".java");
         }
     }
 
@@ -166,7 +166,7 @@ public class LensProcessorSuccessTest {
 
         result.success();
         for (String factoryFile : expected) {
-            result.generated(factoryFile, factoryFile + "Inlined.java");
+            result.pathGenerated(factoryFile, factoryFile + "Inlined.java");
         }
     }
 
