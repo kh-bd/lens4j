@@ -1,13 +1,13 @@
 package dev.khbd.lens4j.processor;
 
-import com.google.testing.compile.Compilation;
+import static com.google.testing.compile.Compiler.javac;
+
+import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
 
 import javax.tools.JavaFileObject;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.google.testing.compile.Compiler.javac;
 
 /**
  * @author Sergei_Khadanovich
@@ -15,13 +15,18 @@ import static com.google.testing.compile.Compiler.javac;
 public class CompilationDescription {
 
     private final List<JavaFileObject> files = new ArrayList<>();
-    private boolean inlined = false;
+    private Boolean inlined;
 
     private CompilationDescription() {
     }
 
     public CompilationDescription withFile(String file) {
         files.add(JavaFileObjects.forResource(file));
+        return this;
+    }
+
+    public CompilationDescription withFile(String fileName, String content) {
+        files.add(JavaFileObjects.forSourceString(fileName, content));
         return this;
     }
 
@@ -32,8 +37,13 @@ public class CompilationDescription {
         return this;
     }
 
-    public CompilationDescription withInlinedOption() {
+    public CompilationDescription inlined() {
         this.inlined = true;
+        return this;
+    }
+
+    public CompilationDescription composed() {
+        this.inlined = false;
         return this;
     }
 
@@ -50,10 +60,11 @@ public class CompilationDescription {
     }
 
     public CompilationResult compile() {
-        Compilation compilation = javac().withProcessors(new LensProcessor())
-                .withOptions("-Alenses.generate.inlined=" + inlined)
-                .compile(files);
-        return new CompilationResult(compilation);
+        Compiler compiler = javac().withProcessors(new LensProcessor());
+        if (inlined != null) {
+            compiler = compiler.withOptions("-Alenses.generate.inlined=" + inlined);
+        }
+        return new CompilationResult(compiler.compile(files));
     }
 
     public static CompilationDescription of() {

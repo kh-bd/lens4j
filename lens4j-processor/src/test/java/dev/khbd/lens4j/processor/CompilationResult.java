@@ -1,9 +1,9 @@
 package dev.khbd.lens4j.processor;
 
+import static com.google.testing.compile.CompilationSubject.assertThat;
+
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
-
-import static com.google.testing.compile.CompilationSubject.assertThat;
 
 /**
  * @author Sergei_Khadanovich
@@ -21,15 +21,22 @@ public class CompilationResult {
         return this;
     }
 
-    public CompilationResult generated(String fileName, String path) {
+    public CompilationResult generated(String fileName, String content) {
+        assertThat(compilation)
+                .generatedSourceFile(fileName)
+                .hasSourceEquivalentTo(JavaFileObjects.forSourceString(fileName, content));
+        return this;
+    }
+
+    public CompilationResult pathGenerated(String fileName, String path) {
         assertThat(compilation)
                 .generatedSourceFile(fileName)
                 .hasSourceEquivalentTo(JavaFileObjects.forResource(path));
         return this;
     }
 
-    public CompilationResult generated(String fileName) {
-        return generated(fileName, fileName + ".java");
+    public CompilationResult pathGenerated(String fileName) {
+        return pathGenerated(fileName, fileName + ".java");
     }
 
     public CompilationResult failed(String... messages) {
