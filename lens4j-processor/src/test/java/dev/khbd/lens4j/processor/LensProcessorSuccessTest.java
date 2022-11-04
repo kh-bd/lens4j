@@ -40,6 +40,7 @@ public class LensProcessorSuccessTest {
         CompilationDescription.of()
                 .withFile(file)
                 .withCommons()
+                .composed()
                 .compile()
                 .success()
                 .generated(factoryFile, factoryFile + ".java");
@@ -50,7 +51,7 @@ public class LensProcessorSuccessTest {
         CompilationDescription.of()
                 .withFile(file)
                 .withCommons()
-                .withInlinedOption()
+                .inlined()
                 .compile()
                 .success()
                 .generated(factoryFile, factoryFile + "Inlined.java");
@@ -145,6 +146,7 @@ public class LensProcessorSuccessTest {
     public void generate_multiFile_generateValidFactories(List<String> sources, List<String> expected) {
         CompilationResult result = CompilationDescription.of()
                 .withCommons()
+                .composed()
                 .withFiles(sources.toArray(String[]::new))
                 .compile();
 
@@ -158,7 +160,7 @@ public class LensProcessorSuccessTest {
     public void generate_multiFileAndInlined_generateValidFactories(List<String> sources, List<String> expected) {
         CompilationResult result = CompilationDescription.of()
                 .withCommons()
-                .withInlinedOption()
+                .inlined()
                 .withFiles(sources.toArray(String[]::new))
                 .compile();
 

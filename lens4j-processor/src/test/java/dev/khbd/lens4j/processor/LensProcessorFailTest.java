@@ -34,6 +34,7 @@ public class LensProcessorFailTest {
     public void generate_someProblemExists_failToGenerate(String path, String msg) {
         CompilationDescription.of()
                 .withFile(path)
+                .composed()
                 .compile()
                 .failed(msg);
     }
@@ -42,7 +43,7 @@ public class LensProcessorFailTest {
     public void generate_inliningEnabledAndSomeProblemExists_failToGenerate(String path, String msg) {
         CompilationDescription.of()
                 .withFile(path)
-                .withInlinedOption()
+                .inlined()
                 .compile()
                 .failed(msg);
     }
