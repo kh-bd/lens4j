@@ -33,6 +33,34 @@ public class ReadLensTest {
             Lenses.readLens(Inner::getValue)
                     .composeF(Outer::getInner);
 
+    @Test
+    public void getOrElse_propertyValueIsNotNull_returnIt() {
+        String value = AND_THEN_LEN.getOrElse(new Outer(new Inner("value")), "default");
+
+        assertThat(value).isEqualTo("value");
+    }
+
+    @Test
+    public void getOrElse_propertyValueIsNull_returnDefaultValue() {
+        String value = AND_THEN_LEN.getOrElse(new Outer(new Inner(null)), "default");
+
+        assertThat(value).isEqualTo("default");
+    }
+
+    @Test
+    public void getOrElse_propertyValueIsNullAndDefaultValueIsSubType_returnDefaultValue() {
+        class SubInner extends Inner {
+            SubInner() {
+                super("value");
+            }
+        }
+        SubInner defaultValue = new SubInner();
+
+        Inner inner = Lenses.readLens(Outer::getInner).getOrElse(new Outer(null), defaultValue);
+
+        assertThat(inner).isEqualTo(defaultValue);
+    }
+
     // andThen
 
     @Test
@@ -112,8 +140,8 @@ public class ReadLensTest {
     static class Outer {
         final Inner inner;
 
-        public Outer(Inner account) {
-            this.inner = account;
+        public Outer(Inner inner) {
+            this.inner = inner;
         }
 
         Inner getInner() {
