@@ -1,5 +1,6 @@
 package dev.khbd.lens4j.core;
 
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -61,6 +62,22 @@ public interface ReadLens<O, P> {
      * @return extracted property value
      */
     P get(O object);
+
+    /**
+     * Get property value from object or default value.
+     *
+     * @param object       object
+     * @param defaultValue default value
+     * @param <P1>         result type
+     * @return property value or default value if property value is {@literal null}
+     */
+    default <P1 extends P> P getOrElse(O object, P1 defaultValue) {
+        P value = get(object);
+        if (Objects.nonNull(value)) {
+            return value;
+        }
+        return defaultValue;
+    }
 
     /**
      * Combine current lens with supplied one.
