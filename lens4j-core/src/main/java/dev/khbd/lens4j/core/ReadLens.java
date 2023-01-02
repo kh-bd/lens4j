@@ -3,6 +3,7 @@ package dev.khbd.lens4j.core;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Read lens.
@@ -77,6 +78,21 @@ public interface ReadLens<O, P> {
             return value;
         }
         return defaultValue;
+    }
+
+    /**
+     * Get property value from object or default value.
+     *
+     * @param object        object
+     * @param defaultValueF lazy evaluated default value
+     * @return property value or default value if property value is {@literal null}
+     */
+    default P getOrElseF(O object, Supplier<? extends P> defaultValueF) {
+        P value = get(object);
+        if (Objects.nonNull(value)) {
+            return value;
+        }
+        return defaultValueF.get();
     }
 
     /**
