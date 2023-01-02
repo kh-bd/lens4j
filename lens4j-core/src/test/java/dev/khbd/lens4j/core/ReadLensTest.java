@@ -61,6 +61,34 @@ public class ReadLensTest {
         assertThat(inner).isEqualTo(defaultValue);
     }
 
+    @Test
+    public void getOrElseF_propertyValueIsNotNull_returnIt() {
+        String value = AND_THEN_LEN.getOrElseF(new Outer(new Inner("value")), () -> "default");
+
+        assertThat(value).isEqualTo("value");
+    }
+
+    @Test
+    public void getOrElseF_propertyValueIsNull_returnDefaultValue() {
+        String value = AND_THEN_LEN.getOrElseF(new Outer(new Inner(null)), () -> "default");
+
+        assertThat(value).isEqualTo("default");
+    }
+
+    @Test
+    public void getOrElseF_propertyValueIsNullAndDefaultValueIsSubType_returnDefaultValue() {
+        class SubInner extends Inner {
+            SubInner() {
+                super("value");
+            }
+        }
+        SubInner defaultValue = new SubInner();
+
+        Inner inner = Lenses.readLens(Outer::getInner).getOrElseF(new Outer(null), () -> defaultValue);
+
+        assertThat(inner).isEqualTo(defaultValue);
+    }
+
     // andThen
 
     @Test
