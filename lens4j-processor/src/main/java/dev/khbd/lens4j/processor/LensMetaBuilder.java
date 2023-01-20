@@ -1,17 +1,17 @@
 package dev.khbd.lens4j.processor;
 
 import com.google.common.base.CaseFormat;
-import dev.khbd.lens4j.common.Method;
-import dev.khbd.lens4j.common.Path;
-import dev.khbd.lens4j.common.PathParser;
-import dev.khbd.lens4j.common.PathVisitor;
-import dev.khbd.lens4j.common.Property;
 import dev.khbd.lens4j.core.annotations.Lens;
 import dev.khbd.lens4j.core.annotations.LensType;
 import dev.khbd.lens4j.processor.meta.LensMeta;
 import dev.khbd.lens4j.processor.meta.LensPartMeta;
 import dev.khbd.lens4j.processor.meta.ResolvedParametrizedTypeMirror;
+import dev.khbd.lens4j.processor.path.Method;
+import dev.khbd.lens4j.processor.path.Path;
+import dev.khbd.lens4j.processor.path.PathParser;
 import dev.khbd.lens4j.processor.path.PathStructureValidator;
+import dev.khbd.lens4j.processor.path.PathVisitor;
+import dev.khbd.lens4j.processor.path.Property;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.lang.model.element.Element;
