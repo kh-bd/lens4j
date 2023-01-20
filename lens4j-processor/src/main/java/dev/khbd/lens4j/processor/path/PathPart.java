@@ -1,4 +1,4 @@
-package dev.khbd.lens4j.common;
+package dev.khbd.lens4j.processor.path;
 
 /**
  * Base interface for all path parts.
@@ -20,16 +20,6 @@ public interface PathPart {
      * @return part kind
      */
     PathPartKind getKind();
-
-    /**
-     * Compare kinds of current part and supplied one.
-     *
-     * @param other part to compare
-     * @return {@literal true} if both parts have the same kind and {@literal false} otherwise
-     */
-    default boolean hasTheSameKindWith(PathPart other) {
-        return getKind() == other.getKind();
-    }
 
     /**
      * Check is part point or not.
