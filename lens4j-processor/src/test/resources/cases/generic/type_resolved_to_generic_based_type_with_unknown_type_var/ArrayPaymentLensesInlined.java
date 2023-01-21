@@ -4,7 +4,7 @@ import dev.khbd.lens4j.core.ReadLens;
 import dev.khbd.lens4j.core.ReadWriteLens;
 import java.lang.Override;
 import java.lang.UnsupportedOperationException;
-import javax.annotation.processing.Generated;
+import javax.annotation.Generated;
 
 @Generated("dev.khbd.lens4j.processor.LensProcessor")
 final class ArrayPaymentLenses {

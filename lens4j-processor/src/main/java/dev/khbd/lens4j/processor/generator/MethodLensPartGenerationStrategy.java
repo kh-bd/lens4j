@@ -4,6 +4,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import dev.khbd.lens4j.core.Lenses;
 import dev.khbd.lens4j.core.annotations.LensType;
+import dev.khbd.lens4j.processor.StdUtils;
 import dev.khbd.lens4j.processor.meta.ResolvedParametrizedTypeMirror;
 
 import java.util.Map;
@@ -28,11 +29,12 @@ class MethodLensPartGenerationStrategy implements LensPartGenerationStrategy {
                               LensType lensType) {
         verifyReadOnly(lensType);
 
-        Map<String, Object> params = Map.of(
-                "lenses", ClassName.get(Lenses.class),
-                "sourceType", typeNameBuilder.buildTypeName(sourceType),
-                "methodName", name
-        );
+        Map<String, Object> params =
+                StdUtils.map(
+                        "lenses", ClassName.get(Lenses.class),
+                        "sourceType", typeNameBuilder.buildTypeName(sourceType),
+                        "methodName", name
+                );
 
         return CodeBlock.builder()
                 .addNamed(TEMPLATE, params)

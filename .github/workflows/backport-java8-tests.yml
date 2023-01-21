@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ backport-java11 ]
+    branches: [ backport-java8 ]
   pull_request:
-    branches: [ backport-java11 ]
+    branches: [ backport-java8 ]
 
 jobs:
   build:
@@ -14,10 +14,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Set up JDK 11
+    - name: Set up JDK 8
       uses: actions/setup-java@v3
       with:
-        java-version: '11'
+        java-version: '8'
         distribution: 'adopt'
         cache: maven
 

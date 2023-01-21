@@ -5,7 +5,7 @@ import dev.khbd.lens4j.core.ReadLens;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.UnsupportedOperationException;
-import javax.annotation.processing.Generated;
+import javax.annotation.Generated;
 
 @Generated("dev.khbd.lens4j.processor.LensProcessor")
 final class AccountLenses {

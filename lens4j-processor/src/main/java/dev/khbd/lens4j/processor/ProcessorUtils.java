@@ -78,8 +78,8 @@ public final class ProcessorUtils {
      */
     public static Optional<VariableElement> findNonStaticFieldByName(TypeElement classElement,
                                                                      String fieldName) {
-        return findNonStaticFieldInClass(classElement, fieldName)
-                .or(findNonStaticFieldInSuperClass(classElement, fieldName));
+        return StdUtils.recover(findNonStaticFieldInClass(classElement, fieldName),
+                findNonStaticFieldInSuperClass(classElement, fieldName));
     }
 
     private static Optional<VariableElement> findNonStaticFieldInClass(TypeElement classElement, String fieldName) {

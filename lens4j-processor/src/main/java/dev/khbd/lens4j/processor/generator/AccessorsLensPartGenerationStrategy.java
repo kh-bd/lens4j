@@ -4,6 +4,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import dev.khbd.lens4j.core.Lenses;
 import dev.khbd.lens4j.core.annotations.LensType;
+import dev.khbd.lens4j.processor.StdUtils;
 import dev.khbd.lens4j.processor.meta.ResolvedParametrizedTypeMirror;
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,7 +31,7 @@ class AccessorsLensPartGenerationStrategy implements LensPartGenerationStrategy 
                               ResolvedParametrizedTypeMirror ignore,
                               String name,
                               LensType lensType) {
-        Map<String, Object> params = Map.of(
+        Map<String, Object> params = StdUtils.map(
                 "lenses", ClassName.get(Lenses.class),
                 "sourceType", typeNameBuilder.buildTypeName(sourceType),
                 "fieldName", StringUtils.capitalize(name)

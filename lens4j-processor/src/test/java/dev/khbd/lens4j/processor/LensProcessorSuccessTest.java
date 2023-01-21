@@ -3,6 +3,8 @@ package dev.khbd.lens4j.processor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -59,82 +61,82 @@ public class LensProcessorSuccessTest {
     public static Object[][] multiFileSuccessCases() {
         return new Object[][]{
                 {
-                        List.of(
+                        Arrays.asList(
                                 "cases/generic/projection/From.java",
                                 "cases/generic/projection/StrFrom.java",
                                 "cases/generic/projection/AbstractPayment.java",
                                 "cases/generic/projection/Payment.java"
                         ),
-                        List.of("cases/generic/projection/PaymentLenses")
+                        Arrays.asList("cases/generic/projection/PaymentLenses")
                 },
                 {
-                        List.of(
+                        Arrays.asList(
                                 "cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/Box.java",
                                 "cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/AbstractPayment.java",
                                 "cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/BoxedToPayment.java",
                                 "cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/Payments.java"
                         ),
-                        List.of(
+                        Arrays.asList(
                                 "cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/ArrayPaymentLenses",
                                 "cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/GenPaymentLenses",
                                 "cases/generic/type_resolved_to_generic_based_type_with_unknown_type_var/StrPaymentLenses"
                         )
                 },
                 {
-                        List.of(
+                        Arrays.asList(
                                 "cases/single_property/Account.java",
                                 "cases/multi_property/Payment.java"
                         ),
-                        List.of(
+                        Arrays.asList(
                                 "cases/single_property/AccountLenses",
                                 "cases/multi_property/PaymentLenses"
                         )
                 },
                 {
-                        List.of(
+                        Arrays.asList(
                                 "cases/generic/field_type_declared_with_unknown_type_param/Box.java",
                                 "cases/generic/field_type_declared_with_unknown_type_param/AbstractPayment.java",
                                 "cases/generic/field_type_declared_with_unknown_type_param/Payment.java"
                         ),
-                        List.of("cases/generic/field_type_declared_with_unknown_type_param/PaymentLenses")
+                        Collections.singletonList("cases/generic/field_type_declared_with_unknown_type_param/PaymentLenses")
                 },
                 {
-                        List.of(
+                        Arrays.asList(
                                 "cases/generic/field_type_declared_with_known_type_param/Box.java",
                                 "cases/generic/field_type_declared_with_known_type_param/Payment.java"
                         ),
-                        List.of("cases/generic/field_type_declared_with_known_type_param/PaymentLenses")
+                        Collections.singletonList("cases/generic/field_type_declared_with_known_type_param/PaymentLenses")
                 },
                 {
-                        List.of(
+                        Arrays.asList(
                                 "cases/generic/type_resolved_to_generic_based_type/Box.java",
                                 "cases/generic/type_resolved_to_generic_based_type/BoxedCurrency.java",
                                 "cases/generic/type_resolved_to_generic_based_type/CurrencyPair.java",
                                 "cases/generic/type_resolved_to_generic_based_type/Pair.java"
                         ),
-                        List.of("cases/generic/type_resolved_to_generic_based_type/CurrencyPairLenses")
+                        Collections.singletonList("cases/generic/type_resolved_to_generic_based_type/CurrencyPairLenses")
                 },
                 {
-                        List.of(
+                        Arrays.asList(
                                 "cases/generic/first_sub_class_supplied_simple_type/Base.java",
                                 "cases/generic/first_sub_class_supplied_simple_type/Child.java"
                         ),
-                        List.of("cases/generic/first_sub_class_supplied_simple_type/ChildLenses")
+                        Collections.singletonList("cases/generic/first_sub_class_supplied_simple_type/ChildLenses")
                 },
                 {
-                        List.of(
+                        Arrays.asList(
                                 "cases/generic/second_sub_class_supplied_simple_type/Base.java",
                                 "cases/generic/second_sub_class_supplied_simple_type/FirstChild.java",
                                 "cases/generic/second_sub_class_supplied_simple_type/SecondChild.java"
                         ),
-                        List.of("cases/generic/second_sub_class_supplied_simple_type/SecondChildLenses")
+                        Collections.singletonList("cases/generic/second_sub_class_supplied_simple_type/SecondChildLenses")
                 },
                 {
-                        List.of(
+                        Arrays.asList(
                                 "cases/sub_class/BaseClass.java",
                                 "cases/sub_class/SubClass.java"
                         ),
-                        List.of("cases/sub_class/SubClassLenses")
+                        Collections.singletonList("cases/sub_class/SubClassLenses")
                 }
         };
     }
@@ -143,7 +145,7 @@ public class LensProcessorSuccessTest {
     public void generate_multiFile_generateValidFactories(List<String> sources, List<String> expected) {
         CompilationResult result = CompilationDescription.of()
                 .withCommons()
-                .withFiles(sources.toArray(String[]::new))
+                .withFiles(sources.toArray(new String[0]))
                 .compile();
 
         result.success();
@@ -157,7 +159,7 @@ public class LensProcessorSuccessTest {
         CompilationResult result = CompilationDescription.of()
                 .withCommons()
                 .withInlinedOption()
-                .withFiles(sources.toArray(String[]::new))
+                .withFiles(sources.toArray(new String[0]))
                 .compile();
 
         result.success();

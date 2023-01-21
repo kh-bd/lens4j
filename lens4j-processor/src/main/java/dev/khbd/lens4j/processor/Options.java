@@ -1,5 +1,6 @@
 package dev.khbd.lens4j.processor;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class Options {
 
     private static final String GENERATE_INLINED_LENSES = "lenses.generate.inlined";
 
-    private static final List<OptionsDescription<?>> DESCRIPTIONS = List.of(
+    private static final List<OptionsDescription<?>> DESCRIPTIONS = Collections.singletonList(
             new OptionsDescription<>(GENERATE_INLINED_LENSES, Boolean::parseBoolean, () -> false)
     );
 

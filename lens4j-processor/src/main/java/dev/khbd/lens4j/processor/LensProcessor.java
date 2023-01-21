@@ -17,6 +17,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -57,7 +58,7 @@ public class LensProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return Set.of(GenLenses.class.getName());
+        return Collections.singleton(GenLenses.class.getName());
     }
 
     @Override
