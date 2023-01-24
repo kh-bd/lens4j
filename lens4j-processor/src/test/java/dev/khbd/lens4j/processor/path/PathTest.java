@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
  */
 public class PathTest {
 
-    private final PathParser pathParser = new PathParser();
+    private final PathParser pathParser = PathParser.getInstance();
 
     @Test(expectedExceptions = IllegalStateException.class,
             expectedExceptionsMessageRegExp = "Path is empty\\. Cannot remove last part")

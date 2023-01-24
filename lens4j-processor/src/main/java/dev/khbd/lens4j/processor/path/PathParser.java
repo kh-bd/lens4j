@@ -9,6 +9,9 @@ public final class PathParser {
 
     private static final PathParser INSTANCE = new PathParser();
 
+    private PathParser() {
+    }
+
     /**
      * Parse string into {@link Path} instance.
      *
