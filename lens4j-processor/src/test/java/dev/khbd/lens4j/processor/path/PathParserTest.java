@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
  */
 public class PathParserTest {
 
-    private final PathParser pathParser = new PathParser();
+    private final PathParser pathParser = PathParser.getInstance();
 
     @Test
     public void parse_pathIsEmpty_returnEmpty() {
