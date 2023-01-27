@@ -197,11 +197,14 @@ For maven-based projects, add the following to your `pom.xml` file:
 
 ## Versions
 
-| Java<br/> version | Lens version<br/> prefix | Latest release                                                                                                                                                                 |
-|-------------------|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `11`              | `0.1.*`                  | [![Maven jdk11](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionPrefix=0.1)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j) |
-| `17`              | `0.2.*`                  | [![Maven jdk17](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionPrefix=0.2)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j) |
+We are going to support separate version for each LTS release as long as that release is supported.
+In the following table, you can find the latest lens4j version for each supported java version.
 
+| Java<br/> version | Latest release                                                                                                                                                                      |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `8`               | [![Maven jdk1.8](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre1.8)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j) |
+| `11`              | [![Maven jdk11](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre11)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j)   |
+| `17`              | [![Maven jdk17](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre17)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j)   |
 
 # Generating inlined lenses (experimental)
 
@@ -273,7 +276,8 @@ final class PaymentLenses {
 }
 ```
 
-See comparison between inlined and not-inlined lenses [here](https://jmh.morethan.io/?sources=https://raw.githubusercontent.com/kh-bd/lens4j/main/readme/benchmark/jmh_v_017_result.json,https://raw.githubusercontent.com/kh-bd/lens4j/main/readme/benchmark/jmh_latest_result.json).
+See comparison between inlined and not-inlined
+lenses [here](https://jmh.morethan.io/?sources=https://raw.githubusercontent.com/kh-bd/lens4j/main/readme/benchmark/jmh_v_017_result.json,https://raw.githubusercontent.com/kh-bd/lens4j/main/readme/benchmark/jmh_latest_result.json).
 
 # Intellij IDEA support
 
