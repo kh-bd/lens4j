@@ -5,7 +5,7 @@
     <groupId>dev.khbd.lens4j</groupId>
     <artifactId>lens4j</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.9</version>
+    <version>1.0.0_jre11</version>
 
     <description>Lens4j is a lightweight lens library for Java</description>
 
