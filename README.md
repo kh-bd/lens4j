@@ -202,7 +202,7 @@ In the following table, you can find the latest lens4j version for each supporte
 
 | Java<br/> version | Latest release                                                                                                                                                                      |
 |-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `8`               | [![Maven jdk1.8](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre1.8)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j) |
+| `1.8`             | [![Maven jdk1.8](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre1.8)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j) |
 | `11`              | [![Maven jdk11](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre11)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j)   |
 | `17`              | [![Maven jdk17](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre17)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j)   |
 
