@@ -5,7 +5,7 @@
     <parent>
         <artifactId>lens4j</artifactId>
         <groupId>dev.khbd.lens4j</groupId>
-        <version>LATEST-SNAPSHOT</version>
+        <version>1.0.0_jre21</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
