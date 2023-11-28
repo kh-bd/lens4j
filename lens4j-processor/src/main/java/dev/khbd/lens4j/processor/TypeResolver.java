@@ -12,6 +12,8 @@ import javax.lang.model.type.TypeVariable;
 import java.util.List;
 
 /**
+ * Parametrized type mirror resolver.
+ *
  * @author Sergei_Khadanovich
  */
 public class TypeResolver {

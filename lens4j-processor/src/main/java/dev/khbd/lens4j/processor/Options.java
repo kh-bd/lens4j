@@ -10,6 +10,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
+ * Options.
+ *
  * @author Sergei_Khadanovich
  */
 public class Options {

@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * Variable names lexical scope.
+ *
  * @author Sergei_Khadanovich
  */
 public class LexicalScope {
