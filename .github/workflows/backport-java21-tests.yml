@@ -2,12 +2,12 @@ name: Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ backport-java21 ]
     paths-ignore:
       - 'README.md'
       - 'readme/**'
   pull_request:
-    branches: [ main ]
+    branches: [ backport-java21 ]
     paths-ignore:
       - 'README.md'
       - 'readme/**'
