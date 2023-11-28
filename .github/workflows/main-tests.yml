@@ -23,7 +23,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '19'
+        java-version: '21'
         distribution: 'adopt'
         cache: maven
 
