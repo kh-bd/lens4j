@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * Lens factory metadata builder.
+ *
  * @author Sergei_Khadanovich
  */
 public class LensFactoryMetaBuilder {

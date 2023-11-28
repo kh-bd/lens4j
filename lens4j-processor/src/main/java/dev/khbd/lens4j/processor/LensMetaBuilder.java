@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Lens metadata builder.
+ *
  * @author Sergei_Khadanovich
  */
 public class LensMetaBuilder {

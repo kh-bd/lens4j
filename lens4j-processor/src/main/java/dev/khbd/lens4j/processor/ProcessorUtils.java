@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * Utility class with helper methods for lens processor.
+ *
  * @author Sergei_Khadanovich
  */
 public final class ProcessorUtils {

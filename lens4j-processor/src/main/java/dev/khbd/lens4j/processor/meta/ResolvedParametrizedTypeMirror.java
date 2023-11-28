@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Parametrized type mirror with resolved type arguments.
+ *
  * @author Sergei_Khadanovich
  */
 public class ResolvedParametrizedTypeMirror {
