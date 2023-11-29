@@ -200,11 +200,12 @@ For maven-based projects, add the following to your `pom.xml` file:
 We are going to support separate version for each LTS release as long as that release is supported.
 In the following table, you can find the latest lens4j version for each supported java version.
 
-| Java<br/> version | Latest release                                                                                                                                                                      |
-|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `1.8`             | [![Maven jdk1.8](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre1.8)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j) |
-| `11`              | [![Maven jdk11](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre11)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j)   |
-| `17`              | [![Maven jdk17](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre17)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j)   |
+| Java<br/> version | Latest release                                                                                                                                                                                   |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `1.8`             | [![Maven jdk1.8](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre1.8)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j/1.0.0_jre1.8) |
+| `11`              | [![Maven jdk11](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre11)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j/1.0.0_jre11)    |
+| `17`              | [![Maven jdk17](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre17)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j/1.0.0_jre17)    |
+| `21`               | [![Maven jdk21](https://img.shields.io/maven-central/v/dev.khbd.lens4j/lens4j?color=brightgreen&versionSuffix=_jre21)](https://mvnrepository.com/artifact/dev.khbd.lens4j/lens4j/1.0.0_jre21)    |
 
 # Generating inlined lenses (experimental)
 
