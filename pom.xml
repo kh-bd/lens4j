@@ -59,7 +59,7 @@
         <maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
 
         <!-- dependencies versions -->
-        <testng.version>7.4.0</testng.version>
+        <testng.version>7.7.1</testng.version>
         <mockito.version>3.9.0</mockito.version>
         <assertj.version>3.20.2</assertj.version>
         <javapoet.version>1.13.0</javapoet.version>
