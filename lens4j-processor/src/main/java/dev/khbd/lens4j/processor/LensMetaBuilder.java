@@ -12,6 +12,7 @@ import dev.khbd.lens4j.processor.path.PathParser;
 import dev.khbd.lens4j.processor.path.PathStructureValidator;
 import dev.khbd.lens4j.processor.path.PathVisitor;
 import dev.khbd.lens4j.processor.path.Property;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.lang.model.element.Element;
@@ -33,6 +34,7 @@ import java.util.Set;
 /**
  * @author Sergei_Khadanovich
  */
+@RequiredArgsConstructor
 public class LensMetaBuilder {
 
     private static final String LENS_NAME_SUFFIX = "LENS";
@@ -40,11 +42,6 @@ public class LensMetaBuilder {
 
     private final TypeElement rootClassElement;
     private final Types typeUtil;
-
-    public LensMetaBuilder(TypeElement rootClassElement, Types typeUtil) {
-        this.rootClassElement = rootClassElement;
-        this.typeUtil = typeUtil;
-    }
 
     public LensMeta build(Lens annotation) {
         Path path = PathParser.getInstance().parse(annotation.path());
@@ -58,16 +55,13 @@ public class LensMetaBuilder {
         return meta;
     }
 
+    @RequiredArgsConstructor
     class LensPartResolver implements PathVisitor {
 
         private final LensMeta meta;
 
         private ResolvedParametrizedTypeMirror lastResolvedType =
                 new ResolvedParametrizedTypeMirror(rootClassElement.asType());
-
-        public LensPartResolver(LensMeta meta) {
-            this.meta = meta;
-        }
 
         @Override
         public void visitProperty(Property property) {
@@ -207,14 +201,11 @@ public class LensMetaBuilder {
         return accumulator.getLensName();
     }
 
+    @RequiredArgsConstructor
     private static class LensNameAccumulator implements PathVisitor {
 
         private final LensType lensType;
         private final StringBuilder builder = new StringBuilder();
-
-        public LensNameAccumulator(LensType lensType) {
-            this.lensType = lensType;
-        }
 
         @Override
         public void visitProperty(Property property) {
@@ -227,7 +218,7 @@ public class LensMetaBuilder {
         }
 
         private void visitNamed(String name) {
-            if (builder.length() != 0) {
+            if (!builder.isEmpty()) {
                 builder.append("_");
             }
             builder.append(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, name));
