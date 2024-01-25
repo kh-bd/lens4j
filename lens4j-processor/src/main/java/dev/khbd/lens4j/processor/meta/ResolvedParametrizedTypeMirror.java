@@ -1,5 +1,8 @@
 package dev.khbd.lens4j.processor.meta;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +12,12 @@ import java.util.List;
  *
  * @author Sergei_Khadanovich
  */
+@Getter
+@RequiredArgsConstructor
 public class ResolvedParametrizedTypeMirror {
 
     private final TypeMirror typeMirror;
     private final List<ResolvedParametrizedTypeMirror> actualTypeArguments = new ArrayList<>();
-
-    public ResolvedParametrizedTypeMirror(TypeMirror typeMirror) {
-        this.typeMirror = typeMirror;
-    }
 
     /**
      * Append actual type argument to arguments list.
@@ -38,13 +39,5 @@ public class ResolvedParametrizedTypeMirror {
             throw new IndexOutOfBoundsException("There is no any actual type argument");
         }
         return actualTypeArguments.get(0);
-    }
-
-    public TypeMirror getTypeMirror() {
-        return typeMirror;
-    }
-
-    public List<ResolvedParametrizedTypeMirror> getActualTypeArguments() {
-        return actualTypeArguments;
     }
 }

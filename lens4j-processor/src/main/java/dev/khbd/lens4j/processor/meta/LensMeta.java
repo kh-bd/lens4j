@@ -1,6 +1,8 @@
 package dev.khbd.lens4j.processor.meta;
 
 import dev.khbd.lens4j.core.annotations.LensType;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import javax.lang.model.element.Modifier;
 import java.util.LinkedList;
@@ -13,18 +15,14 @@ import java.util.stream.Collectors;
  *
  * @author Alexey_Bodyak
  */
+@Getter
+@RequiredArgsConstructor
 public class LensMeta {
 
     private final String name;
     private final LensType type;
-    private final LinkedList<LensPartMeta> parts = new LinkedList<>();
     private final Set<Modifier> modifiers;
-
-    public LensMeta(String name, LensType type, Set<Modifier> modifiers) {
-        this.name = name;
-        this.type = type;
-        this.modifiers = modifiers;
-    }
+    private final LinkedList<LensPartMeta> parts = new LinkedList<>();
 
     /**
      * Add lens part to the end.
@@ -83,17 +81,5 @@ public class LensMeta {
      */
     public boolean isSinglePart() {
         return parts.size() == 1;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LensType getType() {
-        return type;
-    }
-
-    public Set<Modifier> getModifiers() {
-        return modifiers;
     }
 }
