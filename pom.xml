@@ -59,6 +59,7 @@
         <maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
 
         <!-- dependencies versions -->
+        <lombok.version>1.18.30</lombok.version>
         <testng.version>7.7.1</testng.version>
         <mockito.version>4.8.1</mockito.version>
         <assertj.version>3.23.1</assertj.version>
@@ -83,6 +84,12 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
@@ -150,6 +157,18 @@
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <release>21</release>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>com.google.auto.service</groupId>
+                            <artifactId>auto-service</artifactId>
+                            <version>${auto-service.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
@@ -193,10 +212,11 @@
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
-<!--                    add-opens is needed here to bypass google-testing problems-->
-<!--                    with accessing internal jdk classes. This problem might be fixed in-->
-<!--                    any future release.-->
-                    <argLine>-Dfile.encoding=UTF-8 --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</argLine>
+                    <!-- add-opens is needed here to bypass google-testing problems-->
+                    <!-- with accessing internal jdk classes. This problem might be fixed in-->
+                    <!-- any future release.-->
+                    <argLine>-Dfile.encoding=UTF-8 --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
+                    </argLine>
                     <useSystemClassLoader>false</useSystemClassLoader>
                 </configuration>
             </plugin>
