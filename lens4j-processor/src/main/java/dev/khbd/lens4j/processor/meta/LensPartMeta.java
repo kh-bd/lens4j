@@ -1,8 +1,13 @@
 package dev.khbd.lens4j.processor.meta;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * @author Alexey_Bodyak
  */
+@Getter
+@RequiredArgsConstructor
 public class LensPartMeta {
 
     private final ResolvedParametrizedTypeMirror sourceType;
@@ -10,50 +15,6 @@ public class LensPartMeta {
     private final String name;
 
     private Shape shape = Shape.ACCESSORS;
-
-    public LensPartMeta(ResolvedParametrizedTypeMirror sourceType,
-                        ResolvedParametrizedTypeMirror targetType,
-                        String name) {
-        this.sourceType = sourceType;
-        this.targetType = targetType;
-        this.name = name;
-    }
-
-    /**
-     * Get source type mirror.
-     *
-     * @return source type mirror
-     */
-    public ResolvedParametrizedTypeMirror getSourceType() {
-        return sourceType;
-    }
-
-    /**
-     * Get property type mirror.
-     *
-     * @return property type mirror
-     */
-    public ResolvedParametrizedTypeMirror getTargetType() {
-        return targetType;
-    }
-
-    /**
-     * Get property name.
-     *
-     * @return property name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Get lens part shape.
-     *
-     * @return part shape
-     */
-    public Shape getShape() {
-        return shape;
-    }
 
     /**
      * Change lens part shape.
