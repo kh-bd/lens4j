@@ -1,5 +1,7 @@
 package dev.khbd.lens4j.processor;
 
+import dev.khbd.lens4j.processor.meta.FactoryId;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -18,6 +20,13 @@ public final class MessageFactory {
     private static final ResourceBundle MESSAGE_BUNDLE = ResourceBundle.getBundle("messages.message");
 
     private MessageFactory() {
+    }
+
+    /**
+     * Create `factories cannot be merged` error message.
+     */
+    public static Message factoriesCannotBeMerged(FactoryId id) {
+        return Message.of(makeMessage("factories_cannot_be_merged", id.getFqn()));
     }
 
     /**
