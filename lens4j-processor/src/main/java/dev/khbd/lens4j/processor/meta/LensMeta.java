@@ -1,11 +1,12 @@
 package dev.khbd.lens4j.processor.meta;
 
 import dev.khbd.lens4j.core.annotations.LensType;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Singular;
 
 import javax.lang.model.element.Modifier;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,23 +16,16 @@ import java.util.stream.Collectors;
  *
  * @author Alexey_Bodyak
  */
-@Getter
-@RequiredArgsConstructor
+@Data
+@Builder
 public class LensMeta {
 
     private final String name;
     private final LensType type;
-    private final Set<Modifier> modifiers;
-    private final LinkedList<LensPartMeta> parts = new LinkedList<>();
-
-    /**
-     * Add lens part to the end.
-     *
-     * @param part lens part
-     */
-    public void addPart(LensPartMeta part) {
-        parts.add(part);
-    }
+    @Builder.Default
+    private final Set<Modifier> modifiers = new HashSet<>();
+    @Singular("part")
+    private final List<LensPartMeta> parts;
 
     /**
      * Get last part.
@@ -39,7 +33,7 @@ public class LensMeta {
      * @return last part in lens chain
      */
     public LensPartMeta getLastPart() {
-        return parts.getLast();
+        return parts.get(parts.size() - 1);
     }
 
     /**
@@ -48,7 +42,7 @@ public class LensMeta {
      * @return first part in lens chain
      */
     public LensPartMeta getFirstPart() {
-        return parts.getFirst();
+        return parts.get(0);
     }
 
     /**

@@ -1,10 +1,10 @@
 package dev.khbd.lens4j.processor.meta;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Singular;
 
 import javax.lang.model.element.Modifier;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -13,22 +13,15 @@ import java.util.Set;
  *
  * @author Alexey_Bodyak
  */
-@Getter
-@RequiredArgsConstructor
+@Data
+@Builder
 public class FactoryMeta {
 
     private final FactoryId id;
-    private final Set<Modifier> modifiers;
-    private final List<LensMeta> lenses = new ArrayList<>();
-
-    /**
-     * Add lens meta to factory.
-     *
-     * @param lensMeta lens meta
-     */
-    public void addLens(LensMeta lensMeta) {
-        this.lenses.add(lensMeta);
-    }
+    @Builder.Default
+    private final Set<Modifier> modifiers = Set.of();
+    @Singular("lens")
+    private final List<LensMeta> lenses;
 
     /**
      * Two factories can be merged into single one
@@ -42,9 +35,11 @@ public class FactoryMeta {
      * Merge to factories into single one.
      */
     public FactoryMeta merge(FactoryMeta other) {
-        FactoryMeta result = new FactoryMeta(id, modifiers);
-        result.lenses.addAll(lenses);
-        result.lenses.addAll(other.lenses);
-        return result;
+        return FactoryMeta.builder()
+                .id(id)
+                .modifiers(modifiers)
+                .lenses(lenses)
+                .lenses(other.lenses)
+                .build();
     }
 }

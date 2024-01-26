@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * @author Sergei_Khadanovich
  */
 @RequiredArgsConstructor
-public class LensFactoryMetaBuilder {
+public class LensFactoryMetaCollector {
 
     private static final String DEFAULT_FACTORY_SUFFIX = "Lenses";
 
@@ -37,7 +37,7 @@ public class LensFactoryMetaBuilder {
      * @param element element
      * @return built factory metadata
      */
-    public FactoryMeta build(Element element) {
+    public FactoryMeta collect(Element element) {
         if (element.getKind() == ElementKind.CLASS || element.getKind() == ElementKind.RECORD) {
             return makeFactoryMetaFromClassElement((TypeElement) element);
         }
@@ -58,14 +58,18 @@ public class LensFactoryMetaBuilder {
     }
 
     private FactoryMeta makeFactoryMetaFromClassElement(TypeElement classElement, GenLenses annotation) {
-        FactoryMeta factory = new FactoryMeta(
-                makeFactoryId(classElement, annotation),
-                getClassModifiers(classElement, annotation));
+        FactoryMeta.FactoryMetaBuilder factoryBuilder =
+                FactoryMeta.builder()
+                        .id(makeFactoryId(classElement, annotation))
+                        .modifiers(getClassModifiers(classElement, annotation));
 
-        LensMetaBuilder metaBuilder = new LensMetaBuilder(classElement, typeUtil);
+        LensMetaCollector creator = new LensMetaCollector(classElement, typeUtil);
         for (Lens lens : annotation.lenses()) {
-            factory.addLens(metaBuilder.build(lens));
+            factoryBuilder.lens(creator.collect(lens));
         }
+
+        FactoryMeta factory = factoryBuilder.build();
+
         checkLensNames(classElement, factory.getLenses());
 
         return factory;
