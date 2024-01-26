@@ -36,14 +36,14 @@ public class LensProcessor extends AbstractProcessor {
     private Filer filer;
     private Logger logger;
 
-    private LensFactoryMetaBuilder metaBuilder;
+    private LensFactoryMetaCollector metaCreator;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
 
         this.filer = processingEnv.getFiler();
-        this.metaBuilder = new LensFactoryMetaBuilder(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
+        this.metaCreator = new LensFactoryMetaCollector(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
         this.logger = new Logger(processingEnv.getMessager());
 
         Options options = new Options(processingEnv.getOptions());
@@ -80,7 +80,7 @@ public class LensProcessor extends AbstractProcessor {
         try {
             Map<FactoryId, List<FactoryMeta>> groupedFactories =
                     lensElements.stream()
-                            .map(metaBuilder::build)
+                            .map(metaCreator::collect)
                             .collect(Collectors.groupingBy(FactoryMeta::getId));
             for (List<FactoryMeta> factories : groupedFactories.values()) {
                 FactoryMeta merged = mergeFactories(factories);
