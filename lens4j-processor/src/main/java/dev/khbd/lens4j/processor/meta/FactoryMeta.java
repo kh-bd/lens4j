@@ -17,8 +17,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class FactoryMeta {
 
-    private final String packageName;
-    private final String factoryName;
+    private final FactoryId id;
     private final Set<Modifier> modifiers;
     private final List<LensMeta> lenses = new ArrayList<>();
 
@@ -29,5 +28,23 @@ public class FactoryMeta {
      */
     public void addLens(LensMeta lensMeta) {
         this.lenses.add(lensMeta);
+    }
+
+    /**
+     * Two factories can be merged into single one
+     * if they point to the same file with same modifiers.
+     */
+    public boolean canBeMergedWith(FactoryMeta other) {
+        return id.equals(other.id) && modifiers.equals(other.modifiers);
+    }
+
+    /**
+     * Merge to factories into single one.
+     */
+    public FactoryMeta merge(FactoryMeta other) {
+        FactoryMeta result = new FactoryMeta(id, modifiers);
+        result.lenses.addAll(lenses);
+        result.lenses.addAll(other.lenses);
+        return result;
     }
 }

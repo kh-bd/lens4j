@@ -67,7 +67,7 @@ public class LensProcessorSuccessTest {
                                 "cases/generic/projection/AbstractPayment.java",
                                 "cases/generic/projection/Payment.java"
                         ),
-                        Arrays.asList("cases/generic/projection/PaymentLenses")
+                        Collections.singletonList("cases/generic/projection/PaymentLenses")
                 },
                 {
                         Arrays.asList(
@@ -137,6 +137,13 @@ public class LensProcessorSuccessTest {
                                 "cases/sub_class/SubClass.java"
                         ),
                         Collections.singletonList("cases/sub_class/SubClassLenses")
+                },
+                {
+                        Arrays.asList(
+                                "cases/several_factories_to_same_class/success/Customer.java",
+                                "cases/several_factories_to_same_class/success/Client.java"
+                        ),
+                        Collections.singletonList("cases/several_factories_to_same_class/success/FactoryImpl")
                 }
         };
     }
