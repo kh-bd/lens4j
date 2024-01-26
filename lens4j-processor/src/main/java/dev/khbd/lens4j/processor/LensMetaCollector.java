@@ -37,7 +37,7 @@ import java.util.Set;
  * @author Sergei_Khadanovich
  */
 @RequiredArgsConstructor
-public class LensMetaBuilder {
+public class LensMetaCollector {
 
     private static final String LENS_NAME_SUFFIX = "LENS";
     private static final List<String> SUPPORTED_ARRAYS_PROPERTIES = Collections.singletonList("length");
@@ -45,22 +45,26 @@ public class LensMetaBuilder {
     private final TypeElement rootClassElement;
     private final Types typeUtil;
 
-    public LensMeta build(Lens annotation) {
+    public LensMeta collect(Lens annotation) {
         Path path = PathParser.getInstance().parse(annotation.path());
 
         if (!PathStructureValidator.validate(path)) {
             throw new LensProcessingException(MessageFactory.pathIsIncorrect(rootClassElement));
         }
 
-        LensMeta meta = new LensMeta(makeLensName(annotation, path), annotation.type(), getLensModifiers(annotation));
-        path.visit(new LensPartResolver(meta));
-        return meta;
+        LensMeta.LensMetaBuilder metaBuilder = LensMeta.builder()
+                .name(makeLensName(annotation, path))
+                .type(annotation.type())
+                .modifiers(getLensModifiers(annotation));
+
+        path.visit(new LensPartResolver(metaBuilder));
+        return metaBuilder.build();
     }
 
     @RequiredArgsConstructor
     class LensPartResolver implements PathVisitor {
 
-        private final LensMeta meta;
+        private final LensMeta.LensMetaBuilder builder;
 
         private ResolvedParametrizedTypeMirror lastResolvedType =
                 new ResolvedParametrizedTypeMirror(rootClassElement.asType());
@@ -71,9 +75,9 @@ public class LensMetaBuilder {
                 if (!SUPPORTED_ARRAYS_PROPERTIES.contains(property.name())) {
                     throw new LensProcessingException(MessageFactory.arraysPropertyIsNotSupported(property.name()));
                 }
-                meta.addPart(makeArrayLensPartMeta(property));
+                builder.part(makeArrayLensPartMeta(property));
             } else {
-                meta.addPart(makeTypeLensPartMeta(property));
+                builder.part(makeTypeLensPartMeta(property));
             }
         }
 
@@ -87,8 +91,14 @@ public class LensMetaBuilder {
                     resolveType(currentClassElement, lastResolvedType.getActualTypeArguments(),
                             methodElement, methodElement.getReturnType());
 
-            LensPartMeta part = new LensPartMeta(lastResolvedType, methodReturnType, method.name());
-            meta.addPart(part.withShape(LensPartMeta.Shape.METHOD));
+            LensPartMeta part = LensPartMeta.builder()
+                    .sourceType(lastResolvedType)
+                    .targetType(methodReturnType)
+                    .name(method.name())
+                    .shape(LensPartMeta.Shape.METHOD)
+                    .build();
+
+            builder.part(part);
 
             lastResolvedType = methodReturnType;
         }
@@ -102,19 +112,20 @@ public class LensMetaBuilder {
 
         @Override
         public void finish() {
+            LensMeta meta = builder.build();
             if (meta.getType() == LensType.READ_WRITE) {
-                verifyRecordPropertyAtLastPosition();
-                verifyMethodAtLastPosition();
+                verifyRecordPropertyAtLastPosition(meta);
+                verifyMethodAtLastPosition(meta);
             }
         }
 
-        private void verifyMethodAtLastPosition() {
+        private void verifyMethodAtLastPosition(LensMeta meta) {
             if (meta.getLastPart().getShape() == LensPartMeta.Shape.METHOD) {
                 throw new LensProcessingException(MessageFactory.methodAtWrongPosition(rootClassElement));
             }
         }
 
-        private void verifyRecordPropertyAtLastPosition() {
+        private void verifyRecordPropertyAtLastPosition(LensMeta meta) {
             TypeMirror sourceMirror = meta.getLastPart().getSourceType().getTypeMirror();
             if (sourceMirror.getKind() == TypeKind.DECLARED) {
                 DeclaredType declaredType = (DeclaredType) sourceMirror;
@@ -128,10 +139,14 @@ public class LensMetaBuilder {
             ResolvedParametrizedTypeMirror fieldType = new ResolvedParametrizedTypeMirror(
                     typeUtil.getPrimitiveType(TypeKind.INT)
             );
-            LensPartMeta lensPartMeta = new LensPartMeta(lastResolvedType, fieldType, property.name())
-                    .withShape(LensPartMeta.Shape.FIELD);
+            LensPartMeta part = LensPartMeta.builder()
+                    .sourceType(lastResolvedType)
+                    .targetType(fieldType)
+                    .name(property.name())
+                    .shape(LensPartMeta.Shape.FIELD)
+                    .build();
             lastResolvedType = fieldType;
-            return lensPartMeta;
+            return part;
         }
 
         private LensPartMeta makeTypeLensPartMeta(Property property) {
@@ -142,16 +157,20 @@ public class LensMetaBuilder {
                     resolveType(currentClassElement, lastResolvedType.getActualTypeArguments(),
                             fieldElement, fieldElement.asType());
 
-            LensPartMeta part = new LensPartMeta(lastResolvedType, fieldType, property.name());
+            LensPartMeta.LensPartMetaBuilder partBuilder = LensPartMeta.builder()
+                    .sourceType(lastResolvedType)
+                    .targetType(fieldType)
+                    .name(property.name());
 
             if (currentClassElement.getKind() == ElementKind.RECORD) {
-                part.withShape(LensPartMeta.Shape.METHOD);
+                partBuilder.shape(LensPartMeta.Shape.METHOD);
             } else if (!fieldElement.getModifiers().contains(Modifier.PRIVATE)) {
-                part.withShape(LensPartMeta.Shape.FIELD);
+                partBuilder.shape(LensPartMeta.Shape.FIELD);
             }
 
             lastResolvedType = fieldType;
-            return part;
+
+            return partBuilder.build();
         }
 
         private boolean lastResolvedTypeIsArray() {
