@@ -47,11 +47,11 @@ public class CombinedLensFactoryGenerator implements LensFactoryGenerator {
 
     @Override
     public JavaFile generate(FactoryMeta factoryMeta) {
-        return JavaFile.builder(factoryMeta.getPackageName(), makeType(factoryMeta)).build();
+        return JavaFile.builder(factoryMeta.getId().getPackageName(), makeType(factoryMeta)).build();
     }
 
     private TypeSpec makeType(FactoryMeta factoryMeta) {
-        TypeSpec.Builder builder = TypeSpec.classBuilder(factoryMeta.getFactoryName());
+        TypeSpec.Builder builder = TypeSpec.classBuilder(factoryMeta.getId().getFactoryName());
         builder.addModifiers(factoryMeta.getModifiers().toArray(new Modifier[0]));
         builder.addAnnotation(makeGeneratedAnnotation());
         builder.addMethod(makeConstructor());

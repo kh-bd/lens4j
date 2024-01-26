@@ -135,6 +135,13 @@ public class LensProcessorSuccessTest {
                                 "cases/sub_class/SubClass.java"
                         ),
                         List.of("cases/sub_class/SubClassLenses")
+                },
+                {
+                        List.of(
+                                "cases/several_factories_to_same_class/success/Customer.java",
+                                "cases/several_factories_to_same_class/success/Client.java"
+                        ),
+                        List.of("cases/several_factories_to_same_class/success/FactoryImpl")
                 }
         };
     }
