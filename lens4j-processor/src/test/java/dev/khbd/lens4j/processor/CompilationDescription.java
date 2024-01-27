@@ -2,7 +2,7 @@ package dev.khbd.lens4j.processor;
 
 import static com.google.testing.compile.Compiler.javac;
 
-import com.google.testing.compile.Compilation;
+import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
 
 import javax.tools.JavaFileObject;
@@ -16,7 +16,6 @@ import java.util.List;
 public class CompilationDescription {
 
     private final List<JavaFileObject> files = new ArrayList<>();
-    private boolean inlined = false;
 
     private CompilationDescription() {
     }
@@ -33,11 +32,6 @@ public class CompilationDescription {
         return this;
     }
 
-    public CompilationDescription withInlinedOption() {
-        this.inlined = true;
-        return this;
-    }
-
     public CompilationDescription withCommons() {
         files.addAll(
                 Arrays.asList(
@@ -51,10 +45,8 @@ public class CompilationDescription {
     }
 
     public CompilationResult compile() {
-        Compilation compilation = javac().withProcessors(new LensProcessor())
-                .withOptions("-Alenses.generate.inlined=" + inlined)
-                .compile(files);
-        return new CompilationResult(compilation);
+        Compiler compiler = javac().withProcessors(new LensProcessor());
+        return new CompilationResult(compiler.compile(files));
     }
 
     public static CompilationDescription of() {

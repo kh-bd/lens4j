@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Singular;
 
 import javax.lang.model.element.Modifier;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ public class FactoryMeta {
 
     private final FactoryId id;
     @Builder.Default
-    private final Set<Modifier> modifiers = Set.of();
+    private final Set<Modifier> modifiers = Collections.emptySet();
     @Singular("lens")
     private final List<LensMeta> lenses;
 

@@ -3,7 +3,6 @@ package dev.khbd.lens4j.processor;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.JavaFile;
 import dev.khbd.lens4j.core.annotations.GenLenses;
-import dev.khbd.lens4j.processor.generator.CombinedLensFactoryGenerator;
 import dev.khbd.lens4j.processor.generator.InlinedLensFactoryGenerator;
 import dev.khbd.lens4j.processor.generator.LensFactoryGenerator;
 import dev.khbd.lens4j.processor.meta.FactoryId;
@@ -45,14 +44,7 @@ public class LensProcessor extends AbstractProcessor {
         this.filer = processingEnv.getFiler();
         this.metaCreator = new LensFactoryMetaCollector(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
         this.logger = new Logger(processingEnv.getMessager());
-
-        Options options = new Options(processingEnv.getOptions());
-
-        if (options.inlinedGenerationEnabled()) {
-            this.lensGenerator = new InlinedLensFactoryGenerator(processingEnv.getTypeUtils());
-        } else {
-            this.lensGenerator = new CombinedLensFactoryGenerator(processingEnv.getTypeUtils());
-        }
+        this.lensGenerator = new InlinedLensFactoryGenerator(processingEnv.getTypeUtils());
     }
 
     @Override

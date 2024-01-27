@@ -45,17 +45,6 @@ public class LensProcessorSuccessTest {
                 .generated(factoryFile, factoryFile + ".java");
     }
 
-    @Test(dataProvider = "singleFileSuccessCases")
-    public void generate_singleFileAndInlinedFlagIsOn_generateValidFactory(String file, String factoryFile) {
-        CompilationDescription.of()
-                .withFile(file)
-                .withCommons()
-                .withInlinedOption()
-                .compile()
-                .success()
-                .generated(factoryFile, factoryFile + "Inlined.java");
-    }
-
 
     @DataProvider
     public static Object[][] multiFileSuccessCases() {
@@ -158,20 +147,6 @@ public class LensProcessorSuccessTest {
         result.success();
         for (String factoryFile : expected) {
             result.generated(factoryFile, factoryFile + ".java");
-        }
-    }
-
-    @Test(dataProvider = "multiFileSuccessCases")
-    public void generate_multiFileAndInlined_generateValidFactories(List<String> sources, List<String> expected) {
-        CompilationResult result = CompilationDescription.of()
-                .withCommons()
-                .withInlinedOption()
-                .withFiles(sources.toArray(new String[0]))
-                .compile();
-
-        result.success();
-        for (String factoryFile : expected) {
-            result.generated(factoryFile, factoryFile + "Inlined.java");
         }
     }
 
