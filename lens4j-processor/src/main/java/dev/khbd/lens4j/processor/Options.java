@@ -19,7 +19,7 @@ public class Options {
     private static final OptionsKey<Boolean> GENERATE_INLINED_LENSES = new OptionsKey<>("lenses.generate.inlined");
 
     private static final List<OptionsDescription<?>> DESCRIPTIONS = List.of(
-            new OptionsDescription<>(GENERATE_INLINED_LENSES, Boolean::parseBoolean, () -> true)
+            new OptionsDescription<>(GENERATE_INLINED_LENSES, str -> true, () -> true)
     );
 
     private final Map<OptionsKey<?>, Object> params = new HashMap<>();
@@ -41,15 +41,6 @@ public class Options {
         for (OptionsDescription<?> description : DESCRIPTIONS) {
             params.putIfAbsent(description.key(), description.defaultValue().get());
         }
-    }
-
-    /**
-     * Is inlined generation enabled or not.
-     *
-     * @return {@literal true} if enabled
-     */
-    public boolean inlinedGenerationEnabled() {
-        return getKeyValue(GENERATE_INLINED_LENSES);
     }
 
     /**
