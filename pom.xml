@@ -67,7 +67,7 @@
         <auto-service.version>1.0.1</auto-service.version>
         <google-testing.version>0.19</google-testing.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
-        <guava.version>31.1-jre</guava.version>
+        <guava.version>32.0.1-jre</guava.version>
         <jmh.version>1.35</jmh.version>
     </properties>
 
