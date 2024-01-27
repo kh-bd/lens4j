@@ -17,6 +17,7 @@ import dev.khbd.lens4j.processor.LexicalScope;
 import dev.khbd.lens4j.processor.meta.FactoryMeta;
 import dev.khbd.lens4j.processor.meta.LensMeta;
 import dev.khbd.lens4j.processor.meta.LensPartMeta;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.Generated;
 import javax.lang.model.element.Modifier;
@@ -38,15 +39,15 @@ public class InlinedLensFactoryGenerator implements LensFactoryGenerator {
     private static final String UNSUPPORTED_METHOD_MSG = "Can not create instance of factory class";
 
     private final TypeNameBuilder typeNameBuilder;
-    private final Map<LensPartMeta.Shape, InlinedLensPartGenerationStrategy> strategies;
+    private final Map<LensPartMeta.Shape, LensPartGenerationStrategy> strategies;
 
     public InlinedLensFactoryGenerator(Types typeUtils) {
         typeNameBuilder = new TypeNameBuilder(typeUtils);
 
         strategies = new EnumMap<>(LensPartMeta.Shape.class);
-        strategies.put(LensPartMeta.Shape.ACCESSORS, new AccessorsInlinedLensPartGenerationStrategy());
-        strategies.put(LensPartMeta.Shape.METHOD, new MethodInlinedLensPartGenerationStrategy());
-        strategies.put(LensPartMeta.Shape.FIELD, new FieldInlinedLensPartGenerationStrategy());
+        strategies.put(LensPartMeta.Shape.ACCESSORS, new AccessorsLensPartGenerationStrategy());
+        strategies.put(LensPartMeta.Shape.METHOD, new MethodLensPartGenerationStrategy());
+        strategies.put(LensPartMeta.Shape.FIELD, new FieldLensPartGenerationStrategy());
     }
 
     @Override
@@ -190,8 +191,8 @@ public class InlinedLensFactoryGenerator implements LensFactoryGenerator {
         return findStrategy(shape).generateWrite(sourceName, meta, PROPERTY_ARGUMENT_NAME);
     }
 
-    private InlinedLensPartGenerationStrategy findStrategy(LensPartMeta.Shape shape) {
-        InlinedLensPartGenerationStrategy strategy = strategies.get(shape);
+    private LensPartGenerationStrategy findStrategy(LensPartMeta.Shape shape) {
+        LensPartGenerationStrategy strategy = strategies.get(shape);
         if (Objects.isNull(strategy)) {
             throw new RuntimeException(String.format("Lens part generation strategy was not found for shape = %s", shape));
         }
@@ -219,6 +220,97 @@ public class InlinedLensFactoryGenerator implements LensFactoryGenerator {
                 typeNameBuilder.buildTypeName(lensMeta.getFirstPart().getSourceType()),
                 typeNameBuilder.buildTypeName(lensMeta.getLastPart().getTargetType())
         );
+    }
+
+    /**
+     * Lens part generation strategy.
+     *
+     * @author Sergei_Khadanovich
+     */
+    interface LensPartGenerationStrategy {
+
+        /**
+         * Generate code to read property on source instance.
+         *
+         * @param sourceName source variable name
+         * @param meta       lens part meta data
+         * @return code block to read property
+         */
+        CodeBlock generateRead(String sourceName, LensPartMeta meta);
+
+        /**
+         * Generate code to write property into source instance.
+         *
+         * @param sourceName   source variable name
+         * @param meta         lens part meta data
+         * @param propertyName property variable name
+         * @return code block to write property
+         */
+        CodeBlock generateWrite(String sourceName, LensPartMeta meta, String propertyName);
+    }
+
+    /**
+     * Field part generation strategy.
+     *
+     * @author Sergei_Khadanovich
+     */
+    private static class FieldLensPartGenerationStrategy implements LensPartGenerationStrategy {
+
+        @Override
+        public CodeBlock generateRead(String sourceName, LensPartMeta meta) {
+            return CodeBlock.builder()
+                    .add("$L.$L", sourceName, meta.getName())
+                    .build();
+        }
+
+        @Override
+        public CodeBlock generateWrite(String sourceName, LensPartMeta meta, String propertyName) {
+            return CodeBlock.builder()
+                    .add("$L.$L = $L", sourceName, meta.getName(), propertyName)
+                    .build();
+        }
+    }
+
+    /**
+     * Accessors part generation strategy.
+     *
+     * @author Sergei_Khadanovich
+     */
+    private static class AccessorsLensPartGenerationStrategy implements LensPartGenerationStrategy {
+
+        @Override
+        public CodeBlock generateRead(String sourceName, LensPartMeta meta) {
+            return CodeBlock.builder()
+                    .add("$L.get$L()", sourceName, StringUtils.capitalize(meta.getName()))
+                    .build();
+        }
+
+        @Override
+        public CodeBlock generateWrite(String sourceName, LensPartMeta meta, String propertyName) {
+            return CodeBlock.builder()
+                    .add("$L.set$L($L)", sourceName, StringUtils.capitalize(meta.getName()), propertyName)
+                    .build();
+        }
+    }
+
+    /**
+     * Method part generation strategy.
+     *
+     * @author Sergei_Khadanovich
+     */
+    private static class MethodLensPartGenerationStrategy implements LensPartGenerationStrategy {
+
+        @Override
+        public CodeBlock generateRead(String sourceName, LensPartMeta meta) {
+            return CodeBlock.builder()
+                    .add("$L.$L()", sourceName, meta.getName())
+                    .build();
+        }
+
+        @Override
+        public CodeBlock generateWrite(String sourceName, LensPartMeta meta, String propertyName) {
+            throw new IllegalArgumentException("Method-based generation strategy can not be used in write position");
+        }
     }
 
 }
