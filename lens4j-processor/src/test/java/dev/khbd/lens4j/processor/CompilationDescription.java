@@ -15,7 +15,6 @@ import java.util.List;
 public class CompilationDescription {
 
     private final List<JavaFileObject> files = new ArrayList<>();
-    private Boolean inlined;
 
     private CompilationDescription() {
     }
@@ -37,16 +36,6 @@ public class CompilationDescription {
         return this;
     }
 
-    public CompilationDescription inlined() {
-        this.inlined = true;
-        return this;
-    }
-
-    public CompilationDescription composed() {
-        this.inlined = false;
-        return this;
-    }
-
     public CompilationDescription withCommons() {
         files.addAll(
                 List.of(
@@ -61,9 +50,6 @@ public class CompilationDescription {
 
     public CompilationResult compile() {
         Compiler compiler = javac().withProcessors(new LensProcessor());
-        if (inlined != null) {
-            compiler = compiler.withOptions("-Alenses.generate.inlined=" + inlined);
-        }
         return new CompilationResult(compiler.compile(files));
     }
 
