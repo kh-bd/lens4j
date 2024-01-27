@@ -2,8 +2,10 @@ package dev.khbd.lens4j.processor;
 
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
+import dev.khbd.lens4j.processor.meta.FactoryId;
 import dev.khbd.lens4j.processor.meta.FactoryMeta;
 import dev.khbd.lens4j.processor.meta.LensMeta;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.lang.model.element.Element;
@@ -23,17 +25,13 @@ import java.util.stream.Collectors;
  *
  * @author Sergei_Khadanovich
  */
-public class LensFactoryMetaBuilder {
+@RequiredArgsConstructor
+public class LensFactoryMetaCollector {
 
     private static final String DEFAULT_FACTORY_SUFFIX = "Lenses";
 
     private final Types typeUtil;
     private final Elements elementUtil;
-
-    public LensFactoryMetaBuilder(Types typeUtil, Elements elementUtil) {
-        this.typeUtil = typeUtil;
-        this.elementUtil = elementUtil;
-    }
 
     /**
      * Build factory metadata by annotated element.
@@ -41,7 +39,7 @@ public class LensFactoryMetaBuilder {
      * @param element element
      * @return built factory metadata
      */
-    public FactoryMeta build(Element element) {
+    public FactoryMeta collect(Element element) {
         if (element.getKind() == ElementKind.CLASS || element.getKind() == ElementKind.RECORD) {
             return makeFactoryMetaFromClassElement((TypeElement) element);
         }
@@ -62,16 +60,25 @@ public class LensFactoryMetaBuilder {
     }
 
     private FactoryMeta makeFactoryMetaFromClassElement(TypeElement classElement, GenLenses annotation) {
-        FactoryMeta factory = new FactoryMeta(getPackage(classElement),
-                makeFactoryName(classElement, annotation), getClassModifiers(classElement, annotation));
+        FactoryMeta.FactoryMetaBuilder factoryBuilder =
+                FactoryMeta.builder()
+                        .id(makeFactoryId(classElement, annotation))
+                        .modifiers(getClassModifiers(classElement, annotation));
 
-        LensMetaBuilder metaBuilder = new LensMetaBuilder(classElement, typeUtil);
+        LensMetaCollector creator = new LensMetaCollector(classElement, typeUtil);
         for (Lens lens : annotation.lenses()) {
-            factory.addLens(metaBuilder.build(lens));
+            factoryBuilder.lens(creator.collect(lens));
         }
+
+        FactoryMeta factory = factoryBuilder.build();
+
         checkLensNames(classElement, factory.getLenses());
 
         return factory;
+    }
+
+    private FactoryId makeFactoryId(TypeElement element, GenLenses annotation) {
+        return new FactoryId(getPackage(element), makeFactoryName(element, annotation));
     }
 
     private String makeFactoryName(TypeElement classElement, GenLenses annotation) {

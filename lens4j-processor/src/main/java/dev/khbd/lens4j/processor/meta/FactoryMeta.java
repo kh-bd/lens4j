@@ -1,10 +1,10 @@
 package dev.khbd.lens4j.processor.meta;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Singular;
 
 import javax.lang.model.element.Modifier;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -13,21 +13,33 @@ import java.util.Set;
  *
  * @author Alexey_Bodyak
  */
-@Getter
-@RequiredArgsConstructor
+@Data
+@Builder
 public class FactoryMeta {
 
-    private final String packageName;
-    private final String factoryName;
-    private final Set<Modifier> modifiers;
-    private final List<LensMeta> lenses = new ArrayList<>();
+    private final FactoryId id;
+    @Builder.Default
+    private final Set<Modifier> modifiers = Set.of();
+    @Singular("lens")
+    private final List<LensMeta> lenses;
 
     /**
-     * Add lens meta to factory.
-     *
-     * @param lensMeta lens meta
+     * Two factories can be merged into single one
+     * if they point to the same file with same modifiers.
      */
-    public void addLens(LensMeta lensMeta) {
-        this.lenses.add(lensMeta);
+    public boolean canBeMergedWith(FactoryMeta other) {
+        return id.equals(other.id) && modifiers.equals(other.modifiers);
+    }
+
+    /**
+     * Merge to factories into single one.
+     */
+    public FactoryMeta merge(FactoryMeta other) {
+        return FactoryMeta.builder()
+                .id(id)
+                .modifiers(modifiers)
+                .lenses(lenses)
+                .lenses(other.lenses)
+                .build();
     }
 }
