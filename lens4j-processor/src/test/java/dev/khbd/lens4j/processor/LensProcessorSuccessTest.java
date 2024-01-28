@@ -133,6 +133,13 @@ public class LensProcessorSuccessTest {
                                 "cases/several_factories_to_same_class/success/Client.java"
                         ),
                         Collections.singletonList("cases/several_factories_to_same_class/success/FactoryImpl")
+                },
+                {
+                        Arrays.asList(
+                                "cases/field_strategy/different_package/other/Account.java",
+                                "cases/field_strategy/different_package/Payment.java"
+                        ),
+                        Collections.singletonList("cases/field_strategy/different_package/PaymentLenses")
                 }
         };
     }
