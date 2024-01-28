@@ -58,14 +58,16 @@ public class LensFactoryMetaCollector {
     }
 
     private FactoryMeta makeFactoryMetaFromClassElement(TypeElement classElement, GenLenses annotation) {
+        FactoryId factoryId = makeFactoryId(classElement, annotation);
+
         FactoryMeta.FactoryMetaBuilder factoryBuilder =
                 FactoryMeta.builder()
-                        .id(makeFactoryId(classElement, annotation))
+                        .id(factoryId)
                         .modifiers(getClassModifiers(classElement, annotation));
 
         LensMetaCollector creator = new LensMetaCollector(classElement, typeUtil);
         for (Lens lens : annotation.lenses()) {
-            factoryBuilder.lens(creator.collect(lens));
+            factoryBuilder.lens(creator.collect(factoryId, lens));
         }
 
         FactoryMeta factory = factoryBuilder.build();

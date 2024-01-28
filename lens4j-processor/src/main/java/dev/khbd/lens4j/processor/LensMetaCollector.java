@@ -3,6 +3,7 @@ package dev.khbd.lens4j.processor;
 import com.google.common.base.CaseFormat;
 import dev.khbd.lens4j.core.annotations.Lens;
 import dev.khbd.lens4j.core.annotations.LensType;
+import dev.khbd.lens4j.processor.meta.FactoryId;
 import dev.khbd.lens4j.processor.meta.LensMeta;
 import dev.khbd.lens4j.processor.meta.LensPartMeta;
 import dev.khbd.lens4j.processor.meta.ResolvedParametrizedTypeMirror;
@@ -19,6 +20,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
@@ -45,7 +47,7 @@ public class LensMetaCollector {
     private final TypeElement rootClassElement;
     private final Types typeUtil;
 
-    public LensMeta collect(Lens annotation) {
+    public LensMeta collect(FactoryId id, Lens annotation) {
         Path path = PathParser.getInstance().parse(annotation.path());
 
         if (!PathStructureValidator.validate(path)) {
@@ -57,13 +59,14 @@ public class LensMetaCollector {
                 .type(annotation.type())
                 .modifiers(getLensModifiers(annotation));
 
-        path.visit(new LensPartResolver(metaBuilder));
+        path.visit(new LensPartResolver(id, metaBuilder));
         return metaBuilder.build();
     }
 
     @RequiredArgsConstructor
     class LensPartResolver implements PathVisitor {
 
+        private final FactoryId factoryId;
         private final LensMeta.LensMetaBuilder builder;
 
         private ResolvedParametrizedTypeMirror lastResolvedType =
@@ -164,13 +167,30 @@ public class LensMetaCollector {
 
             if (currentClassElement.getKind() == ElementKind.RECORD) {
                 partBuilder.shape(LensPartMeta.Shape.METHOD);
-            } else if (!fieldElement.getModifiers().contains(Modifier.PRIVATE)) {
-                partBuilder.shape(LensPartMeta.Shape.FIELD);
+            } else {
+                if(isPackageSameAsFactory(currentClassElement)) {
+                    if (!ProcessorUtils.isPrivate(fieldElement)) {
+                        partBuilder.shape(LensPartMeta.Shape.FIELD);
+                    }
+                } else {
+                    if (ProcessorUtils.isPublic(fieldElement)) {
+                        partBuilder.shape(LensPartMeta.Shape.FIELD);
+                    }
+                }
             }
 
             lastResolvedType = fieldType;
 
             return partBuilder.build();
+        }
+
+        private boolean isPackageSameAsFactory(TypeElement element) {
+            TypeElement topElement = ProcessorUtils.getTopLevelClass(element);
+            Element enclosing = topElement.getEnclosingElement();
+            if (enclosing instanceof PackageElement pe) {
+                return pe.getQualifiedName().contentEquals(factoryId.getPackageName());
+            }
+            return false;
         }
 
         private boolean lastResolvedTypeIsArray() {

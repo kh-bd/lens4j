@@ -1,5 +1,8 @@
 package dev.khbd.lens4j.processor;
 
+import lombok.experimental.UtilityClass;
+
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -19,10 +22,21 @@ import java.util.stream.Stream;
 /**
  * @author Sergei_Khadanovich
  */
+@UtilityClass
 public final class ProcessorUtils {
 
-    private ProcessorUtils() {
-        throw new UnsupportedOperationException("Can not create instance of utility class");
+    /**
+     * Check if element private or not.
+     */
+    public static boolean isPrivate(Element element) {
+        return element.getModifiers().contains(Modifier.PRIVATE);
+    }
+
+    /**
+     * Check if element public or not.
+     */
+    public static boolean isPublic(Element element) {
+        return element.getModifiers().contains(Modifier.PUBLIC);
     }
 
     /**
