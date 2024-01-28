@@ -131,6 +131,13 @@ public class LensProcessorSuccessTest {
                                 "cases/several_factories_to_same_class/success/Client.java"
                         ),
                         List.of("cases/several_factories_to_same_class/success/FactoryImpl")
+                },
+                {
+                        List.of(
+                                "cases/field_strategy/different_package/other/Account.java",
+                                "cases/field_strategy/different_package/Payment.java"
+                        ),
+                        List.of("cases/field_strategy/different_package/PaymentLenses")
                 }
         };
     }
