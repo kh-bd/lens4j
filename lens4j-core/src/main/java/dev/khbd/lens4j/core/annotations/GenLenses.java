@@ -2,6 +2,7 @@ package dev.khbd.lens4j.core.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -40,6 +41,7 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
+@Repeatable(GenLenses.GenLensesMulti.class)
 public @interface GenLenses {
 
     /**
@@ -82,5 +84,16 @@ public @interface GenLenses {
          * Generated factory visibility modified will be the same as annotated class.
          */
         INHERIT
+    }
+
+    /**
+     * Repeatable GenLenses.
+     */
+    @Documented
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.CLASS)
+    @interface GenLensesMulti {
+
+       GenLenses[] value();
     }
 }
