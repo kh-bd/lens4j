@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -34,21 +33,16 @@ public class LensFactoryMetaCollector {
     /**
      * Build factory metadata by annotated element.
      *
-     * @param element element
+     * @param onElement element
      * @return built factory metadata
      */
-    public FactoryMeta collect(Element element) {
-        if (element.getKind() == ElementKind.CLASS) {
-            return makeFactoryMetaFromClassElement((TypeElement) element);
+    public FactoryMeta collect(Element onElement, GenLenses annotation) {
+        if (onElement instanceof TypeElement) {
+            TypeElement typeElement = (TypeElement) onElement;
+            verifyClass(typeElement);
+            return makeFactoryMetaFromClassElement(typeElement, annotation);
         }
-        throw new LensProcessingException(MessageFactory.genLensNotAllowedHere(element));
-    }
-
-    private FactoryMeta makeFactoryMetaFromClassElement(TypeElement classElement) {
-        verifyClass(classElement);
-
-        GenLenses annotation = classElement.getAnnotation(GenLenses.class);
-        return makeFactoryMetaFromClassElement(classElement, annotation);
+        throw new IllegalStateException("Unsupported element kind " + onElement.getKind());
     }
 
     private void verifyClass(TypeElement classElement) {
