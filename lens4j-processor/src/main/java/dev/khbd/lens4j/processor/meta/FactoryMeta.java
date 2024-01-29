@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.Singular;
 
 import javax.lang.model.element.Modifier;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -38,8 +40,14 @@ public class FactoryMeta {
         return FactoryMeta.builder()
                 .id(id)
                 .modifiers(modifiers)
-                .lenses(lenses)
-                .lenses(other.lenses)
+                .lenses(merge(lenses, other.lenses))
                 .build();
+    }
+
+    private List<LensMeta> merge(List<LensMeta> meta, List<LensMeta> otherMeta) {
+        List<LensMeta> result = new ArrayList<>(meta);
+        result.addAll(otherMeta);
+        result.sort(Comparator.comparing(LensMeta::getName));
+        return result;
     }
 }

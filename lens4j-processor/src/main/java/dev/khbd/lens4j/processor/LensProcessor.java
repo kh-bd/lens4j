@@ -5,7 +5,6 @@ import com.squareup.javapoet.JavaFile;
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.processor.generator.InlinedLensFactoryGenerator;
 import dev.khbd.lens4j.processor.generator.LensFactoryGenerator;
-import dev.khbd.lens4j.processor.meta.FactoryId;
 import dev.khbd.lens4j.processor.meta.FactoryMeta;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -14,11 +13,9 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,17 +30,20 @@ public class LensProcessor extends AbstractProcessor {
     private LensFactoryGenerator lensGenerator;
     private Filer filer;
     private Logger logger;
-
-    private LensFactoryMetaCollector metaCreator;
+    private ElementAndGenLensesSearcher searcher;
+    private LensFactoryMetaCollector metaCollector;
+    private FactoryMetaMerger merger;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
 
         this.filer = processingEnv.getFiler();
-        this.metaCreator = new LensFactoryMetaCollector(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
+        this.metaCollector = new LensFactoryMetaCollector(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
         this.logger = new Logger(processingEnv.getMessager());
         this.lensGenerator = new InlinedLensFactoryGenerator(processingEnv.getTypeUtils());
+        this.searcher = new ElementAndGenLensesSearcher();
+        this.merger = new FactoryMetaMerger();
     }
 
     @Override
@@ -53,7 +53,7 @@ public class LensProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return Set.of(GenLenses.class.getName());
+        return Set.of(GenLenses.class.getName(), GenLenses.GenLensesMulti.class.getName());
     }
 
     @Override
@@ -67,15 +67,14 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private ProcessResult processElements(RoundEnvironment roundEnv) {
-        Set<? extends Element> lensElements = findLensElements(roundEnv);
         try {
-            Map<FactoryId, List<FactoryMeta>> groupedFactories =
-                    lensElements.stream()
-                            .map(metaCreator::collect)
-                            .collect(Collectors.groupingBy(FactoryMeta::getId));
-            for (List<FactoryMeta> factories : groupedFactories.values()) {
-                FactoryMeta merged = mergeFactories(factories);
-                JavaFile file = lensGenerator.generate(merged);
+            Set<ElementAndGenLenses> lensElements = searcher.search(roundEnv);
+            List<FactoryMeta> factories = lensElements.stream()
+                    .map(elementAndGenLenses -> metaCollector.collect(elementAndGenLenses.element(), elementAndGenLenses.annotation()))
+                    .collect(Collectors.toList());
+            List<FactoryMeta> merged = merger.merge(factories);
+            for (FactoryMeta factoryMeta : merged) {
+                JavaFile file = lensGenerator.generate(factoryMeta);
                 writeFile(file);
             }
         } catch (LensProcessingException e) {
@@ -83,25 +82,6 @@ public class LensProcessor extends AbstractProcessor {
             return ProcessResult.ERROR;
         }
         return ProcessResult.GENERATED;
-    }
-
-    private FactoryMeta mergeFactories(List<FactoryMeta> factories) {
-        if (factories.size() == 1) {
-            return factories.get(0);
-        }
-        FactoryMeta merged = factories.get(0);
-        for(int i = 1; i < factories.size(); i++) {
-            FactoryMeta current = factories.get(i);
-            if (!merged.canBeMergedWith(current)) {
-                throw new LensProcessingException(MessageFactory.factoriesCannotBeMerged(current.getId()));
-            }
-            merged = merged.merge(current);
-        }
-        return merged;
-    }
-
-    private Set<? extends Element> findLensElements(RoundEnvironment roundEnv) {
-        return roundEnv.getElementsAnnotatedWith(GenLenses.class);
     }
 
     private void writeFile(JavaFile javaFile) {
