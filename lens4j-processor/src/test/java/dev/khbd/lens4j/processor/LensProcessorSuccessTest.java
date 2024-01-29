@@ -31,7 +31,8 @@ public class LensProcessorSuccessTest {
                 {"cases/nested_class/Outer.java", "cases/nested_class/OuterInner1Inner2Lenses"},
                 {"cases/decapitalize_factory_name/Account.java", "cases/decapitalize_factory_name/SpecificFactoryName"},
                 {"cases/field_strategy/Payment.java", "cases/field_strategy/PaymentLenses"},
-                {"cases/lens_modifiers/Account.java", "cases/lens_modifiers/AccountLenses"}
+                {"cases/lens_modifiers/Account.java", "cases/lens_modifiers/AccountLenses"},
+                {"cases/repeat/Customer.java", "cases/repeat/CustomerLenses"}
         };
     }
 
@@ -44,7 +45,6 @@ public class LensProcessorSuccessTest {
                 .success()
                 .generated(factoryFile, factoryFile + ".java");
     }
-
 
     @DataProvider
     public static Object[][] multiFileSuccessCases() {
