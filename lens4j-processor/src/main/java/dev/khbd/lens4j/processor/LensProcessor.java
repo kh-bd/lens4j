@@ -53,7 +53,10 @@ public class LensProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return Set.of(GenLenses.class.getName(), GenLenses.GenLensesMulti.class.getName());
+        return Set.of(
+                GenLenses.class.getCanonicalName(),
+                GenLenses.GenLensesMulti.class.getCanonicalName()
+        );
     }
 
     @Override
