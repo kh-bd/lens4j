@@ -33,16 +33,16 @@ public class LensFactoryMetaCollector {
     /**
      * Build factory metadata by annotated element.
      *
-     * @param onElement element
+     * @param root root element
      * @return built factory metadata
      */
-    public FactoryMeta collect(Element onElement, GenLenses annotation) {
-        if (onElement instanceof TypeElement) {
-            TypeElement typeElement = (TypeElement) onElement;
+    public FactoryMeta collect(Element root, GenLenses annotation) {
+        if (root instanceof TypeElement) {
+            TypeElement typeElement = (TypeElement) root;
             verifyClass(typeElement);
             return makeFactoryMetaFromClassElement(typeElement, annotation);
         }
-        throw new IllegalStateException("Unsupported element kind " + onElement.getKind());
+        throw new IllegalStateException("Unsupported element kind " + root.getKind());
     }
 
     private void verifyClass(TypeElement classElement) {
