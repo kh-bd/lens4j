@@ -31,7 +31,8 @@ public class LensProcessorSuccessTest {
                 {"cases/nested_class/Outer.java", "cases/nested_class/OuterInner1Inner2Lenses"},
                 {"cases/decapitalize_factory_name/Account.java", "cases/decapitalize_factory_name/SpecificFactoryName"},
                 {"cases/field_strategy/Payment.java", "cases/field_strategy/PaymentLenses"},
-                {"cases/lens_modifiers/Account.java", "cases/lens_modifiers/AccountLenses"}
+                {"cases/lens_modifiers/Account.java", "cases/lens_modifiers/AccountLenses"},
+                {"cases/repeat/one_factory/Customer.java", "cases/repeat/one_factory/CustomerLenses"}
         };
     }
 
@@ -44,7 +45,6 @@ public class LensProcessorSuccessTest {
                 .success()
                 .pathGenerated(factoryFile, factoryFile + ".java");
     }
-
 
     @DataProvider
     public static Object[][] multiFileSuccessCases() {
@@ -140,6 +140,13 @@ public class LensProcessorSuccessTest {
                                 "cases/field_strategy/different_package/Payment.java"
                         ),
                         List.of("cases/field_strategy/different_package/PaymentLenses")
+                },
+                {
+                        List.of("cases/repeat/more_factories/Customer.java"),
+                        List.of(
+                                "cases/repeat/more_factories/FactoryImpl1",
+                                "cases/repeat/more_factories/FactoryImpl2"
+                        )
                 }
         };
     }
