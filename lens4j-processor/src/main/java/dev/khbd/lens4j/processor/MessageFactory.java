@@ -98,10 +98,10 @@ public final class MessageFactory {
     }
 
     /**
-     * Create `gen lens annotation is not allowed` error.
+     * Create `incorrect root type` error.
      */
-    public static Message genLensNotAllowedHere(Element element) {
-        return Message.of(makeMessage("gen_lens_not_allowed_here"), element);
+    public static Message incorrectRootType(Element element) {
+        return Message.of(makeMessage("incorrect_root_type"), element);
     }
 
     /**

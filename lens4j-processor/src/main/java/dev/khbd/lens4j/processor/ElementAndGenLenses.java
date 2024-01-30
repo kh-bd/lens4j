@@ -12,6 +12,6 @@ import javax.lang.model.element.Element;
  */
 @Value
 class ElementAndGenLenses {
-    Element element;
+    Element root;
     GenLenses annotation;
 }
