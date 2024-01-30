@@ -42,7 +42,7 @@ public class LensProcessor extends AbstractProcessor {
         this.metaCollector = new LensFactoryMetaCollector(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
         this.logger = new Logger(processingEnv.getMessager());
         this.lensGenerator = new InlinedLensFactoryGenerator(processingEnv.getTypeUtils());
-        this.searcher = new ElementAndGenLensesSearcher();
+        this.searcher = new ElementAndGenLensesSearcher(processingEnv.getTypeUtils());
         this.merger = new FactoryMetaMerger();
     }
 
@@ -73,7 +73,7 @@ public class LensProcessor extends AbstractProcessor {
         try {
             Set<ElementAndGenLenses> lensElements = searcher.search(roundEnv);
             List<FactoryMeta> factories = lensElements.stream()
-                    .map(elementAndGenLenses -> metaCollector.collect(elementAndGenLenses.element(), elementAndGenLenses.annotation()))
+                    .map(elementAndGenLenses -> metaCollector.collect(elementAndGenLenses.root(), elementAndGenLenses.annotation()))
                     .collect(Collectors.toList());
             List<FactoryMeta> merged = merger.merge(factories);
             for (FactoryMeta factoryMeta : merged) {
