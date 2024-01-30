@@ -32,7 +32,7 @@ public class LensProcessorSuccessTest {
                 {"cases/decapitalize_factory_name/Account.java", "cases/decapitalize_factory_name/SpecificFactoryName"},
                 {"cases/field_strategy/Payment.java", "cases/field_strategy/PaymentLenses"},
                 {"cases/lens_modifiers/Account.java", "cases/lens_modifiers/AccountLenses"},
-                {"cases/repeat/Customer.java", "cases/repeat/CustomerLenses"}
+                {"cases/repeat/one_factory/Customer.java", "cases/repeat/one_factory/CustomerLenses"}
         };
     }
 
@@ -138,6 +138,14 @@ public class LensProcessorSuccessTest {
                         Arrays.asList(
                                 "cases/field_strategy/different_package/other/Account.java",
                                 "cases/field_strategy/different_package/Payment.java"
+                        ),
+                        List.of("cases/field_strategy/different_package/PaymentLenses")
+                },
+                {
+                        List.of("cases/repeat/more_factories/Customer.java"),
+                        List.of(
+                                "cases/repeat/more_factories/FactoryImpl1",
+                                "cases/repeat/more_factories/FactoryImpl2"
                         ),
                         Collections.singletonList("cases/field_strategy/different_package/PaymentLenses")
                 }

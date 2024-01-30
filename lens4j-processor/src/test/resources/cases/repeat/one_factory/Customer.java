@@ -1,4 +1,4 @@
-package cases.repeat;
+package cases.repeat.one_factory;
 
 import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.core.annotations.Lens;
