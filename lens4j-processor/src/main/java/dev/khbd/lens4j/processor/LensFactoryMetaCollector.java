@@ -33,16 +33,30 @@ public class LensFactoryMetaCollector {
     /**
      * Build factory metadata by annotated element.
      *
-     * @param root root element
+     * @param annotated annotated element
+     * @param root      root element
      * @return built factory metadata
      */
-    public FactoryMeta collect(Element root, GenLenses annotation) {
-        if (root instanceof TypeElement) {
-            TypeElement typeElement = (TypeElement) root;
-            verifyClass(typeElement);
-            return makeFactoryMetaFromClassElement(typeElement, annotation);
+    public FactoryMeta collect(Element annotated, TypeElement root, GenLenses annotation) {
+        verifyClass(root);
+
+        FactoryId factoryId = makeFactoryId(annotated, root, annotation);
+
+        FactoryMeta.FactoryMetaBuilder factoryBuilder =
+                FactoryMeta.builder()
+                        .id(factoryId)
+                        .modifiers(getClassModifiers(root, annotation));
+
+        LensMetaCollector creator = new LensMetaCollector(root, typeUtil);
+        for (Lens lens : annotation.lenses()) {
+            factoryBuilder.lens(creator.collect(factoryId, lens));
         }
-        throw new IllegalStateException("Unsupported element kind " + root.getKind());
+
+        FactoryMeta factory = factoryBuilder.build();
+
+        checkLensNames(root, factory.getLenses());
+
+        return factory;
     }
 
     private void verifyClass(TypeElement classElement) {
@@ -51,51 +65,31 @@ public class LensFactoryMetaCollector {
         }
     }
 
-    private FactoryMeta makeFactoryMetaFromClassElement(TypeElement classElement, GenLenses annotation) {
-        FactoryId factoryId = makeFactoryId(classElement, annotation);
-
-        FactoryMeta.FactoryMetaBuilder factoryBuilder =
-                FactoryMeta.builder()
-                        .id(factoryId)
-                        .modifiers(getClassModifiers(classElement, annotation));
-
-        LensMetaCollector creator = new LensMetaCollector(classElement, typeUtil);
-        for (Lens lens : annotation.lenses()) {
-            factoryBuilder.lens(creator.collect(factoryId, lens));
-        }
-
-        FactoryMeta factory = factoryBuilder.build();
-
-        checkLensNames(classElement, factory.getLenses());
-
-        return factory;
+    private FactoryId makeFactoryId(Element annotated, TypeElement root, GenLenses annotation) {
+        return new FactoryId(getPackage(annotated), makeFactoryName(root, annotation));
     }
 
-    private FactoryId makeFactoryId(TypeElement element, GenLenses annotation) {
-        return new FactoryId(getPackage(element), makeFactoryName(element, annotation));
-    }
-
-    private String makeFactoryName(TypeElement classElement, GenLenses annotation) {
+    private String makeFactoryName(TypeElement root, GenLenses annotation) {
         String factoryName = annotation.factoryName();
         if (StringUtils.isBlank(factoryName)) {
-            return deriveFactoryName(classElement);
+            return deriveFactoryName(root);
         }
         return StringUtils.capitalize(factoryName);
     }
 
-    private String deriveFactoryName(TypeElement classElement) {
-        String joinedClassNames = ProcessorUtils.getNestedHierarchy(classElement).stream()
+    private String deriveFactoryName(TypeElement root) {
+        String joinedClassNames = ProcessorUtils.getNestedHierarchy(root).stream()
                 .map(Element::getSimpleName)
                 .collect(Collectors.joining());
         return joinedClassNames + DEFAULT_FACTORY_SUFFIX;
     }
 
 
-    private String getPackage(TypeElement classElement) {
+    private String getPackage(Element classElement) {
         return elementUtil.getPackageOf(classElement).toString();
     }
 
-    private Set<Modifier> getClassModifiers(TypeElement classElement, GenLenses annotation) {
+    private Set<Modifier> getClassModifiers(TypeElement root, GenLenses annotation) {
         Set<Modifier> modifiers = new HashSet<>();
         modifiers.add(Modifier.FINAL);
 
@@ -103,13 +97,13 @@ public class LensFactoryMetaCollector {
             case PUBLIC:
                 modifiers.add(Modifier.PUBLIC);
                 break;
+            case PACKAGE:
+                break;
             case INHERIT:
-                TypeElement topLevelClass = ProcessorUtils.getTopLevelClass(classElement);
+                TypeElement topLevelClass = ProcessorUtils.getTopLevelClass(root);
                 if (topLevelClass.getModifiers().contains(Modifier.PUBLIC)) {
                     modifiers.add(Modifier.PUBLIC);
                 }
-                break;
-            case PACKAGE:
                 break;
             default:
                 throw new IllegalStateException(annotation.accessLevel().name() + " is unknown GenLenses#AccessLevel.");
@@ -118,11 +112,11 @@ public class LensFactoryMetaCollector {
         return modifiers;
     }
 
-    private void checkLensNames(Element classElement, List<LensMeta> lenses) {
+    private void checkLensNames(Element root, List<LensMeta> lenses) {
         Map<String, List<LensMeta>> lensNames = lenses.stream().collect(Collectors.groupingBy(LensMeta::getName));
         for (Map.Entry<String, List<LensMeta>> entry : lensNames.entrySet()) {
             if (entry.getValue().size() > 1) {
-                throw new LensProcessingException(MessageFactory.existNotUniqueLensName(classElement));
+                throw new LensProcessingException(MessageFactory.existNotUniqueLensName(root));
             }
         }
     }
