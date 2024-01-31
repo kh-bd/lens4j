@@ -33,7 +33,7 @@ class ElementAndGenLensesSearcher {
 
         for (ElementAndGenLenses elementAndGen : elements) {
             Element root = elementAndGen.getRoot();
-            if (incorrectRootElementType(root)) {
+            if (!correctRootElementType(root)) {
                 throw new LensProcessingException(MessageFactory.incorrectRootType(root));
             }
         }
@@ -77,14 +77,14 @@ class ElementAndGenLensesSearcher {
         }
     }
 
-    private static boolean incorrectRootElementType(Element element) {
+    private static boolean correctRootElementType(Element element) {
         switch (element.getKind()) {
             case CLASS:
             case ENUM:
             case INTERFACE:
-                return false;
-            default:
                 return true;
+            default:
+                return false;
         }
     }
 }
