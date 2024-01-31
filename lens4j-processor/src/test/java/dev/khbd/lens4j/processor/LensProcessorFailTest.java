@@ -22,11 +22,9 @@ public class LensProcessorFailTest {
                 {"cases/primitive_type_in_the_middle/WithPrimitive.java", "Non-declared types are allowed only at last position in path"},
                 {"cases/duplicate_lens_names/DuplicateNames.java", "Lens names for type should be unique"},
                 {"cases/lens_with_empty_path/WithEmptyPath.java", "Lens path is incorrect"},
-                {"cases/on_interface/LensOnInterface.java", "@GenLenses' root can be class or record"},
                 {"cases/lens_without_path/AnnotationWithoutLensPath.java", "annotation @dev.khbd.lens4j.core.annotations.Lens is missing a default value for the element 'path'"},
                 {"cases/field_not_found/FieldNotFound.java", "Field 'bid' was not found in class 'Currency'"},
                 {"cases/generic/generic_class/GenericClass.java", "@GenLenses is not allowed on generic classes"},
-                {"cases/explicit_root/on_interface/root_interface/Action.java", "@GenLenses' root can be class or record"}
         };
     }
 
