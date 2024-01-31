@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -34,7 +33,7 @@ class ElementAndGenLensesSearcher {
 
         for (ElementAndGenLenses elementAndGen : elements) {
             Element root = elementAndGen.getRoot();
-            if (root.getKind() != ElementKind.CLASS) {
+            if (incorrectRootElementType(root)) {
                 throw new LensProcessingException(MessageFactory.incorrectRootType(root));
             }
         }
@@ -75,6 +74,17 @@ class ElementAndGenLensesSearcher {
             throw new IllegalStateException("Cannot resolve type mirror by class " + root);
         } catch (MirroredTypeException e) {
             return e.getTypeMirror();
+        }
+    }
+
+    private static boolean incorrectRootElementType(Element element) {
+        switch (element.getKind()) {
+            case CLASS:
+            case ENUM:
+            case INTERFACE:
+                return false;
+            default:
+                return true;
         }
     }
 }
