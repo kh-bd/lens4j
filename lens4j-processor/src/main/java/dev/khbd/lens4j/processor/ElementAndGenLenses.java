@@ -9,5 +9,5 @@ import javax.lang.model.element.Element;
  *
  * @author Sergei Khadanovich
  */
-record ElementAndGenLenses(Element element, GenLenses annotation) {
+record ElementAndGenLenses(Element root, GenLenses annotation) {
 }

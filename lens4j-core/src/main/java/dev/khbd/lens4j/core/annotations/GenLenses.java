@@ -45,6 +45,16 @@ import java.lang.annotation.Target;
 public @interface GenLenses {
 
     /**
+     * Class which will be the root of all lenses.
+     *
+     * <p>Default value is {@link Void}. It means that an annotated element
+     * is going to be the root of all lenses.
+     *
+     * @return root class
+     */
+    Class<?> root() default void.class;
+
+    /**
      * Generated factory name.
      *
      * @return factory name
