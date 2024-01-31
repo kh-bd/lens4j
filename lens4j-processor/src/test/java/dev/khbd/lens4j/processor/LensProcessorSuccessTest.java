@@ -33,7 +33,9 @@ public class LensProcessorSuccessTest {
                 {"cases/field_strategy/Payment.java", "cases/field_strategy/PaymentLenses"},
                 {"cases/lens_modifiers/Account.java", "cases/lens_modifiers/AccountLenses"},
                 {"cases/repeat/one_factory/Customer.java", "cases/repeat/one_factory/CustomerLenses"},
-                {"cases/explicit_root/on_interface/clazz/Action.java", "cases/explicit_root/on_interface/clazz/CustomerLenses"}
+                {"cases/explicit_root/on_interface/clazz/Action.java", "cases/explicit_root/on_interface/clazz/CustomerLenses"},
+                {"cases/on_interface/LensOnInterface.java", "cases/on_interface/LensOnInterfaceLenses"},
+                {"cases/explicit_root/on_interface/root_interface/Action.java", "cases/explicit_root/on_interface/root_interface/ActionLenses"},
         };
     }
 
