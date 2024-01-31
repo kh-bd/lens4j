@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -21,52 +22,53 @@ import java.util.stream.Stream;
  * @author Sergei Khadanovich
  */
 @RequiredArgsConstructor
-class ElementAndGenLensesSearcher {
+class AnnotatedElementSearcher {
 
     private final Types typeUtils;
 
     /**
      * Search gen lenses in round environment.
      */
-    Set<ElementAndGenLenses> search(RoundEnvironment roundEnv) {
-        Set<ElementAndGenLenses> elements = Stream.concat(getFromLenses(roundEnv), getFromMultiLenses(roundEnv))
-                .collect(Collectors.toSet());
-
-        for (ElementAndGenLenses elementAndGen : elements) {
-            Element root = elementAndGen.root();
-            if (!correctRootElementType(root)) {
-                throw new LensProcessingException(MessageFactory.incorrectRootType(root));
-            }
-        }
-
-        return elements;
+    Set<AnnotatedElement> search(RoundEnvironment roundEnv) {
+        return Stream.concat(
+                getFromLenses(roundEnv),
+                getFromMultiLenses(roundEnv)
+        ).collect(Collectors.toSet());
     }
 
-    private Stream<ElementAndGenLenses> getFromLenses(RoundEnvironment roundEnv) {
+    private Stream<AnnotatedElement> getFromLenses(RoundEnvironment roundEnv) {
         return roundEnv.getElementsAnnotatedWith(GenLenses.class)
                 .stream()
-                .map(onElement -> {
-                    GenLenses annotation = onElement.getAnnotation(GenLenses.class);
-                    return new ElementAndGenLenses(getRootElement(onElement, annotation), annotation);
+                .map(annotated -> {
+                    GenLenses annotation = annotated.getAnnotation(GenLenses.class);
+                    return new AnnotatedElement(annotated, getRootElement(annotated, annotation), annotation);
                 });
     }
 
-    private Stream<ElementAndGenLenses> getFromMultiLenses(RoundEnvironment roundEnv) {
+    private Stream<AnnotatedElement> getFromMultiLenses(RoundEnvironment roundEnv) {
         return roundEnv.getElementsAnnotatedWith(GenLenses.GenLensesMulti.class)
                 .stream()
-                .flatMap(onElement -> {
-                    GenLenses.GenLensesMulti multi = onElement.getAnnotation(GenLenses.GenLensesMulti.class);
+                .flatMap(annotated -> {
+                    GenLenses.GenLensesMulti multi = annotated.getAnnotation(GenLenses.GenLensesMulti.class);
                     return Arrays.stream(multi.value())
-                            .map(annotation -> new ElementAndGenLenses(getRootElement(onElement, annotation), annotation));
+                            .map(annotation -> new AnnotatedElement(annotated, getRootElement(annotated, annotation), annotation));
                 });
     }
 
-    private Element getRootElement(Element onElement, GenLenses annotation) throws MirroredTypeException {
+    private TypeElement getRootElement(Element annotated, GenLenses annotation) {
         TypeMirror mirror = rootTypeMirror(annotation);
-        if (mirror.getKind() == TypeKind.VOID) {
-            return onElement;
+
+        if (mirror.getKind() != TypeKind.VOID) {
+            // correct cast because root can be class only
+            return (TypeElement) typeUtils.asElement(mirror);
         }
-        return typeUtils.asElement(mirror);
+
+        // root is void, so annotated element is root
+        if (correctRootElementType(annotated)) {
+            return (TypeElement) annotated;
+        }
+
+        throw new LensProcessingException(MessageFactory.incorrectRootType(annotated));
     }
 
     private TypeMirror rootTypeMirror(GenLenses annotation) {
@@ -78,8 +80,8 @@ class ElementAndGenLensesSearcher {
         }
     }
 
-    private static boolean correctRootElementType(Element element) {
-        return switch (element.getKind()) {
+    private static boolean correctRootElementType(Element root) {
+        return switch (root.getKind()) {
             case ElementKind.RECORD, ElementKind.CLASS, ElementKind.INTERFACE, ElementKind.ENUM -> true;
             default -> false;
         };
