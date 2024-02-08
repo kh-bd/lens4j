@@ -17,6 +17,7 @@ public class LensProcessorSuccessTest {
         return new Object[][]{
                 {"cases/factory_modifiers/public_factory/Account.java", "cases/factory_modifiers/public_factory/AccountLenses"},
                 {"cases/factory_modifiers/package_factory/Account.java", "cases/factory_modifiers/package_factory/AccountLenses"},
+                {"cases/factory_modifiers/different_access/Account.java", "cases/factory_modifiers/different_access/AccountLenses"},
                 {"cases/method/generic/class_generics/Payment.java", "cases/method/generic/class_generics/PaymentLenses"},
                 {"cases/method/found/Payment.java", "cases/method/found/PaymentLenses"},
                 {"cases/array_type_at_the_end/WithArray.java", "cases/array_type_at_the_end/WithArrayLenses"},
