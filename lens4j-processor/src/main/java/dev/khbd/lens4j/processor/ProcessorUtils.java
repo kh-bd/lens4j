@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,11 +49,11 @@ public final class ProcessorUtils {
      * @return top level class for specified one
      */
     public static TypeElement getTopLevelClass(TypeElement classElement) {
-        return getNestedHierarchy(classElement).getHighest();
+        return (TypeElement) getNestedHierarchy(classElement).getHighest();
     }
 
     /**
-     * Get all classes up to top level.
+     * Get all elements up to the package.
      *
      * <p>For example, suppose we have several classes
      * <pre>{@code
@@ -64,17 +65,37 @@ public final class ProcessorUtils {
      * }</pre>
      * {@code getNestedHierarchy(Inner2) == [Outer -> Inner1 -> Inner2] }
      *
-     * @param classElement class to start
-     * @return all classes up to top level
+     * @param element element to start
+     * @return all elements up to the packageø
      */
-    public static LinerHierarchy<TypeElement> getNestedHierarchy(TypeElement classElement) {
-        List<TypeElement> classes = new ArrayList<>();
-        classes.add(classElement);
+    public static LinerHierarchy<Element> getNestedHierarchy(Element element) {
+        return getNestedHierarchy(element, e -> e.getKind() == ElementKind.PACKAGE);
+    }
 
-        TypeElement current = classElement;
+    /**
+     * Get all elements until predicate is {@literal true}.
+     *
+     * <p>For example, suppose we have several classes
+     * <pre>{@code
+     *  class Outer {
+     *      class Inner1 {
+     *          class Inner2 {}
+     *      }
+     *  }
+     * }</pre>
+     * {@code getNestedHierarchy(Inner2, e.kind != PACKAGE) == [Outer -> Inner1 -> Inner2] }
+     *
+     * @param element element to start
+     * @return all elements
+     */
+    public static LinerHierarchy<Element> getNestedHierarchy(Element element, Predicate<Element> until) {
+        List<Element> classes = new ArrayList<>();
+        classes.add(element);
 
-        while (current.getEnclosingElement().getKind() != ElementKind.PACKAGE) {
-            current = (TypeElement) current.getEnclosingElement();
+        Element current = element;
+
+        while (!until.test(current.getEnclosingElement())) {
+            current = current.getEnclosingElement();
             classes.add(current);
         }
 
