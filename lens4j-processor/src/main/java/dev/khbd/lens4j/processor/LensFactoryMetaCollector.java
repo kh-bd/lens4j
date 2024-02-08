@@ -47,7 +47,7 @@ public class LensFactoryMetaCollector {
         FactoryMeta.FactoryMetaBuilder factoryBuilder =
                 FactoryMeta.builder()
                         .id(factoryId)
-                        .modifiers(getClassModifiers(root, annotation));
+                        .modifiers(getClassModifiers(annotated, annotation));
 
         LensMetaCollector creator = new LensMetaCollector(root, typeUtil);
         for (Lens lens : annotation.lenses()) {
@@ -91,7 +91,7 @@ public class LensFactoryMetaCollector {
         return elementUtil.getPackageOf(classElement).toString();
     }
 
-    private Set<Modifier> getClassModifiers(TypeElement root, GenLenses annotation) {
+    private Set<Modifier> getClassModifiers(Element annotated, GenLenses annotation) {
         Set<Modifier> modifiers = new HashSet<>();
         modifiers.add(Modifier.FINAL);
 
@@ -102,9 +102,11 @@ public class LensFactoryMetaCollector {
             case PACKAGE:
                 break;
             case INHERIT:
-                TypeElement topLevelClass = ProcessorUtils.getTopLevelClass(root);
-                if (topLevelClass.getModifiers().contains(Modifier.PUBLIC)) {
-                    modifiers.add(Modifier.PUBLIC);
+                if (annotated instanceof TypeElement typed) {
+                    TypeElement top = ProcessorUtils.getTopLevelClass(typed);
+                    if (top.getModifiers().contains(Modifier.PUBLIC)) {
+                        modifiers.add(Modifier.PUBLIC);
+                    }
                 }
                 break;
             default:
