@@ -1,5 +1,7 @@
 package dev.khbd.lens4j.processor;
 
+import dev.khbd.lens4j.processor.meta.FactoryId;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -18,6 +20,13 @@ public final class MessageFactory {
     private static final ResourceBundle MESSAGE_BUNDLE = ResourceBundle.getBundle("messages.message");
 
     private MessageFactory() {
+    }
+
+    /**
+     * Create `factories cannot be merged` error message.
+     */
+    public static Message factoriesCannotBeMerged(FactoryId id) {
+        return Message.of(makeMessage("factories_cannot_be_merged", id.getFqn()));
     }
 
     /**
@@ -96,10 +105,17 @@ public final class MessageFactory {
     }
 
     /**
-     * Create `gen lens annotation is not allowed` error.
+     * Create `incorrect root type` error.
      */
-    public static Message genLensNotAllowedHere(Element element) {
-        return Message.of(makeMessage("gen_lens_not_allowed_here"), element);
+    public static Message incorrectRootType(Element element) {
+        return Message.of(makeMessage("incorrect_root_type"), element);
+    }
+
+    /**
+     * Create `explicit root is required` error.
+     */
+    public static Message explicitRootIsRequired(Element element) {
+        return Message.of(makeMessage("explicit_root_is_required"), element);
     }
 
     /**
