@@ -86,7 +86,7 @@ class AnnotatedElementSearcher {
 
     private static boolean correctRootElementType(Element root) {
         return switch (root.getKind()) {
-            case ElementKind.RECORD, ElementKind.CLASS, ElementKind.INTERFACE, ElementKind.ENUM -> true;
+            case RECORD, CLASS, INTERFACE, ENUM -> true;
             default -> false;
         };
     }
