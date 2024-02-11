@@ -25,6 +25,7 @@ public class LensProcessorFailTest {
                 {"cases/lens_without_path/AnnotationWithoutLensPath.java", "annotation @dev.khbd.lens4j.core.annotations.Lens is missing a default value for the element 'path'"},
                 {"cases/field_not_found/FieldNotFound.java", "Field 'bid' was not found in class 'Currency'"},
                 {"cases/generic/generic_class/GenericClass.java", "@GenLenses is not allowed on generic classes"},
+                {"cases/on_package/no_root/package-info.java", "Explicit root is required for @GenLenses annotation at package level"}
         };
     }
 
