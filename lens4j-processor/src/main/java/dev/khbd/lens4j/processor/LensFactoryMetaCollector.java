@@ -85,8 +85,8 @@ public class LensFactoryMetaCollector {
     }
 
 
-    private String getPackage(Element classElement) {
-        return elementUtil.getPackageOf(classElement).toString();
+    private String getPackage(Element annotated) {
+        return elementUtil.getPackageOf(annotated).toString();
     }
 
     private Set<Modifier> getClassModifiers(Element annotated, GenLenses annotation) {
