@@ -100,8 +100,8 @@ public class LensFactoryMetaCollector {
             case PACKAGE:
                 break;
             case INHERIT:
-                if (annotated instanceof TypeElement typed) {
-                    TypeElement top = ProcessorUtils.getTopLevelClass(typed);
+                if (annotated instanceof TypeElement) {
+                    TypeElement top = ProcessorUtils.getTopLevelClass((TypeElement) annotated);
                     if (top.getModifiers().contains(Modifier.PUBLIC)) {
                         modifiers.add(Modifier.PUBLIC);
                     }

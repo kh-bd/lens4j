@@ -147,15 +147,14 @@ public class LensProcessorSuccessTest {
                                 "cases/field_strategy/different_package/other/Account.java",
                                 "cases/field_strategy/different_package/Payment.java"
                         ),
-                        List.of("cases/field_strategy/different_package/PaymentLenses")
+                        Collections.singletonList("cases/field_strategy/different_package/PaymentLenses")
                 },
                 {
-                        List.of("cases/repeat/more_factories/Customer.java"),
-                        List.of(
+                        Collections.singletonList("cases/repeat/more_factories/Customer.java"),
+                        Arrays.asList(
                                 "cases/repeat/more_factories/FactoryImpl1",
                                 "cases/repeat/more_factories/FactoryImpl2"
-                        ),
-                        Collections.singletonList("cases/field_strategy/different_package/PaymentLenses")
+                        )
                 }
         };
     }

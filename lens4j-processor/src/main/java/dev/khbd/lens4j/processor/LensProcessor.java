@@ -15,7 +15,8 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,10 +55,10 @@ public class LensProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return Set.of(
+        return new HashSet<>(Arrays.asList(
                 GenLenses.class.getCanonicalName(),
                 GenLenses.GenLensesMulti.class.getCanonicalName()
-        );
+        ));
     }
 
     @Override
@@ -74,7 +75,7 @@ public class LensProcessor extends AbstractProcessor {
         try {
             Set<AnnotatedElement> lensElements = searcher.search(roundEnv);
             List<FactoryMeta> factories = lensElements.stream()
-                    .map(element -> metaCollector.collect(element.annotated(), element.root(), element.annotation()))
+                    .map(element -> metaCollector.collect(element.getAnnotated(), element.getRoot(), element.getAnnotation()))
                     .collect(Collectors.toList());
             List<FactoryMeta> merged = merger.merge(factories);
             for (FactoryMeta factoryMeta : merged) {
