@@ -63,7 +63,11 @@ class AnnotatedElementSearcher {
             return (TypeElement) typeUtils.asElement(mirror);
         }
 
-        // root is void, so annotated element is root
+        if (annotated.getKind() == ElementKind.PACKAGE) {
+            throw new LensProcessingException(MessageFactory.explicitRootIsRequired(annotated));
+        }
+
+        // root is void and type is annotated, so annotated element is root
         if (correctRootElementType(annotated)) {
             return (TypeElement) annotated;
         }

@@ -39,6 +39,8 @@ public class LensProcessorSuccessTest {
                 {"cases/explicit_root/on_interface/root_interface/Action.java", "cases/explicit_root/on_interface/root_interface/ActionLenses"},
                 {"cases/on_enum/ConfigType.java", "cases/on_enum/ConfigTypeLenses"},
                 {"cases/different_package/Lenses.java", "cases/different_package/FactoryImpl"},
+                {"cases/on_package/different_package/package-info.java", "cases/on_package/different_package/Factory"},
+                {"cases/on_package/inherit_access_level/package-info.java", "cases/on_package/inherit_access_level/Factory"},
         };
     }
 
