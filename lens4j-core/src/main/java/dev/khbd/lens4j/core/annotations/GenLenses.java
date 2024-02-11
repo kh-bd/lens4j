@@ -39,7 +39,7 @@ import java.lang.annotation.Target;
  * @author Sergei_Khadanovich
  */
 @Documented
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.PACKAGE})
 @Retention(RetentionPolicy.CLASS)
 @Repeatable(GenLenses.GenLensesMulti.class)
 public @interface GenLenses {

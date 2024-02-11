@@ -112,6 +112,13 @@ public final class MessageFactory {
     }
 
     /**
+     * Create `explicit root is required` error.
+     */
+    public static Message explicitRootIsRequired(Element element) {
+        return Message.of(makeMessage("explicit_root_is_required"), element);
+    }
+
+    /**
      * Create `gen lens not allowed on generic class` error.
      */
     public static Message genLensNotAllowedOnGenericClasses(Element element) {
