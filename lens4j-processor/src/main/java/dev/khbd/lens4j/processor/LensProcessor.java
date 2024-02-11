@@ -73,7 +73,7 @@ public class LensProcessor extends AbstractProcessor {
         try {
             Set<AnnotatedElement> lensElements = searcher.search(roundEnv);
             List<FactoryMeta> factories = lensElements.stream()
-                    .map(element -> metaCollector.collect(element.annotated(), element.root(), element.annotation()))
+                    .map(element -> metaCollector.collect(element.getAnnotated(), element.getRoot(), element.getAnnotation()))
                     .collect(Collectors.toList());
             List<FactoryMeta> merged = merger.merge(factories);
             for (FactoryMeta factoryMeta : merged) {

@@ -12,7 +12,8 @@ import javax.lang.model.element.TypeElement;
  * @author Sergei Khadanovich
  */
 @Value
-class ElementAndGenLenses {
+class AnnotatedElement {
+
     Element annotated;
     TypeElement root;
     GenLenses annotation;
