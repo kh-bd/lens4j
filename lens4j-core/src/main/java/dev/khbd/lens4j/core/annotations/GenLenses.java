@@ -2,6 +2,7 @@ package dev.khbd.lens4j.core.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -38,9 +39,20 @@ import java.lang.annotation.Target;
  * @author Sergei_Khadanovich
  */
 @Documented
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.PACKAGE})
 @Retention(RetentionPolicy.CLASS)
+@Repeatable(GenLenses.GenLensesMulti.class)
 public @interface GenLenses {
+
+    /**
+     * Class which will be the root of all lenses.
+     *
+     * <p>Default value is {@link Void}. It means that an annotated element
+     * is going to be the root of all lenses.
+     *
+     * @return root class
+     */
+    Class<?> root() default void.class;
 
     /**
      * Generated factory name.
@@ -82,5 +94,16 @@ public @interface GenLenses {
          * Generated factory visibility modified will be the same as annotated class.
          */
         INHERIT
+    }
+
+    /**
+     * Repeatable GenLenses.
+     */
+    @Documented
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.CLASS)
+    @interface GenLensesMulti {
+
+       GenLenses[] value();
     }
 }

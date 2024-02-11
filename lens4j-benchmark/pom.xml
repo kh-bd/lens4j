@@ -63,6 +63,18 @@
                     <compilerArgs>
                         <compilerArg>-Alenses.generate.inlined=${inlined}</compilerArg>
                     </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>dev.khbd.lens4j</groupId>
+                            <artifactId>lens4j-processor</artifactId>
+                            <version>${project.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.openjdk.jmh</groupId>
+                            <artifactId>jmh-generator-annprocess</artifactId>
+                            <version>${jmh.version}</version>k
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>
