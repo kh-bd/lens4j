@@ -15,6 +15,7 @@ public class LensProcessorSuccessTest {
         return new Object[][]{
                 {"cases/factory_modifiers/public_factory/Account.java", "cases/factory_modifiers/public_factory/AccountLenses"},
                 {"cases/factory_modifiers/package_factory/Account.java", "cases/factory_modifiers/package_factory/AccountLenses"},
+                {"cases/factory_modifiers/different_access/Account.java", "cases/factory_modifiers/different_access/AccountLenses"},
                 {"cases/method/generic/class_generics/Payment.java", "cases/method/generic/class_generics/PaymentLenses"},
                 {"cases/method/found/Payment.java", "cases/method/found/PaymentLenses"},
                 {"cases/array_type_at_the_end/WithArray.java", "cases/array_type_at_the_end/WithArrayLenses"},
@@ -29,7 +30,15 @@ public class LensProcessorSuccessTest {
                 {"cases/nested_class/Outer.java", "cases/nested_class/OuterInner1Inner2Lenses"},
                 {"cases/decapitalize_factory_name/Account.java", "cases/decapitalize_factory_name/SpecificFactoryName"},
                 {"cases/field_strategy/Payment.java", "cases/field_strategy/PaymentLenses"},
-                {"cases/lens_modifiers/Account.java", "cases/lens_modifiers/AccountLenses"}
+                {"cases/lens_modifiers/Account.java", "cases/lens_modifiers/AccountLenses"},
+                {"cases/repeat/one_factory/Customer.java", "cases/repeat/one_factory/CustomerLenses"},
+                {"cases/explicit_root/on_interface/clazz/Action.java", "cases/explicit_root/on_interface/clazz/CustomerLenses"},
+                {"cases/on_interface/LensOnInterface.java", "cases/on_interface/LensOnInterfaceLenses"},
+                {"cases/explicit_root/on_interface/root_interface/Action.java", "cases/explicit_root/on_interface/root_interface/ActionLenses"},
+                {"cases/on_enum/ConfigType.java", "cases/on_enum/ConfigTypeLenses"},
+                {"cases/different_package/Lenses.java", "cases/different_package/FactoryImpl"},
+                {"cases/on_package/different_package/package-info.java", "cases/on_package/different_package/Factory"},
+                {"cases/on_package/inherit_access_level/package-info.java", "cases/on_package/inherit_access_level/Factory"},
         };
     }
 
@@ -42,18 +51,6 @@ public class LensProcessorSuccessTest {
                 .success()
                 .generated(factoryFile, factoryFile + ".java");
     }
-
-    @Test(dataProvider = "singleFileSuccessCases")
-    public void generate_singleFileAndInlinedFlagIsOn_generateValidFactory(String file, String factoryFile) {
-        CompilationDescription.of()
-                .withFile(file)
-                .withCommons()
-                .withInlinedOption()
-                .compile()
-                .success()
-                .generated(factoryFile, factoryFile + "Inlined.java");
-    }
-
 
     @DataProvider
     public static Object[][] multiFileSuccessCases() {
@@ -135,6 +132,27 @@ public class LensProcessorSuccessTest {
                                 "cases/sub_class/SubClass.java"
                         ),
                         List.of("cases/sub_class/SubClassLenses")
+                },
+                {
+                        List.of(
+                                "cases/several_factories_to_same_class/success/Customer.java",
+                                "cases/several_factories_to_same_class/success/Client.java"
+                        ),
+                        List.of("cases/several_factories_to_same_class/success/FactoryImpl")
+                },
+                {
+                        List.of(
+                                "cases/field_strategy/different_package/other/Account.java",
+                                "cases/field_strategy/different_package/Payment.java"
+                        ),
+                        List.of("cases/field_strategy/different_package/PaymentLenses")
+                },
+                {
+                        List.of("cases/repeat/more_factories/Customer.java"),
+                        List.of(
+                                "cases/repeat/more_factories/FactoryImpl1",
+                                "cases/repeat/more_factories/FactoryImpl2"
+                        )
                 }
         };
     }
@@ -149,20 +167,6 @@ public class LensProcessorSuccessTest {
         result.success();
         for (String factoryFile : expected) {
             result.generated(factoryFile, factoryFile + ".java");
-        }
-    }
-
-    @Test(dataProvider = "multiFileSuccessCases")
-    public void generate_multiFileAndInlined_generateValidFactories(List<String> sources, List<String> expected) {
-        CompilationResult result = CompilationDescription.of()
-                .withCommons()
-                .withInlinedOption()
-                .withFiles(sources.toArray(String[]::new))
-                .compile();
-
-        result.success();
-        for (String factoryFile : expected) {
-            result.generated(factoryFile, factoryFile + "Inlined.java");
         }
     }
 

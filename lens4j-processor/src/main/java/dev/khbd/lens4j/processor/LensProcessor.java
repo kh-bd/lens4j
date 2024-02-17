@@ -3,7 +3,6 @@ package dev.khbd.lens4j.processor;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.JavaFile;
 import dev.khbd.lens4j.core.annotations.GenLenses;
-import dev.khbd.lens4j.processor.generator.CombinedLensFactoryGenerator;
 import dev.khbd.lens4j.processor.generator.InlinedLensFactoryGenerator;
 import dev.khbd.lens4j.processor.generator.LensFactoryGenerator;
 import dev.khbd.lens4j.processor.meta.FactoryMeta;
@@ -14,10 +13,11 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Annotation processor for generating lens.
@@ -30,24 +30,20 @@ public class LensProcessor extends AbstractProcessor {
     private LensFactoryGenerator lensGenerator;
     private Filer filer;
     private Logger logger;
-
-    private LensFactoryMetaBuilder metaBuilder;
+    private AnnotatedElementSearcher searcher;
+    private LensFactoryMetaCollector metaCollector;
+    private FactoryMetaMerger merger;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
 
         this.filer = processingEnv.getFiler();
-        this.metaBuilder = new LensFactoryMetaBuilder(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
+        this.metaCollector = new LensFactoryMetaCollector(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
         this.logger = new Logger(processingEnv.getMessager());
-
-        Options options = new Options(processingEnv.getOptions());
-
-        if (options.inlinedGenerationEnabled()) {
-            this.lensGenerator = new InlinedLensFactoryGenerator(processingEnv.getTypeUtils());
-        } else {
-            this.lensGenerator = new CombinedLensFactoryGenerator(processingEnv.getTypeUtils());
-        }
+        this.lensGenerator = new InlinedLensFactoryGenerator(processingEnv.getTypeUtils());
+        this.searcher = new AnnotatedElementSearcher(processingEnv.getTypeUtils());
+        this.merger = new FactoryMetaMerger();
     }
 
     @Override
@@ -57,7 +53,10 @@ public class LensProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return Set.of(GenLenses.class.getName());
+        return Set.of(
+                GenLenses.class.getCanonicalName(),
+                GenLenses.GenLensesMulti.class.getCanonicalName()
+        );
     }
 
     @Override
@@ -71,10 +70,13 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private ProcessResult processElements(RoundEnvironment roundEnv) {
-        Set<? extends Element> lensElements = findLensElements(roundEnv);
         try {
-            for (Element element : lensElements) {
-                FactoryMeta factoryMeta = metaBuilder.build(element);
+            Set<AnnotatedElement> lensElements = searcher.search(roundEnv);
+            List<FactoryMeta> factories = lensElements.stream()
+                    .map(element -> metaCollector.collect(element.getAnnotated(), element.getRoot(), element.getAnnotation()))
+                    .collect(Collectors.toList());
+            List<FactoryMeta> merged = merger.merge(factories);
+            for (FactoryMeta factoryMeta : merged) {
                 JavaFile file = lensGenerator.generate(factoryMeta);
                 writeFile(file);
             }
@@ -83,10 +85,6 @@ public class LensProcessor extends AbstractProcessor {
             return ProcessResult.ERROR;
         }
         return ProcessResult.GENERATED;
-    }
-
-    private Set<? extends Element> findLensElements(RoundEnvironment roundEnv) {
-        return roundEnv.getElementsAnnotatedWith(GenLenses.class);
     }
 
     private void writeFile(JavaFile javaFile) {
