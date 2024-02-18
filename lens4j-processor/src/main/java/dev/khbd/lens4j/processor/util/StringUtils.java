@@ -17,7 +17,7 @@ public class StringUtils {
      * @return {@literal true} if it's blank and {@literal false} otherwise
      */
     public static boolean isBlank(CharSequence cs) {
-        if (cs == null || cs.isEmpty()) {
+        if (cs == null || cs.length() == 0) {
             return true;
         }
         return cs.chars().allMatch(Character::isWhitespace);
