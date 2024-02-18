@@ -5,8 +5,9 @@ import dev.khbd.lens4j.core.annotations.Lens;
 import dev.khbd.lens4j.processor.meta.FactoryId;
 import dev.khbd.lens4j.processor.meta.FactoryMeta;
 import dev.khbd.lens4j.processor.meta.LensMeta;
+import dev.khbd.lens4j.processor.util.ProcessorUtils;
+import dev.khbd.lens4j.processor.util.StringUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
