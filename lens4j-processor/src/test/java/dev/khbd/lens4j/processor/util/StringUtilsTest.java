@@ -48,4 +48,35 @@ public class StringUtilsTest {
     public void capitalize_stringIsNotCapitalized_returnCapitalizedVersion() {
         assertThat(StringUtils.capitalize("hello")).isEqualTo("Hello");
     }
+
+    @Test
+    public void toSnakeCase_stringIsNull_returnNull() {
+        assertThat(StringUtils.toSnakeCase(null)).isNull();
+    }
+
+    @Test
+    public void toSnakeCase_stringIsEmpty_returnEmpty() {
+        assertThat(StringUtils.toSnakeCase("")).isEmpty();
+    }
+
+    @Test
+    public void toSnakeCase_simpleWorld_returnUppercaseVersion() {
+        String result = StringUtils.toSnakeCase("lens");
+
+        assertThat(result).isEqualTo("LENS");
+    }
+
+    @Test
+    public void toSnakeCase_simpleUppercase_returnTheSame() {
+        String result = StringUtils.toSnakeCase("LENS_NAME");
+
+        assertThat(result).isEqualTo("LENS_NAME");
+    }
+
+    @Test
+    public void toSnakeCase_stringInCamelCase_returnUppercaseVersion() {
+        String result = StringUtils.toSnakeCase("lensName");
+
+        assertThat(result).isEqualTo("LENS_NAME");
+    }
 }
