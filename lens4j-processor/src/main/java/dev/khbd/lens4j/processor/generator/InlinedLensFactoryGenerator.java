@@ -17,7 +17,7 @@ import dev.khbd.lens4j.processor.LexicalScope;
 import dev.khbd.lens4j.processor.meta.FactoryMeta;
 import dev.khbd.lens4j.processor.meta.LensMeta;
 import dev.khbd.lens4j.processor.meta.LensPartMeta;
-import org.apache.commons.lang3.StringUtils;
+import dev.khbd.lens4j.processor.util.StringUtils;
 
 import javax.annotation.processing.Generated;
 import javax.lang.model.element.Modifier;
