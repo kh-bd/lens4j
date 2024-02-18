@@ -1,21 +1,17 @@
 package dev.khbd.lens4j.processor.path;
 
-import java.util.Objects;
+import lombok.Value;
 
 /**
  * Path part which represents property access in lens path.
  *
  * @author Sergei_Khadanovich
  */
+@Value
 public class Property implements PathPart {
 
-    private final String name;
-    private final int start;
-
-    public Property(String name, int start) {
-        this.name = name;
-        this.start = start;
-    }
+    String name;
+    int start;
 
     @Override
     public void visit(PathVisitor visitor) {
@@ -25,34 +21,5 @@ public class Property implements PathPart {
     @Override
     public PathPartKind getKind() {
         return PathPartKind.PROPERTY;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getStart() {
-        return start;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Property property = (Property) o;
-        return start == property.start && name.equals(property.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, start);
-    }
-
-    @Override
-    public String toString() {
-        return "Property{" +
-                "name='" + name + '\'' +
-                ", start=" + start +
-                '}';
     }
 }

@@ -11,6 +11,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
+ * Options.
+ *
  * @author Sergei_Khadanovich
  */
 public class Options {
@@ -18,7 +20,7 @@ public class Options {
     private static final String GENERATE_INLINED_LENSES = "lenses.generate.inlined";
 
     private static final List<OptionsDescription<?>> DESCRIPTIONS = Collections.singletonList(
-            new OptionsDescription<>(GENERATE_INLINED_LENSES, Boolean::parseBoolean, () -> false)
+            new OptionsDescription<>(GENERATE_INLINED_LENSES, str -> true, () -> true)
     );
 
     private final Map<String, Object> params = new HashMap<>();
@@ -39,15 +41,6 @@ public class Options {
         for (OptionsDescription<?> description : DESCRIPTIONS) {
             params.putIfAbsent(description.key, description.defaultValue.get());
         }
-    }
-
-    /**
-     * Is inlined generation enabled or not.
-     *
-     * @return {@literal true} if enabled
-     */
-    public boolean inlinedGenerationEnabled() {
-        return getKeyValue(GENERATE_INLINED_LENSES);
     }
 
     /**
