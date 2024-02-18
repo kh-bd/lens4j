@@ -13,8 +13,9 @@ import dev.khbd.lens4j.processor.path.PathParser;
 import dev.khbd.lens4j.processor.path.PathStructureValidator;
 import dev.khbd.lens4j.processor.path.PathVisitor;
 import dev.khbd.lens4j.processor.path.Property;
+import dev.khbd.lens4j.processor.util.ProcessorUtils;
+import dev.khbd.lens4j.processor.util.StringUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -230,7 +231,7 @@ public class LensMetaCollector {
     }
 
     private String makeLensName(Lens lens, Path path) {
-        if (StringUtils.isNotBlank(lens.lensName())) {
+        if (!StringUtils.isBlank(lens.lensName())) {
             return lens.lensName();
         }
         return deriveLensNameByPath(path, lens.type());

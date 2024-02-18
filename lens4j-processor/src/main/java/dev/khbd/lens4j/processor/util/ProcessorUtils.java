@@ -1,5 +1,6 @@
-package dev.khbd.lens4j.processor;
+package dev.khbd.lens4j.processor.util;
 
+import dev.khbd.lens4j.processor.LinerHierarchy;
 import lombok.experimental.UtilityClass;
 
 import javax.lang.model.element.Element;
