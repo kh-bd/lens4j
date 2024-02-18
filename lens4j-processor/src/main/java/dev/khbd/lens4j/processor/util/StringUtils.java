@@ -36,15 +36,40 @@ public class StringUtils {
 
         char[] chars = original.toCharArray();
 
-        if (chars[0] == Character.toTitleCase(chars[0])) {
+        if (chars[0] == Character.toUpperCase(chars[0])) {
             return original;
         }
 
         char[] capitalizeChars = new char[original.length()];
-        capitalizeChars[0] = Character.toTitleCase(chars[0]);
+        capitalizeChars[0] = Character.toUpperCase(chars[0]);
 
         System.arraycopy(chars, 1, capitalizeChars, 1, capitalizeChars.length - 1);
 
         return new String(capitalizeChars);
+    }
+
+    /**
+     * Convert camel case string to snake-upper case.
+     *
+     * @param original original string
+     * @return converted string
+     */
+    public static String toSnakeCase(String original) {
+        if (original == null || original.isEmpty()) {
+            return original;
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        char[] chars = original.toCharArray();
+        for (int i = 0; i < chars.length - 1; i++) {
+            builder.append(Character.toUpperCase(chars[i]));
+            if (Character.isLowerCase(chars[i]) && Character.isUpperCase(chars[i + 1])) {
+                builder.append("_");
+            }
+        }
+        builder.append(Character.toUpperCase(chars[chars.length - 1]));
+
+        return builder.toString();
     }
 }

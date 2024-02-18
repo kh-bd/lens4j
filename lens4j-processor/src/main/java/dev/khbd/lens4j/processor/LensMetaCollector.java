@@ -1,6 +1,5 @@
 package dev.khbd.lens4j.processor;
 
-import com.google.common.base.CaseFormat;
 import dev.khbd.lens4j.core.annotations.Lens;
 import dev.khbd.lens4j.core.annotations.LensType;
 import dev.khbd.lens4j.processor.meta.FactoryId;
@@ -248,7 +247,7 @@ public class LensMetaCollector {
             if (builder.length() > 0) {
                 builder.append("_");
             }
-            builder.append(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, name));
+            builder.append(StringUtils.toSnakeCase(name));
         }
 
         @Override
