@@ -1,6 +1,7 @@
 package dev.khbd.lens4j.processor;
 
 import dev.khbd.lens4j.processor.meta.ResolvedParametrizedTypeMirror;
+import dev.khbd.lens4j.processor.util.ProcessorUtils;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
