@@ -64,8 +64,8 @@
         <mockito.version>3.9.0</mockito.version>
         <assertj.version>3.20.2</assertj.version>
         <javapoet.version>1.13.0</javapoet.version>
-        <auto-service.version>1.0-rc2</auto-service.version>
-        <google-testing.version>0.15</google-testing.version>
+        <auto-service.version>1.0.1</auto-service.version>
+        <google-testing.version>0.19</google-testing.version>
         <jmh.version>1.19</jmh.version>
     </properties>
 
