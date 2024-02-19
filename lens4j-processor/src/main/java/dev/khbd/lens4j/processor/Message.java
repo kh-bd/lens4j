@@ -1,5 +1,7 @@
 package dev.khbd.lens4j.processor;
 
+import lombok.Value;
+
 import javax.lang.model.element.Element;
 
 /**
@@ -7,44 +9,11 @@ import javax.lang.model.element.Element;
  *
  * @author Sergei_Khadanovich
  */
+@Value(staticConstructor = "of")
 public class Message {
 
-    private final String msg;
-    private final Element element;
-
-    private Message(String msg, Element element) {
-        this.msg = msg;
-        this.element = element;
-    }
-
-    /**
-     * Get message.
-     *
-     * @return message
-     */
-    public String getMsg() {
-        return msg;
-    }
-
-    /**
-     * Get element.
-     *
-     * @return element
-     */
-    public Element getElement() {
-        return element;
-    }
-
-    /**
-     * Create message.
-     *
-     * @param msg     message text
-     * @param element the element to use as a position hint
-     * @return message
-     */
-    public static Message of(String msg, Element element) {
-        return new Message(msg, element);
-    }
+    String msg;
+    Element element;
 
     /**
      * Create message.
