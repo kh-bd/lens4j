@@ -60,7 +60,7 @@
                 <configuration>
                     <release>21</release>
                     <compilerArgs>
-                        <compilerArg>-Alenses.generate.inlined=${inlined}</compilerArg>
+                        <arg>-Alenses.generate.inlined=${inlined}</arg>
                     </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
