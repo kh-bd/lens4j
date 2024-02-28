@@ -17,10 +17,6 @@
             <artifactId>lens4j-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>dev.khbd.result4j</groupId>
-            <artifactId>result4j-core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>

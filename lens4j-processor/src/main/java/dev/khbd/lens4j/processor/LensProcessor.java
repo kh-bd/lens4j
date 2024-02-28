@@ -6,8 +6,6 @@ import dev.khbd.lens4j.core.annotations.GenLenses;
 import dev.khbd.lens4j.processor.generator.InlinedLensFactoryGenerator;
 import dev.khbd.lens4j.processor.generator.LensFactoryGenerator;
 import dev.khbd.lens4j.processor.meta.FactoryMeta;
-import dev.khbd.result4j.core.Either;
-import dev.khbd.result4j.core.NoData;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -68,34 +66,37 @@ public class LensProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        return processElements(roundEnv)
-                .peekLeft(error -> logger.error(error))
-                .isLeft();
+        return processElements(roundEnv) == ProcessResult.ERROR;
     }
 
-    private Either<Message, ?> processElements(RoundEnvironment roundEnv) {
+    private ProcessResult processElements(RoundEnvironment roundEnv) {
         try {
             Set<AnnotatedElement> lensElements = searcher.search(roundEnv);
             List<FactoryMeta> factories = lensElements.stream()
                     .map(element -> metaCollector.collect(element.annotated(), element.root(), element.annotation()))
                     .collect(Collectors.toList());
-            List<FactoryMeta> merged = merger.merge(factories).unwrap();
+            List<FactoryMeta> merged = merger.merge(factories);
             for (FactoryMeta factoryMeta : merged) {
                 JavaFile file = lensGenerator.generate(factoryMeta);
-                writeFile(file).unwrap();
+                writeFile(file);
             }
         } catch (LensProcessingException e) {
-            return Either.left(e.getError());
+            logger.error(e.getError());
+            return ProcessResult.ERROR;
         }
-        return Either.right(NoData.INSTANCE);
+        return ProcessResult.GENERATED;
     }
 
-    private Either<Message, ?> writeFile(JavaFile javaFile) {
+    private void writeFile(JavaFile javaFile) {
         try {
             javaFile.writeTo(filer);
-            return Either.right(NoData.INSTANCE);
         } catch (IOException ioe) {
-            return Either.left(Message.of("Error during java sources generation"));
+            throw new RuntimeException("Error during java sources generation", ioe);
         }
+    }
+
+    enum ProcessResult {
+        GENERATED,
+        ERROR
     }
 }
