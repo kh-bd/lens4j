@@ -10,10 +10,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <properties>
-        <inlined>false</inlined>
-    </properties>
-
     <artifactId>lens4j-benchmark</artifactId>
 
     <dependencies>
@@ -60,9 +56,6 @@
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <release>11</release>
-                    <compilerArgs>
-                        <compilerArg>-Alenses.generate.inlined=${inlined}</compilerArg>
-                    </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>dev.khbd.lens4j</groupId>
@@ -81,12 +74,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>inlined</id>
-            <properties>
-                <inlined>true</inlined>
-            </properties>
-        </profile>
         <profile>
             <id>benchmark</id>
             <build>
